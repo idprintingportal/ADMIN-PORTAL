@@ -1,4546 +1,2960 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>ID Card Printing Portal</title>
-
-<style>
-:root{
-    --bg:#08070d;
-    --panel:#111019;
-    --panel2:#171521;
-    --panel3:#1c1928;
-    --line:#302b3d;
-    --text:#f8f6fb;
-    --muted:#aaa4b5;
-
-    --primary:#806cff;
-    --primary2:#a07cff;
-    --pink:#f05bd5;
-
-    --green:#55d99a;
-    --red:#ff687c;
-    --yellow:#ffc857;
-    --blue:#62b5ff;
-}
-
-*{
-    box-sizing:border-box;
-}
-
-html{
-    scroll-behavior:smooth;
-}
-
-body{
-    margin:0;
-    min-height:100vh;
-
-    color:var(--text);
-
-    font-family:
-        Inter,
-        ui-sans-serif,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-    background:
-        radial-gradient(
-            circle at 50% -10%,
-            rgba(122,77,180,.35),
-            transparent 38%
-        ),
-        radial-gradient(
-            circle at 100% 20%,
-            rgba(74,55,170,.16),
-            transparent 30%
-        ),
-        #08070d;
-}
-
-button,
-input,
-select{
-    font:inherit;
-}
-
-button{
-    cursor:pointer;
-}
-
-img{
-    max-width:100%;
-}
-
-.hidden{
-    display:none!important;
-}
-
-
-/* =========================================================
-   GLOBAL
-========================================================= */
-
-.container{
-    width:100%;
-    max-width:1500px;
-    margin:auto;
-    padding:20px;
-}
-
-.btn{
-    min-width:140px;
-    height:46px;
-
-    padding:0 18px;
-
-    border-radius:12px;
-
-    border:1px solid var(--line);
-
-    color:white;
-
-    background:#171520;
-
-    transition:
-        .2s ease;
-}
-
-.btn:hover{
-    transform:translateY(-1px);
-    border-color:#8072ff;
-    box-shadow:
-        0 8px 25px rgba(0,0,0,.25);
-}
-
-.btn-primary{
-    background:
-        linear-gradient(
-            135deg,
-            #6d5cff,
-            #9b6cff
-        );
-
-    border-color:#9b8fff;
-}
-
-.btn-success{
-    background:
-        linear-gradient(
-            135deg,
-            #248b61,
-            #35bb80
-        );
-
-    border-color:#62dba3;
-}
-
-.btn-danger{
-    background:#3c1c25;
-    border-color:#6b303c;
-}
-
-.btn-small{
-    min-width:auto;
-    height:38px;
-    padding:0 13px;
-}
-
-.badge{
-    display:inline-flex;
-    align-items:center;
-
-    min-height:28px;
-
-    padding:0 10px;
-
-    border-radius:20px;
-
-    font-size:12px;
-    font-weight:700;
-}
-
-.badge-green{
-    color:#86edb7;
-    background:#11291f;
-    border:1px solid #275d44;
-}
-
-.badge-blue{
-    color:#92d1ff;
-    background:#112433;
-    border:1px solid #2b5a78;
-}
-
-.badge-yellow{
-    color:#ffd76c;
-    background:#302714;
-    border:1px solid #67532a;
-}
-
-
-/* =========================================================
-   LOGIN
-========================================================= */
-
-.login-page{
-    min-height:100vh;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    padding:20px;
-}
-
-.login-box{
-    width:440px;
-    max-width:100%;
-
-    padding:34px;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(25,22,36,.98),
-            rgba(13,12,19,.98)
-        );
-
-    border:1px solid #393247;
-
-    border-radius:24px;
-
-    box-shadow:
-        0 35px 100px rgba(0,0,0,.65);
-}
-
-.login-logo{
-    text-align:center;
-
-    font-size:27px;
-    font-weight:900;
-
-    letter-spacing:.5px;
-
-    background:
-        linear-gradient(
-            90deg,
-            #aa8bff,
-            #ff61d3
-        );
-
-    -webkit-background-clip:text;
-    background-clip:text;
-
-    color:transparent;
-}
-
-.login-subtitle{
-    text-align:center;
-
-    color:var(--muted);
-
-    margin-top:8px;
-    margin-bottom:28px;
-}
-
-.field{
-    margin:15px 0;
-}
-
-.field label{
-    display:block;
-
-    color:#bbb5c5;
-
-    font-size:12px;
-    font-weight:600;
-
-    margin-bottom:7px;
-}
-
-.field input,
-.field select{
-
-    width:100%;
-
-    height:44px;
-
-    padding:0 12px;
-
-    color:white;
-
-    background:#0c0b12;
-
-    border:1px solid #302b3b;
-
-    border-radius:10px;
-
-    outline:none;
-}
-
-.field input:focus,
-.field select:focus{
-    border-color:#8072ff;
-    box-shadow:
-        0 0 0 3px rgba(128,108,255,.12);
-}
-
-.login-btn{
-    width:100%;
-    margin-top:10px;
-}
-
-.login-bottom{
-    display:flex;
-
-    justify-content:center;
-
-    gap:10px;
-
-    margin-top:18px;
-}
-
-.login-error{
-    min-height:20px;
-
-    text-align:center;
-
-    color:var(--red);
-
-    font-size:13px;
-
-    margin-top:12px;
-}
-
-
-/* =========================================================
-   TOPBAR
-========================================================= */
-
-.topbar{
-
-    display:flex;
-
-    justify-content:space-between;
-    align-items:center;
-
-    gap:20px;
-
-    padding:12px 0 18px;
-
-    border-bottom:1px solid #443b4c;
-}
-
-.logo{
-    font-size:24px;
-    font-weight:900;
-
-    letter-spacing:.5px;
-
-    background:
-        linear-gradient(
-            90deg,
-            #b18cff,
-            #ff5bd5
-        );
-
-    -webkit-background-clip:text;
-    background-clip:text;
-
-    color:transparent;
-}
-
-.top-actions{
-    display:flex;
-    gap:8px;
-}
-
-
-/* =========================================================
-   TOOL NAV
-========================================================= */
-
-.tool-bar{
-
-    display:flex;
-
-    flex-wrap:wrap;
-
-    justify-content:center;
-
-    gap:9px;
-
-    padding:20px 0;
-}
-
-.tool-btn{
-
-    min-width:145px;
-    height:44px;
-
-    padding:0 14px;
-
-    color:white;
-
-    background:#15131e;
-
-    border:1px solid #312c3d;
-
-    border-radius:11px;
-
-    font-size:12px;
-    font-weight:700;
-
-    transition:.2s;
-}
-
-.tool-btn:hover{
-    border-color:#7e70ff;
-}
-
-.tool-btn.active{
-
-    background:
-        linear-gradient(
-            135deg,
-            #5f72ff,
-            #8064ff
-        );
-
-    border-color:#9a92ff;
-
-    box-shadow:
-        0 7px 22px rgba(91,77,255,.2);
-}
-
-
-/* =========================================================
-   ACCOUNT
-========================================================= */
-
-.account-bar{
-
-    display:flex;
-
-    align-items:center;
-    justify-content:space-between;
-
-    gap:15px;
-
-    padding:15px 18px;
-
-    background:#121019;
-
-    border:1px solid #3a3445;
-
-    border-radius:17px;
-}
-
-.validity{
-
-    padding:9px 15px;
-
-    border-radius:20px;
-
-    color:#9eeeb9;
-
-    background:#112119;
-
-    border:1px solid #285d43;
-
-    font-size:13px;
-}
-
-.validity b{
-    color:#ffd05d;
-}
-
-
-/* =========================================================
-   HERO
-========================================================= */
-
-.hero{
-    text-align:center;
-
-    padding:30px 10px 24px;
-}
-
-.hero h1{
-
-    margin:13px 0 8px;
-
-    font-size:36px;
-
-    background:
-        linear-gradient(
-            90deg,
-            #b38aff,
-            #ff62d3
-        );
-
-    -webkit-background-clip:text;
-    background-clip:text;
-
-    color:transparent;
-}
-
-.hero p{
-    margin:0;
-
-    color:var(--muted);
-}
-
-.pill{
-
-    display:inline-flex;
-
-    align-items:center;
-
-    padding:8px 15px;
-
-    border-radius:20px;
-
-    color:#a8d9ff;
-
-    background:#122332;
-
-    border:1px solid #315d7b;
-
-    font-size:11px;
-
-    font-weight:800;
-
-    letter-spacing:.3px;
-}
-
-
-/* =========================================================
-   CARDS
-========================================================= */
-
-.grid{
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(2,minmax(0,1fr));
-
-    gap:18px;
-}
-
-.card{
-
-    background:
-        linear-gradient(
-            145deg,
-            #14121c,
-            #0f0e15
-        );
-
-    border:1px solid #302b3b;
-
-    border-radius:17px;
-
-    padding:20px;
-}
-
-.card-title{
-    margin-top:0;
-}
-
-
-/* =========================================================
-   UPLOAD
-========================================================= */
-
-.drop-zone{
-
-    min-height:170px;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    flex-direction:column;
-
-    gap:12px;
-
-    text-align:center;
-
-    border:2px dashed #55566b;
-
-    border-radius:15px;
-
-    background:#0c0b12;
-}
-
-.drop-zone:hover{
-    border-color:#8277ff;
-}
-
-.file-input{
-
-    width:100%;
-
-    color:#aaa5b3;
-}
-
-
-/* =========================================================
-   DIMENSION PANEL
-========================================================= */
-
-.dimension-panel{
-
-    display:grid;
-
-    grid-template-columns:
-        1.4fr 1fr 1fr 1fr;
-
-    gap:10px;
-
-    margin-top:16px;
-}
-
-.dimension-info{
-
-    margin-top:12px;
-
-    padding:12px;
-
-    border-radius:10px;
-
-    background:#0d0c13;
-
-    border:1px solid #292532;
-
-    color:#aaa5b3;
-
-    font-size:12px;
-}
-
-.dimension-info strong{
-    color:white;
-}
-
-
-/* =========================================================
-   PREVIEW
-========================================================= */
-
-.preview-layout{
-
-    display:grid;
-
-    grid-template-columns:
-        minmax(0,1fr)
-        minmax(0,1fr);
-
-    gap:18px;
-
-    margin-top:18px;
-}
-
-.preview-box{
-
-    min-height:280px;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    flex-direction:column;
-
-    gap:12px;
-
-    padding:18px;
-
-    background:#09080d;
-
-    border:1px solid #302b3b;
-
-    border-radius:14px;
-}
-
-.preview-box img{
-
-    max-width:100%;
-    max-height:400px;
-
-    object-fit:contain;
-
-    border-radius:8px;
-}
-
-.preview-label{
-
-    width:100%;
-
-    color:#aaa5b3;
-
-    font-size:12px;
-}
-
-
-/* =========================================================
-   ACTIONS
-========================================================= */
-
-.actions{
-
-    display:flex;
-
-    flex-wrap:wrap;
-
-    justify-content:flex-end;
-
-    gap:10px;
-
-    margin-top:18px;
-}
-
-.download-row{
-
-    display:flex;
-
-    flex-wrap:wrap;
-
-    justify-content:center;
-
-    gap:12px;
-
-    margin-top:18px;
-}
-
-
-/* =========================================================
-   PRINT SHEET
-========================================================= */
-
-.print-preview-wrapper{
-
-    overflow:auto;
-
-    padding:15px;
-
-    background:#050509;
-
-    border-radius:14px;
-
-    border:1px solid #2d2937;
-}
-
-.a4-sheet{
-
-    width:794px;
-    min-height:1123px;
-
-    margin:auto;
-
-    background:white;
-
-    color:#000;
-
-    padding:35px;
-
-    box-shadow:
-        0 15px 60px rgba(0,0,0,.45);
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(2,1fr);
-
-    align-content:start;
-
-    gap:20px;
-}
-
-.a4-sheet.photo-4x6{
-
-    grid-template-columns:
-        repeat(2,1fr);
-
-    gap:15px;
-}
-
-.a4-photo{
-
-    width:100%;
-
-    aspect-ratio:4/6;
-
-    object-fit:cover;
-
-    border:1px solid #ddd;
-}
-
-.a4-passport{
-
-    width:138px;
-    height:177px;
-
-    object-fit:cover;
-
-    border:1px solid #bbb;
-}
-
-.a4-id{
-
-    width:100%;
-
-    aspect-ratio:1013/638;
-
-    object-fit:cover;
-
-    border:2px solid #000;
-}
-
-
-/* =========================================================
-   ID CARD
-========================================================= */
-
-.id-card-preview{
-
-    width:min(100%,650px);
-
-    aspect-ratio:1013/638;
-
-    background:#eee;
-
-    border:4px solid #000;
-
-    overflow:hidden;
-
-    border-radius:6px;
-
-    margin:auto;
-}
-
-.id-card-preview img{
-
-    width:100%;
-    height:100%;
-
-    object-fit:cover;
-}
-
-.id-sheet{
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(2,1fr);
-
-    gap:15px;
-}
-
-.id-slot{
-
-    aspect-ratio:1013/638;
-
-    background:#eee;
-
-    border:2px solid #000;
-
-    overflow:hidden;
-}
-
-.id-slot img{
-
-    width:100%;
-    height:100%;
-
-    object-fit:cover;
-}
-
-
-/* =========================================================
-   HISTORY
-========================================================= */
-
-.history-row{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    gap:20px;
-
-    padding:14px 0;
-
-    border-bottom:1px solid #292531;
-}
-
-.note{
-    color:var(--muted);
-    font-size:12px;
-}
-
-
-/* =========================================================
-   ADMIN
-========================================================= */
-
-.admin-layout{
-
-    min-height:100vh;
-
-    display:grid;
-
-    grid-template-columns:235px 1fr;
-}
-
-.admin-sidebar{
-
-    padding:18px;
-
-    background:#0c0b11;
-
-    border-right:1px solid #302b3b;
-}
-
-.admin-sidebar h2{
-
-    font-size:18px;
-
-    margin:5px 0 20px;
-}
-
-.admin-sidebar .btn{
-
-    width:100%;
-
-    margin:5px 0;
-
-    text-align:left;
-}
-
-.admin-main{
-    padding:25px;
-}
-
-.stats{
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(4,1fr);
-
-    gap:12px;
-}
-
-.stat{
-
-    padding:18px;
-
-    background:#121019;
-
-    border:1px solid #302b3b;
-
-    border-radius:15px;
-}
-
-.stat small{
-    color:var(--muted);
-}
-
-.stat strong{
-
-    display:block;
-
-    margin-top:7px;
-
-    font-size:26px;
-}
-
-
-/* =========================================================
-   TABLE
-========================================================= */
-
-.table-wrapper{
-    overflow:auto;
-}
-
-.table{
-
-    width:100%;
-
-    min-width:800px;
-
-    border-collapse:collapse;
-}
-
-.table th,
-.table td{
-
-    padding:12px;
-
-    text-align:left;
-
-    border-bottom:1px solid #2b2733;
-}
-
-.table th{
-    color:#aaa4b5;
-    font-size:12px;
-}
-
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media(max-width:1000px){
-
-    .grid,
-    .preview-layout{
-
-        grid-template-columns:1fr;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALL PRINTING SERVICES WORKING FINE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- PDF.js Standalone -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  
+  <!-- PDF-LIB for Pure Vector Merging & Page Manipulation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+
+  <!-- jsPDF Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- JSZip for Multi-page PDF to JPG Batch Download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <!-- Cropper.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #090d16 0%, #111827 50%, #090d16 100%);
+      --card-bg: rgba(17, 24, 39, 0.9);
+      --accent-blue: #38bdf8;
+      --accent-purple: #a855f7;
+      --btn-add: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      --btn-download: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border-color: rgba(56, 189, 248, 0.15);
     }
 
-    .dimension-panel{
-
-        grid-template-columns:
-            repeat(2,1fr);
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+    
+    body { 
+      background: var(--bg-gradient); 
+      min-height: 100vh;
+      padding: 20px 10px; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center;
+      color: var(--text-main);
     }
 
-    .stats{
-
-        grid-template-columns:
-            repeat(2,1fr);
+    .portal-main-heading {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #38bdf8 0%, #a855f7 50%, #ec4899 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
+      text-align: center;
     }
 
-    .admin-layout{
-
-        grid-template-columns:1fr;
+    .auth-box {
+      background: var(--card-bg);
+      backdrop-filter: blur(25px);
+      border: 1px solid var(--border-color);
+      padding: 40px 30px;
+      border-radius: 24px;
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7);
+      width: 100%;
+      max-width: 440px;
+      text-align: center;
     }
 
-    .admin-sidebar{
-
-        border-right:none;
-        border-bottom:1px solid #302b3b;
-    }
-}
-
-@media(max-width:650px){
-
-    .container{
-        padding:12px;
-    }
-
-    .topbar{
-
-        align-items:flex-start;
-
-        flex-direction:column;
+    .badge {
+      display: inline-block;
+      padding: 5px 16px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent-blue);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 20px;
+      margin-bottom: 15px;
     }
 
-    .account-bar{
-
-        flex-direction:column;
-
-        align-items:flex-start;
+    .slot-counter-badge {
+      background: rgba(245, 158, 11, 0.12);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 6px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 15px;
     }
 
-    .tool-btn{
-
-        flex:1 1 calc(50% - 10px);
-
-        min-width:0;
+    .login-input {
+      width: 100%;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      background: rgba(3, 7, 18, 0.8);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      transition: 0.2s;
+    }
+    .login-input:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
     }
 
-    .dimension-panel{
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      color: #fff;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: 0.3s;
+    }
+    .login-btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
-        grid-template-columns:1fr;
+    .auth-link {
+      display: inline-block;
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--accent-blue);
+      cursor: pointer;
+      text-decoration: underline;
     }
 
-    .stats{
-
-        grid-template-columns:1fr;
+    .error-msg {
+      color: #f87171;
+      font-size: 13px;
+      margin-top: 12px;
+      display: none;
     }
 
-    .a4-sheet{
-
-        transform-origin:top left;
-
-        width:700px;
+    .tab-nav {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
     }
 
-    .actions,
-    .download-row{
+    .tab-btn {
+      padding: 10px 14px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+      transition: 0.3s;
+    }
+    .tab-btn:hover { color: #fff; border-color: rgba(56, 189, 248, 0.4); }
 
-        justify-content:center;
+    .tab-btn.active {
+      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
     }
 
-    .btn{
-
-        width:100%;
+    #mainApp {
+      display: none;
+      width: 100%;
+      max-width: 1220px;
     }
-}
-</style>
+
+    .container { 
+      background: var(--card-bg); 
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-color);
+      padding: 30px 24px; 
+      border-radius: 24px; 
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6); 
+      width: 100%; 
+      text-align: center; 
+      position: relative; 
+    }
+
+    .logout-btn {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .logout-btn:hover { background: rgba(239, 68, 68, 0.3); }
+
+    h1 { 
+      background: linear-gradient(to right, #38bdf8, #a855f7, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 22px; 
+      font-weight: 700;
+      margin-bottom: 8px; 
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .upload-section { 
+      display: flex; 
+      gap: 15px; 
+      justify-content: center; 
+      margin: 18px 0; 
+      flex-wrap: wrap; 
+    }
+
+    .upload-box { 
+      border: 2px dashed rgba(56, 189, 248, 0.3); 
+      padding: 18px 16px; 
+      border-radius: 16px; 
+      cursor: pointer; 
+      background: rgba(3, 7, 18, 0.6); 
+      flex: 1; 
+      min-width: 220px; 
+      transition: 0.3s; 
+    }
+    .upload-box:hover { 
+      border-color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.06);
+    }
+
+    input[type="file"] { display: none; }
+
+    .preview-container { 
+      display: flex; 
+      justify-content: center; 
+      gap: 20px; 
+      margin: 18px 0; 
+      flex-wrap: wrap; 
+    }
+
+    .preview-box { 
+      border: 1px solid var(--border-color); 
+      padding: 12px; 
+      background: rgba(3, 7, 18, 0.7); 
+      border-radius: 14px; 
+    }
+
+    .preview-box h4 { 
+      font-size: 12px; 
+      color: var(--text-muted); 
+      margin-bottom: 8px; 
+    }
+    
+    canvas { 
+      max-width: 100%; 
+      height: auto; 
+      display: block; 
+      margin: 0 auto; 
+      border-radius: 6px;
+      background: #fff; 
+    }
+
+    .btn-group { 
+      display: flex; 
+      gap: 10px; 
+      justify-content: center; 
+      margin-top: 18px; 
+      flex-wrap: wrap; 
+    }
+
+    .action-btn { 
+      padding: 11px 22px; 
+      font-size: 13px; 
+      font-weight: 600; 
+      border: none; 
+      border-radius: 10px; 
+      cursor: pointer; 
+      transition: all 0.3s ease; 
+      color: #fff;
+    }
+    .action-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    }
+
+    .btn-add { background: var(--btn-add); }
+    .btn-download { background: var(--btn-download); }
+    .btn-reset { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; }
+
+    .btn-manual-crop {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--accent-blue);
+      color: var(--accent-blue);
+      padding: 5px 12px;
+      font-size: 11px;
+      border-radius: 8px;
+      margin-top: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    .btn-manual-crop:hover { background: var(--accent-blue); color: #0f172a; }
+
+    .action-btn:disabled { 
+      background: #1f2937; 
+      color: #4b5563; 
+      cursor: not-allowed; 
+      box-shadow: none;
+    }
+
+    .control-panel {
+      background: rgba(3, 7, 18, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px 20px;
+      max-width: 600px;
+      margin: 18px auto;
+      text-align: center;
+    }
+
+    .qty-select-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .qty-input {
+      width: 80px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(3, 7, 18, 0.9);
+      border: 1px solid var(--accent-blue);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+      outline: none;
+    }
+
+    .text-field-input {
+      width: 100%;
+      max-width: 260px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      background: rgba(3, 7, 18, 0.9);
+      border: 1px solid var(--accent-blue);
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+      margin-bottom: 4px;
+    }
+
+    .quick-qty-btn {
+      padding: 6px 12px;
+      background: #1f2937;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-radius: 8px;
+      font-size: 11px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    .quick-qty-btn:hover { background: #374151; }
+
+    .slider-range {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 5px;
+      background: #1f2937;
+      outline: none;
+      margin: 8px 0 10px 0;
+    }
+    .slider-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+    }
+
+    .size-badge-box {
+      display: flex;
+      justify-content: space-around;
+      background: rgba(3, 7, 18, 0.8);
+      padding: 12px;
+      border-radius: 12px;
+      margin-top: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .file-gallery-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: center;
+      margin: 18px 0;
+      max-height: 420px;
+      overflow-y: auto;
+      padding: 16px;
+      background: rgba(3, 7, 18, 0.7);
+      border-radius: 14px;
+      border: 1px solid var(--border-color);
+    }
+
+    .draggable-card {
+      position: relative;
+      width: 125px;
+      background: #030712;
+      border: 2px solid rgba(56, 189, 248, 0.3);
+      border-radius: 12px;
+      padding: 8px 6px 10px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+      cursor: grab;
+      user-select: none;
+      transition: transform 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+    }
+    .draggable-card:active { cursor: grabbing; }
+    .draggable-card.dragging { opacity: 0.4; transform: scale(0.92); border-color: #f59e0b; }
+    .draggable-card.drag-over { border: 2px dashed #38bdf8; transform: scale(1.05); background: rgba(56, 189, 248, 0.12); }
+
+    .draggable-card canvas, .draggable-card img {
+      width: 100%;
+      height: 135px;
+      object-fit: contain;
+      background: #ffffff;
+      border-radius: 6px;
+      pointer-events: none;
+    }
+
+    .draggable-card .file-label {
+      font-size: 11px;
+      color: #9ca3af;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+      margin: 6px 0 4px 0;
+      font-weight: 600;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .card-tools-bar {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .mini-tool-btn {
+      background: #1f2937;
+      color: #f3f4f6;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .mini-tool-btn:hover { background: #0284c7; }
+    .mini-tool-btn.btn-del:hover { background: #ef4444; }
+
+    .item-delete-btn {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #ef4444;
+      color: #ffffff;
+      border: 2px solid #030712;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      z-index: 10;
+      transition: 0.2s;
+    }
+    .item-delete-btn:hover { background: #dc2626; transform: scale(1.15); }
+
+    .history-table-container {
+      margin-top: 18px;
+      overflow-x: auto;
+      background: rgba(3, 7, 18, 0.7);
+      border-radius: 14px;
+      border: 1px solid var(--border-color);
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    .history-table th, .history-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .history-table th {
+      background: rgba(17, 24, 39, 0.95);
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    .history-table tr:hover { background: rgba(56, 189, 248, 0.04); }
+
+    .history-download-btn {
+      background: #0284c7;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      margin-right: 6px;
+      transition: 0.2s;
+    }
+    .history-download-btn:hover { background: #0369a1; }
+
+    .history-delete-btn {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    .history-delete-btn:hover { background: rgba(239, 68, 68, 0.4); }
+
+    /* Modal System */
+    .generic-modal {
+      display: none !important;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 99999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .generic-modal.active-modal {
+      display: flex !important;
+    }
+
+    .generic-modal-box {
+      background: var(--card-bg);
+      border: 1px solid var(--accent-blue);
+      border-radius: 20px;
+      padding: 30px 24px;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+    }
+
+    .crop-wrapper {
+      max-width: 90vw;
+      max-height: 70vh;
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .crop-wrapper img {
+      max-width: 100%;
+      max-height: 70vh;
+      display: block;
+    }
+  </style>
 </head>
-
-
 <body>
 
-<div id="app"></div>
+<div class="portal-main-heading">
+  ALL PRINTING SERVICES WORKING FINE
+</div>
 
+<!-- 1. Login Screen -->
+<div id="loginScreen" class="auth-box">
+  <div class="badge">Protected Access</div>
+  <h2 style="font-size: 22px; margin-bottom: 6px;">Sign In</h2>
+  <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Card & Photo Generator Portal</p>
+
+  <input type="email" id="loginEmail" class="login-input" placeholder="ईमेल आईडी दर्ज करें" value="oneplus777000@gmail.com">
+  <input type="password" id="loginPass" class="login-input" placeholder="पासवर्ड दर्ज करें">
+  <button id="authBtn" class="login-btn">लॉगिन करें</button>
+  <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड!</div>
+  
+  <div>
+    <span id="goToChangePwd" class="auth-link">🔑 Change Password?</span>
+  </div>
+</div>
+
+<!-- 2. Change Password Screen -->
+<div id="changePwdScreen" class="auth-box" style="display:none;">
+  <div class="badge">Security Settings</div>
+  <h2 style="font-size: 20px; margin-bottom: 6px; color: var(--accent-blue);">🔑 Change Password</h2>
+  <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">पुराने पासवर्ड का उपयोग करके नया पासवर्ड सेट करें</p>
+
+  <input type="password" id="oldPassInput" class="login-input" placeholder="पुराना पासवर्ड">
+  <input type="password" id="newPassInput" class="login-input" placeholder="नया पासवर्ड">
+  <input type="password" id="confirmPassInput" class="login-input" placeholder="नया पासवर्ड कन्फर्म करें">
+  
+  <button id="saveNewPwdBtn" class="login-btn" style="background: var(--btn-download);">💾 नया पासवर्ड सेव करें</button>
+  <div id="pwdStatusMsg" style="font-size:13px; margin-top:12px; display:none; font-weight:500;"></div>
+
+  <div>
+    <span id="backToLogin" class="auth-link">⬅️ Back to Login</span>
+  </div>
+</div>
+
+<!-- 3. Main Portal Application -->
+<div id="mainApp">
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('tab-cards')">💳 ID Card (5 Slots)</button>
+    <button class="tab-btn" onclick="switchTab('tab-passport')">👤 Passport Photos</button>
+    <button class="tab-btn" onclick="switchTab('tab-name-passport')">📝 Name & Date Passport</button>
+    <button class="tab-btn" onclick="switchTab('tab-4x6')">🖼️ 4×6 Photo Print</button>
+    <button class="tab-btn" onclick="switchTab('tab-arranger')">📑 PDF Arranger</button>
+    <button class="tab-btn" onclick="switchTab('tab-jpg-to-pdf')">📄 PDF, JPG, PNG to PDF</button>
+    <button class="tab-btn" onclick="switchTab('tab-resizer')">📐 Image Resizer</button>
+    <button class="tab-btn" onclick="switchTab('tab-pdf-to-jpg')">🖼️ PDF to JPG (Manual DPI)</button>
+    <button class="tab-btn" onclick="switchTab('tab-pdf-compressor')">🗜️ PDF Compressor</button>
+    <button id="historyTabBtn" class="tab-btn" onclick="switchTab('tab-history')" style="border-color: rgba(56, 189, 248, 0.5);">📂 History (60-Day)</button>
+    <button id="adminTabBtn" class="tab-btn" onclick="switchTab('tab-admin')" style="display:none; border-color: #f59e0b; color:#fbbf24;">⚙️ Admin Panel</button>
+  </div>
+
+  <div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
+      <div id="validityCounterBadge" style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #34d399; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+        ⏳ Validity: Initializing...
+      </div>
+      <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
+    </div>
+
+    <!-- TAB 1: 5 CARDS SYSTEM -->
+    <div id="tab-cards" class="tab-content active">
+      <div class="badge">Auto-Dimension Crop • 2.5mm Gap • Broad Black Border • 5 Cards</div>
+      <h1>Card Generator System</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">इमेज सिलेक्ट करते ही वह <strong>ऑटोमैटिकली सही ID साइज में फिट</strong> हो जाएगी। जरूरत पड़ने पर मैनुअल क्रॉप भी कर सकते हैं।</p>
+      
+      <div id="slotCounter" class="slot-counter-badge">Cards on Page: 0 / 5 (Next Slot: #1)</div>
+
+      <div class="upload-section">
+        <label class="upload-box" for="card1Input">
+          <strong style="display:block; font-size:14px; margin-bottom:4px;">📁 Front Side</strong>
+          <div id="file1Name" style="font-size: 12px; color: var(--text-muted);">इमेज चुनें (Auto-Crop)</div>
+        </label>
+        <input type="file" id="card1Input" accept="image/*,application/pdf">
+
+        <label class="upload-box" for="card2Input">
+          <strong style="display:block; font-size:14px; margin-bottom:4px;">📁 Back Side</strong>
+          <div id="file2Name" style="font-size: 12px; color: var(--text-muted);">इमेज चुनें (Auto-Crop)</div>
+        </label>
+        <input type="file" id="card2Input" accept="image/*,application/pdf">
+      </div>
+
+      <div class="preview-container">
+        <div class="preview-box">
+          <h4>Front Card Preview</h4>
+          <canvas id="canvas1" width="1013" height="638" style="width: 180px;"></canvas>
+          <button id="manualCropFrontBtn" class="btn-manual-crop" style="display:none;" onclick="openManualCropForCard('front')">✂️ Manual Crop Front</button>
+        </div>
+        <div class="preview-box">
+          <h4>Back Card Preview</h4>
+          <canvas id="canvas2" width="1013" height="638" style="width: 180px;"></canvas>
+          <button id="manualCropBackBtn" class="btn-manual-crop" style="display:none;" onclick="openManualCropForCard('back')">✂️ Manual Crop Back</button>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button id="addCardBtn" class="action-btn btn-add" disabled>➕ Add This Card to A4 Sheet</button>
+        <button id="resetPageBtn" class="action-btn btn-reset">🔄 Clear A4 Page</button>
+      </div>
+
+      <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+        <h3 style="font-size: 15px; color: var(--accent-blue); margin-bottom: 6px;">A4 Sheet Preview</h3>
+        <div style="display:inline-block; max-width: 250px; background:#fff; border-radius:6px; overflow:hidden; border: 1px solid #475569;">
+          <canvas id="a4Canvas" width="2480" height="3508" style="width: 100%; display:block;"></canvas>
+        </div>
+        <div class="btn-group">
+          <button id="downloadPdfBtn" class="action-btn btn-download" disabled>📥 Direct A4 PDF Download</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: PASSPORT SIZE PHOTOS (STANDARD) -->
+    <div id="tab-passport" class="tab-content">
+      <div class="badge">Standard 35mm × 45mm • Manual Quantity Selection</div>
+      <h1>Passport Photo Generator</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">फ़ोटो अपलोड करें, संख्या (Quantity) चुनें और शीट तैयार करें।</p>
+
+      <div class="upload-section">
+        <label class="upload-box" for="passportInput" style="max-width: 380px;">
+          <strong style="display:block; font-size:14px; margin-bottom:4px;">📁 Passport Photo Upload</strong>
+          <div id="passportFileName" style="font-size: 12px; color: var(--text-muted);">फ़ोटो चुनें व क्रॉप करें</div>
+        </label>
+        <input type="file" id="passportInput" accept="image/*">
+      </div>
+
+      <div class="preview-container">
+        <div class="preview-box">
+          <h4>Cropped Passport Photo</h4>
+          <canvas id="passportCanvas" width="413" height="531" style="width: 140px;"></canvas>
+        </div>
+      </div>
+
+      <div class="control-panel">
+        <span style="font-size: 14px; font-weight:600; color: var(--accent-blue);">🔢 फ़ोटो की संख्या (Quantity) चुनें:</span>
+        <div class="qty-select-group">
+          <input type="number" id="passportQtyInput" class="qty-input" value="8" min="1" max="30">
+          <button class="quick-qty-btn" onclick="setPassportQty(4)">4</button>
+          <button class="quick-qty-btn" onclick="setPassportQty(6)">6</button>
+          <button class="quick-qty-btn" onclick="setPassportQty(8)">8</button>
+          <button class="quick-qty-btn" onclick="setPassportQty(12)">12</button>
+          <button class="quick-qty-btn" onclick="setPassportQty(16)">16</button>
+          <button class="quick-qty-btn" onclick="setPassportQty(30)">30</button>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button id="make4x6CustomPassportBtn" class="action-btn btn-add" disabled>🖼️ Generate on 4×6 Sheet</button>
+        <button id="makeA4CustomPassportBtn" class="action-btn btn-add" disabled>📄 Generate on A4 Sheet</button>
+      </div>
+
+      <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+        <h3 id="passportSheetTitle" style="font-size: 15px; color: var(--accent-blue); margin-bottom: 6px;">Passport Sheet Preview</h3>
+        <div style="display:inline-block; max-width: 250px; background:#fff; border-radius:6px; overflow:hidden; border: 1px solid #475569;">
+          <canvas id="passportSheetCanvas" width="1800" height="1200" style="width: 100%; display:block;"></canvas>
+        </div>
+        <div class="btn-group">
+          <button id="downloadPassportPdfBtn" class="action-btn btn-download" disabled>📥 Download Passport Sheet PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: NAME & DATE PASSPORT PHOTO MAKER -->
+    <div id="tab-name-passport" class="tab-content">
+      <div class="badge">Govt / Exam Standard • 3 Separate Font Sliders • Auto DOB Label</div>
+      <h1>Name & Date Passport Photo Maker</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">नाम, DOB और DOP के लिए अलग-अलग स्लाइडर से फॉन्ट साइज़ कंट्रोल करें।</p>
+
+      <div class="upload-section" style="margin-bottom:10px;">
+        <label class="upload-box" for="namePassportInput" style="max-width: 380px;">
+          <strong style="display:block; font-size:14px; margin-bottom:4px;">📁 Upload Candidate Photo</strong>
+          <div id="namePassportFileName" style="font-size: 12px; color: var(--text-muted);">फ़ोटो चुनें व क्रॉप करें</div>
+        </label>
+        <input type="file" id="namePassportInput" accept="image/*">
+      </div>
+
+      <div class="control-panel" style="text-align:left;">
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="background:rgba(15,23,42,0.6); padding:8px 12px; border-radius:8px; border:1px solid var(--border-color);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label style="font-size:11px; color:var(--text-muted);">👤 Candidate Name:</label>
+              <span id="nameFontLabel" style="font-size:11px; color:var(--accent-blue); font-weight:600;">Size: 24px</span>
+            </div>
+            <input type="text" id="candNameInput" class="text-field-input" style="max-width:100%;" placeholder="e.g. HARSHAL SATISH MARATHE" oninput="renderNamePassportPreview()">
+            <input type="range" id="nameFontSlider" class="slider-range" min="14" max="36" value="24" oninput="updateNameFontSize(this.value)">
+          </div>
+
+          <div style="background:rgba(15,23,42,0.6); padding:8px 12px; border-radius:8px; border:1px solid var(--border-color);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label style="font-size:11px; color:var(--text-muted);">🎂 Date of Birth (DOB):</label>
+              <span id="dobFontLabel" style="font-size:11px; color:var(--accent-blue); font-weight:600;">Size: 20px</span>
+            </div>
+            <input type="text" id="candDobInput" class="text-field-input" style="max-width:100%;" placeholder="e.g. 15/08/1998" oninput="renderNamePassportPreview()">
+            <input type="range" id="dobFontSlider" class="slider-range" min="12" max="30" value="20" oninput="updateDobFontSize(this.value)">
+          </div>
+
+          <div style="background:rgba(15,23,42,0.6); padding:8px 12px; border-radius:8px; border:1px solid var(--border-color);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label style="font-size:11px; color:var(--text-muted);">📅 Photo Date (DOP):</label>
+              <span id="dopFontLabel" style="font-size:11px; color:var(--accent-blue); font-weight:600;">Size: 20px</span>
+            </div>
+            <input type="text" id="candDopInput" class="text-field-input" style="max-width:100%;" placeholder="DOP: DD/MM/YYYY" oninput="renderNamePassportPreview()">
+            <input type="range" id="dopFontSlider" class="slider-range" min="12" max="30" value="20" oninput="updateDopFontSize(this.value)">
+          </div>
+        </div>
+
+        <div style="margin-top:12px; text-align:center;">
+          <span style="font-size: 12px; font-weight:600; color: var(--accent-blue);">🔢 फ़ोटो संख्या:</span>
+          <input type="number" id="namePassportQtyInput" class="qty-input" value="8" min="1" max="30">
+          <button class="quick-qty-btn" onclick="setNamePassportQty(4)">4</button>
+          <button class="quick-qty-btn" onclick="setNamePassportQty(6)">6</button>
+          <button class="quick-qty-btn" onclick="setNamePassportQty(8)">8</button>
+          <button class="quick-qty-btn" onclick="setNamePassportQty(12)">12</button>
+          <button class="quick-qty-btn" onclick="setNamePassportQty(30)">30</button>
+        </div>
+      </div>
+
+      <div class="preview-container">
+        <div class="preview-box">
+          <h4>Preview with Name & Date Strip</h4>
+          <canvas id="namePassportCanvas" width="413" height="531" style="width: 155px;"></canvas>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button id="make4x6NamePassportBtn" class="action-btn btn-add" disabled>🖼️ Generate 4×6 Sheet</button>
+        <button id="makeA4NamePassportBtn" class="action-btn btn-add" disabled>📄 Generate A4 Sheet</button>
+      </div>
+
+      <div style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+        <h3 id="namePassportSheetTitle" style="font-size: 15px; color: var(--accent-blue); margin-bottom: 6px;">Sheet Preview</h3>
+        <div style="display:inline-block; max-width: 250px; background:#fff; border-radius:6px; overflow:hidden; border: 1px solid #475569;">
+          <canvas id="namePassportSheetCanvas" width="1800" height="1200" style="width: 100%; display:block;"></canvas>
+        </div>
+        <div class="btn-group">
+          <button id="downloadNamePassportPdfBtn" class="action-btn btn-download" disabled>📥 Download Name & Date Sheet PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: 4x6 PHOTO PRINT -->
+    <div id="tab-4x6" class="tab-content">
+      <div class="badge">Clear 300 DPI • 1200 × 1800 px • Max 4 Photos</div>
+      <h1>4×6 Photo Print Generator</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">4×6 इंच फ़ोटो अपलोड करें, 1 से 4 तक संख्या चुनें और A4 या 4×6 शीट PDF निकालें।</p>
+
+      <div class="upload-section">
+        <label class="upload-box" for="photo4x6Input" style="max-width: 380px;">
+          <strong style="display:block; font-size:14px; margin-bottom:4px;">📁 4×6 Photo Upload</strong>
+          <div id="photo4x6FileName" style="font-size: 12px; color: var(--text-muted);">फ़ोटो चुनें व क्रॉप करें</div>
+        </label>
+        <input type="file" id="photo4x6Input" accept="image/*">
+      </div>
+
+      <div class="preview-container">
+        <div class="preview-box">
+          <h4>Cropped 4×6 Photo Canvas</h4>
+          <canvas id="canvas4x6" width="1200" height="1800" style="width: 150px;"></canvas>
+        </div>
+      </div>
+
+      <div class="control-panel">
+        <span style="font-size: 14px; font-weight:600; color: var(--accent-blue);">🔢 A4 शीट पर 4×6 फ़ोटो की संख्या चुनें (Max 4):</span>
+        <div class="qty-select-group">
+          <input type="number" id="photo4x6QtyInput" class="qty-input" value="2" min="1" max="4">
+          <button class="quick-qty-btn" onclick="set4x6Qty(1)">1 Photo</button>
+          <button class="quick-qty-btn" onclick="set4x6Qty(2)">2 Photos</button>
+          <button class="quick-qty-btn" onclick="set4x6Qty(3)">3 Photos</button>
+          <button class="quick-qty-btn" onclick="set4x6Qty(4)">4 Photos</button>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button id="downloadDirect4x6Pdf" class="action-btn btn-download" disabled>📥 Direct 1 Photo (4×6 Paper PDF)</button>
+        <button id="generateA4Custom4x6Btn" class="action-btn btn-add" disabled>📄 Generate Selected Qty on A4 Sheet</button>
+      </div>
+
+      <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+        <h3 id="photo4x6SheetTitle" style="font-size: 15px; color: var(--accent-blue); margin-bottom: 6px;">A4 4×6 Photo Sheet Preview</h3>
+        <div style="display:inline-block; max-width: 250px; background:#fff; border-radius:6px; overflow:hidden; border: 1px solid #475569;">
+          <canvas id="a4_4x6_SheetCanvas" width="2480" height="3508" style="width: 100%; display:block;"></canvas>
+        </div>
+        <div class="btn-group">
+          <button id="downloadA4_4x6_PdfBtn" class="action-btn btn-download" disabled>📥 Download A4 4×6 Sheet PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: PDF ARRANGER (DRAG & DROP / HOLD & MOVE) -->
+    <div id="tab-arranger" class="tab-content">
+      <div class="badge">Drag & Drop To Re-order • Hold & Move • Rotate 90° • Cut Pages</div>
+      <h1>PDF Page Arranger & Organizer</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">किसी भी पेज को <strong>पकड़कर (Hold करके) मनचाही जगह पर सरकाएँ</strong>।</p>
+
+      <div class="upload-section" style="margin-bottom: 15px;">
+        <label class="upload-box" for="arrangerPdfInput" style="max-width: 420px;">
+          <strong style="display:block; font-size:14px; margin-bottom:4px; color:var(--accent-blue);">📑 Select / Add PDF to Arrange</strong>
+          <div id="arrangerStatus" style="font-size: 12px; color: var(--text-muted);">क्लिक करके .pdf फाइल अपलोड करें</div>
+        </label>
+        <input type="file" id="arrangerPdfInput" accept="application/pdf" multiple>
+      </div>
+
+      <div id="arrangerContainerArea" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; max-width:900px; margin:0 auto 10px auto;">
+          <span style="font-size: 13px; font-weight:600; color: var(--accent-blue);">Total Pages: <strong id="arrangerTotalPagesCount" style="color:#fbbf24;">0</strong></span>
+          <label for="arrangerPdfInput" class="action-btn btn-add" style="padding:6px 14px; font-size:11px; cursor:pointer;">➕ Add More PDF Files</label>
+        </div>
+
+        <div id="arrangerGridList" class="file-gallery-list"></div>
+
+        <div class="btn-group">
+          <button id="saveArrangedPdfBtn" class="action-btn btn-download">💾 Save & Download Arranged PDF</button>
+          <button id="clearArrangerBtn" class="action-btn btn-reset">🔄 Clear All Pages</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: UNIVERSAL MERGE & RE-ORDER -->
+    <div id="tab-jpg-to-pdf" class="tab-content">
+      <div class="badge">Universal File Merger • Drag & Drop Re-order • Individual Delete</div>
+      <h1>PDF, JPG, PNG to PDF Converter</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">फ़ाइलों को <strong>माउस से पकड़कर आगे-पीछे क्रमबद्ध करें</strong> और कंबाइंड PDF बनाएँ।</p>
+
+      <div class="upload-section" style="margin-bottom: 15px;">
+        <label class="upload-box" for="universalMultiInput" style="max-width: 450px;">
+          <strong style="display:block; font-size:14px; margin-bottom:4px; color:var(--accent-blue);">📁 Select Files (PDF, JPG, PNG Allowed)</strong>
+          <div id="universalMultiStatus" style="font-size: 12px; color: var(--text-muted);">क्लिक करके PDF या इमेज फ़ाइलें चुनें</div>
+        </label>
+        <input type="file" id="universalMultiInput" accept="image/jpeg,image/png,image/jpg,application/pdf" multiple>
+      </div>
+
+      <div id="universalGalleryContainer" style="display:none;">
+        <div style="font-size: 12px; color: var(--accent-blue); font-weight: 600; margin-bottom: 6px;">
+          Selected Files (<span id="universalSelectedCount">0</span>):
+        </div>
+        <div id="universalGalleryList" class="file-gallery-list"></div>
+
+        <div class="btn-group">
+          <button id="convertUniversalToPdfBtn" class="action-btn btn-download">📥 Convert & Download Combined PDF</button>
+          <button id="clearUniversalListBtn" class="action-btn btn-reset">🔄 Clear All</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 7: CUSTOM IMAGE RESIZER -->
+    <div id="tab-resizer" class="tab-content">
+      <div class="badge">Resize in Pixels (px) • Millimeters (mm) • Centimeters (cm)</div>
+      <h1>Custom Image Resizer</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">किसी भी इमेज को अपनी ज़रूरत के अनुसार Width और Height (px, mm, cm) में रीसाइज़ करें।</p>
+
+      <div class="upload-section" style="margin-bottom: 15px;">
+        <label class="upload-box" for="resizerImageInput" style="max-width: 400px;">
+          <strong style="display:block; font-size:14px; margin-bottom:4px; color:var(--accent-blue);">📁 Select Image to Resize</strong>
+          <div id="resizerFileName" style="font-size: 12px; color: var(--text-muted);">क्लिक करके इमेज चुनें (JPG / PNG)</div>
+        </label>
+        <input type="file" id="resizerImageInput" accept="image/*">
+      </div>
+
+      <div id="resizerControlsPanel" style="display:none;">
+        <div class="control-panel" style="text-align:left;">
+          <div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center; align-items:center;">
+            <div>
+              <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:3px;">📏 Unit (इकाई):</label>
+              <select id="resizerUnitSelect" class="text-field-input" style="max-width:110px;" onchange="onResizerUnitChange()">
+                <option value="px" selected>Pixels (px)</option>
+                <option value="mm">Millimeters (mm)</option>
+                <option value="cm">Centimeters (cm)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:3px;">↔️ Width (चौड़ाई):</label>
+              <input type="number" id="resizerWidthInput" class="qty-input" style="width:100px;" value="300" oninput="onResizerDimensionChange('width')">
+            </div>
+            <div>
+              <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:3px;">↕️ Height (ऊंचाई):</label>
+              <input type="number" id="resizerHeightInput" class="qty-input" style="width:100px;" value="300" oninput="onResizerDimensionChange('height')">
+            </div>
+          </div>
+
+          <div style="margin-top:10px; display:flex; justify-content:center; align-items:center; gap:15px; font-size:12px; color:var(--text-muted);">
+            <label style="cursor:pointer; display:flex; align-items:center; gap:5px;">
+              <input type="checkbox" id="resizerAspectLock"> Lock Aspect Ratio (अनुपात लॉक रखें)
+            </label>
+            <span style="color:var(--accent-blue);">DPI: 300 (for mm/cm)</span>
+          </div>
+        </div>
+
+        <div class="preview-container">
+          <div class="preview-box">
+            <h4>Resized Output Preview</h4>
+            <canvas id="resizerPreviewCanvas" style="max-width: 250px; max-height: 250px;"></canvas>
+            <div id="resizerOutputInfo" style="font-size:11px; color:var(--accent-blue); margin-top:5px;">0 x 0 px</div>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button id="downloadResizedJpgBtn" class="action-btn btn-download">📥 Download JPG Image</button>
+          <button id="downloadResizedPngBtn" class="action-btn btn-add">📥 Download PNG Image</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 8: PDF TO HIGH-DPI JPG CONVERTER -->
+    <div id="tab-pdf-to-jpg" class="tab-content">
+      <div class="badge">Ultra High-Res • Manual & Quick DPI (72 to 1200 DPI) • Batch ZIP Export</div>
+      <h1>PDF to High-DPI JPG Converter</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">PDF फ़ाइल अपलोड करें और अपनी आवश्यकतानुसार DPI रिज़ॉल्यूशन टाइप या सेलेक्ट करें।</p>
+
+      <div class="upload-section" style="margin-bottom: 15px;">
+        <label class="upload-box" for="pdfToJpgInput" style="max-width: 420px;">
+          <strong style="display:block; font-size:14px; margin-bottom:4px; color:var(--accent-blue);">📄 Select PDF File to Convert</strong>
+          <div id="pdfToJpgStatus" style="font-size: 12px; color: var(--text-muted);">क्लिक करके .pdf फाइल चुनें</div>
+        </label>
+        <input type="file" id="pdfToJpgInput" accept="application/pdf">
+      </div>
+
+      <div id="pdfToJpgControls" style="display:none;">
+        <div class="control-panel">
+          <span style="font-size: 13px; font-weight:600; color: var(--accent-blue);">⚙️ Quick Select or Type Custom DPI (Max 1200):</span>
+          <div class="qty-select-group">
+            <button class="quick-qty-btn" onclick="setPdfDpi(72)">72 DPI</button>
+            <button class="quick-qty-btn" onclick="setPdfDpi(150)">150 DPI</button>
+            <button class="quick-qty-btn" onclick="setPdfDpi(300)">300 DPI</button>
+            <button class="quick-qty-btn" onclick="setPdfDpi(600)">600 DPI</button>
+            <button class="quick-qty-btn" onclick="setPdfDpi(1200)">1200 DPI</button>
+            <input type="number" id="manualDpiInput" class="qty-input" value="300" min="50" max="1200" oninput="updateManualDpi(this.value)">
+          </div>
+          <div style="margin-top: 10px; font-size: 13px;">
+            Current Active DPI: <strong id="currentDpiDisplay" style="color:#fbbf24;">300 DPI</strong>
+          </div>
+        </div>
+
+        <div style="margin-top: 10px; font-size: 12px; color: var(--text-muted);" id="pdfConversionProgress"></div>
+
+        <div class="btn-group">
+          <button id="startPdfToJpgBtn" class="action-btn btn-download">🖼️ Convert & Download JPGs</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 9: PDF COMPRESSOR -->
+    <div id="tab-pdf-compressor" class="tab-content">
+      <div class="badge">Interactive Quality & Size Slider • Target KB/MB Preview • High-Speed Export</div>
+      <h1>PDF Size Compressor</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">PDF फ़ाइल अपलोड करें, स्लाइडर से अपनी मनचाही फाइल साइज़ (KB/MB) सेट करें और डाउनलोड करें।</p>
+
+      <div class="upload-section" style="margin-bottom: 15px;">
+        <label class="upload-box" for="pdfCompressInput" style="max-width: 420px;">
+          <strong style="display:block; font-size:14px; margin-bottom:4px; color:var(--accent-blue);">🗜️ Select PDF to Compress</strong>
+          <div id="pdfCompressStatus" style="font-size: 12px; color: var(--text-muted);">क्लिक करके .pdf फाइल चुनें</div>
+        </label>
+        <input type="file" id="pdfCompressInput" accept="application/pdf">
+      </div>
+
+      <div id="compressorControlsArea" style="display:none;">
+        <div class="control-panel">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size: 13px; font-weight:600; color: var(--accent-blue);">🎚️ Compression Quality Slider:</span>
+            <span id="compressQualityLabel" style="font-weight:700; color:#fbbf24;">60% (Medium)</span>
+          </div>
+
+          <input type="range" id="compressQualitySlider" class="slider-range" min="10" max="95" value="60" oninput="onCompressSliderChange(this.value)">
+
+          <div class="size-badge-box">
+            <div>
+              <div style="font-size:11px; color:var(--text-muted);">Original File Size</div>
+              <strong id="origFileSizeDisplay" style="color:#f87171; font-size:14px;">0 KB</strong>
+            </div>
+            <div>
+              <div style="font-size:11px; color:var(--text-muted);">Estimated Download Size</div>
+              <strong id="estFileSizeDisplay" style="color:#34d399; font-size:14px;">0 KB</strong>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 10px; font-size: 12px; color: var(--text-muted);" id="compressProgressMsg"></div>
+
+        <div class="btn-group">
+          <button id="startCompressDownloadBtn" class="action-btn btn-download">📥 Compress & Download PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 10: DYNAMIC PRINT HISTORY -->
+    <div id="tab-history" class="tab-content">
+      <div id="historyRetentionBadge" class="badge">Automatic 60-Day Storage • All Features Supported</div>
+      <h1 id="historyHeaderTitle">60-Day Print & Download History</h1>
+      <p id="historyDescText" style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">आपके द्वारा डाउनलोड की गई सभी फाइल्स यहाँ सुरक्षित हैं।</p>
+
+      <div style="text-align: right; margin-bottom: 10px;">
+        <button onclick="clearAllHistoryDB()" class="action-btn btn-reset" style="padding: 6px 14px; font-size: 11px;">🗑️ Clear Entire History Now</button>
+      </div>
+
+      <div class="history-table-container">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Type / Feature</th>
+              <th>File Name</th>
+              <th>Generated Time</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <tr>
+              <td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">कोई प्रिंट रिकॉर्ड नहीं मिला।</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 11: ADMIN PANEL & DISTRIBUTOR MANAGEMENT -->
+    <div id="tab-admin" class="tab-content">
+      <div class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">Master Administrator Control Panel</div>
+      <h1 style="color: #fbbf24;">Distributor Management</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">यहाँ से नए डिस्ट्रीब्यूटर/कस्टमर अकाउंट्स क्रिएट करें। नए यूजर्स केवल एडमिन द्वारा बनाई गई आईडी से ही लॉगिन कर सकेंगे।</p>
+
+      <div class="control-panel" style="max-width: 500px; text-align: left; margin-bottom: 25px;">
+        <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 12px;">➕ Add New Distributor</h3>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div>
+            <label style="font-size: 11px; color: var(--text-muted); display:block; margin-bottom:4px;">Distributor Name / Business Name:</label>
+            <input type="text" id="newDistName" class="text-field-input" style="max-width:100%;" placeholder="e.g. Shri Ganesh Digital Seva">
+          </div>
+          <div>
+            <label style="font-size: 11px; color: var(--text-muted); display:block; margin-bottom:4px;">Distributor Email (Login ID):</label>
+            <input type="email" id="newDistEmail" class="text-field-input" style="max-width:100%;" placeholder="user@gmail.com">
+          </div>
+          <div>
+            <label style="font-size: 11px; color: var(--text-muted); display:block; margin-bottom:4px;">Assign Password:</label>
+            <input type="text" id="newDistPass" class="text-field-input" style="max-width:100%;" placeholder="SecurePass123">
+          </div>
+          <button onclick="addNewDistributor()" class="action-btn btn-add" style="margin-top: 5px;">🚀 Create Distributor Account</button>
+          <div id="distMsg" style="font-size: 12px; font-weight: 500; display:none; margin-top:5px;"></div>
+        </div>
+      </div>
+
+      <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 10px; text-align: left; max-width: 800px; margin-left: auto; margin-right: auto;">Active Distributor Accounts List</h3>
+      <div class="history-table-container" style="max-width: 800px; margin-left: auto; margin-right: auto;">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Business / Name</th>
+              <th>Login Email</th>
+              <th>Password</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="distributorTableBody">
+            <tr>
+              <td colspan="4" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर अकाउंट नहीं मिला।</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <footer style="margin-top: 25px; font-size: 12px; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px;">
+      DESIGNED AND DEVELOPED BY - EASYWAYTECH - @2026 ALL RIGHTS RESERVED
+    </footer>
+  </div>
+</div>
+
+<!-- Global Crop Modal -->
+<div id="cropModal" class="generic-modal">
+  <div class="generic-modal-box" style="max-width: 90vw; padding: 20px;">
+    <div id="cropModalTitle" style="color:#fff; margin-bottom: 10px; font-weight: 600;">कार्ड/फ़ोटो का सही हिस्सा सेलेक्ट (Crop) करें:</div>
+    <div class="crop-wrapper">
+      <img id="imageToCrop" src="">
+    </div>
+    <div class="btn-group">
+      <button id="cropSaveBtn" class="action-btn btn-download">✂️ Crop & Set</button>
+      <button id="cropCancelBtn" class="action-btn" style="background:#ef4444;">रद्द करें</button>
+    </div>
+  </div>
+</div>
 
 <script>
+  if (typeof pdfjsLib !== 'undefined') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '';
+  }
 
-/* =========================================================
-   GLOBAL DIMENSIONS
-========================================================= */
+  const ADMIN_EMAIL = "oneplus777000@gmail.com";
+  const DEFAULT_ADMIN_PASS = "Pass@123";
+  const SIXTY_DAYS_MS = 60 * 24 * 60 * 60 * 1000;
 
-const DIMENSIONS = {
-
-    idCard:{
-        name:"Standard ID Card",
-        width:1013,
-        height:638,
-        unit:"px",
-        dpi:300,
-        ratio:"1013:638"
-    },
-
-    passport:{
-        name:"Indian Passport Photo",
-        width:413,
-        height:531,
-        unit:"px",
-        mmWidth:35,
-        mmHeight:45,
-        dpi:300,
-        ratio:"7:9"
-    },
-
-    photo4x6:{
-        name:"4×6 Photo",
-        width:1200,
-        height:1800,
-        unit:"px",
-        inchWidth:4,
-        inchHeight:6,
-        dpi:300,
-        ratio:"2:3"
-    },
-
-    a4:{
-        name:"A4",
-        width:2480,
-        height:3508,
-        unit:"px",
-        mmWidth:210,
-        mmHeight:297,
-        dpi:300,
-        ratio:"1:1.414"
-    },
-
-    a5:{
-        name:"A5",
-        width:1748,
-        height:2480,
-        unit:"px",
-        mmWidth:148,
-        mmHeight:210,
-        dpi:300
-    },
-
-    a3:{
-        name:"A3",
-        width:3508,
-        height:4961,
-        unit:"px",
-        mmWidth:297,
-        mmHeight:420,
-        dpi:300
-    },
-
-    square2x2:{
-        name:"2×2 Visa Photo",
-        width:600,
-        height:600,
-        unit:"px",
-        inchWidth:2,
-        inchHeight:2,
-        dpi:300,
-        ratio:"1:1"
-    },
-
-    stamp:{
-        name:"Stamp Photo",
-        width:600,
-        height:600,
-        unit:"px",
-        inchWidth:2,
-        inchHeight:2,
-        dpi:300,
-        ratio:"1:1"
+  // ==========================================================
+  // 60-DAYS SECURE ACTIVATION ENGINE
+  // ==========================================================
+  function getActivationExpiryTime() {
+    let expTime = localStorage.getItem('secure_60day_activation_expiry');
+    if (!expTime) {
+      expTime = (Date.now() + SIXTY_DAYS_MS).toString();
+      localStorage.setItem('secure_60day_activation_expiry', expTime);
     }
-};
+    return parseInt(expTime, 10);
+  }
 
+  function checkAndHandleExpiry() {
+    const expTime = getActivationExpiryTime();
+    const remainingMs = expTime - Date.now();
+    const daysRemaining = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
 
-/* =========================================================
-   API
-========================================================= */
+    if (daysRemaining <= 0) {
+      return 0;
+    }
+    return daysRemaining;
+  }
 
-async function api(url,options={}){
+  function updateValidityDisplay() {
+    const badge = document.getElementById('validityCounterBadge');
+    const remainingDays = checkAndHandleExpiry();
 
-    const response =
-        await fetch(
-            url,
-            {
-                ...options,
+    if (remainingDays > 0) {
+      badge.innerHTML = `⏳ 60-Days Portal Validity: <strong style="color:#fbbf24;">${remainingDays} Days Left</strong>`;
+      badge.style.borderColor = '#10b981';
+      badge.style.color = '#34d399';
+      badge.style.background = 'rgba(16, 185, 129, 0.15)';
+    } else {
+      badge.innerHTML = `⏳ Portal Validity: <strong style="color:#ef4444;">Expired (60 Days Completed)</strong>`;
+      badge.style.borderColor = '#ef4444';
+      badge.style.color = '#f87171';
+      badge.style.background = 'rgba(239, 68, 68, 0.15)';
+    }
+  }
 
-                headers:
-                    options.body instanceof FormData
-                    ?
-                    options.headers
-                    :
-                    {
-                        "Content-Type":
-                            "application/json",
+  // ==========================================================
+  // DISTRIBUTOR / ACCOUNT MANAGEMENT (ADMIN PANEL)
+  // ==========================================================
+  function getDistributorsList() {
+    let list = localStorage.getItem('portal_distributors_list');
+    if (!list) {
+      return [];
+    }
+    try {
+      return JSON.parse(list);
+    } catch(e) {
+      return [];
+    }
+  }
 
-                        ...(options.headers || {})
-                    }
-            }
-        );
+  function saveDistributorsList(arr) {
+    localStorage.setItem('portal_distributors_list', JSON.stringify(arr));
+  }
 
-    const data =
-        await response
-            .json()
-            .catch(
-                () => ({})
-            );
+  function addNewDistributor() {
+    const name = document.getElementById('newDistName').value.trim();
+    const email = document.getElementById('newDistEmail').value.trim().toLowerCase();
+    const pass = document.getElementById('newDistPass').value.trim();
+    const msg = document.getElementById('distMsg');
 
-    if(!response.ok){
-
-        throw new Error(
-            data.error ||
-            "Request failed"
-        );
+    if (!name || !email || !pass) {
+      msg.innerText = "⚠️ कृपया सभी फ़ील्ड भरें!";
+      msg.style.color = "#ef4444";
+      msg.style.display = "block";
+      return;
     }
 
-    return data;
-}
+    if (email === ADMIN_EMAIL.toLowerCase()) {
+      msg.innerText = "⚠️ यह ईमेल एडमिन ईमेल है!";
+      msg.style.color = "#ef4444";
+      msg.style.display = "block";
+      return;
+    }
 
+    let dists = getDistributorsList();
+    if (dists.some(d => d.email === email)) {
+      msg.innerText = "⚠️ यह ईमेल आईडी पहले से रजिस्टर्ड है!";
+      msg.style.color = "#ef4444";
+      msg.style.display = "block";
+      return;
+    }
 
-/* =========================================================
-   ESCAPE
-========================================================= */
+    dists.push({ id: Date.now(), name, email, pass });
+    saveDistributorsList(dists);
 
-function escapeHTML(value){
+    msg.innerText = "✅ डिस्ट्रीब्यूटर अकाउंट सफलतापूर्वक क्रिएट हो गया!";
+    msg.style.color = "#34d399";
+    msg.style.display = "block";
 
-    return String(value ?? "")
-        .replace(
-            /[&<>"']/g,
-            char => ({
-                "&":"&amp;",
-                "<":"&lt;",
-                ">":"&gt;",
-                '"':"&quot;",
-                "'":"&#039;"
-            }[char])
-        );
-}
+    document.getElementById('newDistName').value = '';
+    document.getElementById('newDistEmail').value = '';
+    document.getElementById('newDistPass').value = '';
 
+    renderDistributorsTable();
+  }
 
-/* =========================================================
-   START
-========================================================= */
+  function renderDistributorsTable() {
+    const tbody = document.getElementById('distributorTableBody');
+    const dists = getDistributorsList();
+    tbody.innerHTML = '';
 
-async function start(){
+    if (!dists.length) {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर अकाउंट नहीं मिला।</td></tr>`;
+      return;
+    }
 
-    try{
+    dists.forEach((d, index) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${d.name}</strong></td>
+        <td>${d.email}</td>
+        <td><code>${d.pass}</code></td>
+        <td><button class="history-delete-btn" onclick="deleteDistributor(${d.id})">🗑️ Delete</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
 
-        const user =
-            await api(
-                "/api/me"
-            );
+  function deleteDistributor(id) {
+    if (!confirm('क्या आप इस डिस्ट्रीब्यूटर अकाउंट को हटाना चाहते हैं?')) return;
+    let dists = getDistributorsList();
+    dists = dists.filter(d => d.id !== id);
+    saveDistributorsList(dists);
+    renderDistributorsTable();
+  }
 
-        if(!user.loggedIn){
+  // ==========================================================
+  // INDEXEDDB HISTORY STORAGE ENGINE
+  // ==========================================================
+  const DB_NAME = 'PrintPortal60DayDB';
+  const DB_STORE = 'print_records';
 
-            showLogin();
+  function openHistoryDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, 1);
+      request.onupgradeneeded = function(e) {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains(DB_STORE)) {
+          db.createObjectStore(DB_STORE, { keyPath: 'id', autoIncrement: true });
+        }
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
 
-            return;
+  async function saveToHistory(featureName, fileName, blobOrDataUrl, fileType) {
+    try {
+      const db = await openHistoryDB();
+      const tx = db.transaction(DB_STORE, 'readwrite');
+      const store = tx.objectStore(DB_STORE);
+      
+      const record = {
+        feature: featureName,
+        fileName: fileName,
+        data: blobOrDataUrl,
+        fileType: fileType,
+        timestamp: Date.now(),
+        dateFormatted: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+      };
+
+      store.add(record);
+      tx.oncomplete = () => {
+        cleanupOldHistoryRecords();
+      };
+    } catch(err) {
+      console.error("Storage error:", err);
+    }
+  }
+
+  async function cleanupOldHistoryRecords() {
+    try {
+      const db = await openHistoryDB();
+      const tx = db.transaction(DB_STORE, 'readwrite');
+      const store = tx.objectStore(DB_STORE);
+      const now = Date.now();
+      const retentionMs = SIXTY_DAYS_MS;
+
+      const request = store.openCursor();
+      request.onsuccess = function(e) {
+        const cursor = e.target.result;
+        if (cursor) {
+          if (now - cursor.value.timestamp > retentionMs) {
+            cursor.delete();
+          }
+          cursor.continue();
+        }
+      };
+    } catch(err) {}
+  }
+
+  async function renderHistoryTable() {
+    try {
+      await cleanupOldHistoryRecords();
+      const db = await openHistoryDB();
+      const tx = db.transaction(DB_STORE, 'readonly');
+      const store = tx.objectStore(DB_STORE);
+      const request = store.getAll();
+
+      request.onsuccess = function() {
+        const records = request.result || [];
+        const tbody = document.getElementById('historyTableBody');
+        tbody.innerHTML = '';
+
+        if (!records.length) {
+          tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">कोई प्रिंट रिकॉर्ड नहीं मिला।</td></tr>`;
+          return;
         }
 
-        if(user.role === "admin"){
+        records.reverse().forEach(rec => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><strong style="color:var(--accent-blue);">${rec.feature}</strong></td>
+            <td>${rec.fileName}</td>
+            <td style="color:#94a3b8; font-size:11px;">${rec.dateFormatted}</td>
+            <td><button class="history-download-btn" onclick="reDownloadHistoryFile(${rec.id})">📥 Download</button></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      };
+    } catch(err) {}
+  }
 
-            showAdmin();
+  async function reDownloadHistoryFile(recordId) {
+    const db = await openHistoryDB();
+    const tx = db.transaction(DB_STORE, 'readonly');
+    const store = tx.objectStore(DB_STORE);
+    const request = store.get(recordId);
 
-        }else{
+    request.onsuccess = function() {
+      const rec = request.result;
+      if (!rec) return;
 
-            showCustomer(user);
+      const link = document.createElement('a');
+      if (typeof rec.data === 'string') {
+        link.href = rec.data;
+      } else {
+        link.href = URL.createObjectURL(rec.data);
+      }
+      link.download = rec.fileName;
+      link.click();
+    };
+  }
+
+  async function clearAllHistoryDB() {
+    if (!confirm('क्या आप सभी इतिहास रिकॉर्ड्स तुरंत मिटाना चाहते हैं?')) return;
+    const db = await openHistoryDB();
+    const tx = db.transaction(DB_STORE, 'readwrite');
+    tx.objectStore(DB_STORE).clear();
+    tx.oncomplete = () => renderHistoryTable();
+  }
+
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    
+    event.target.classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+
+    if (tabId === 'tab-history') {
+      renderHistoryTable();
+    }
+    if (tabId === 'tab-admin') {
+      renderDistributorsTable();
+    }
+  }
+
+  const loginScreen = document.getElementById('loginScreen');
+  const changePwdScreen = document.getElementById('changePwdScreen');
+  const mainApp = document.getElementById('mainApp');
+  
+  const loginEmail = document.getElementById('loginEmail');
+  const loginPass = document.getElementById('loginPass');
+  const authBtn = document.getElementById('authBtn');
+  const errorMsg = document.getElementById('errorMsg');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const adminTabBtn = document.getElementById('adminTabBtn');
+
+  const goToChangePwd = document.getElementById('goToChangePwd');
+  const backToLogin = document.getElementById('backToLogin');
+  const oldPassInput = document.getElementById('oldPassInput');
+  const newPassInput = document.getElementById('newPassInput');
+  const confirmPassInput = document.getElementById('confirmPassInput');
+  const saveNewPwdBtn = document.getElementById('saveNewPwdBtn');
+  const pwdStatusMsg = document.getElementById('pwdStatusMsg');
+
+  sessionStorage.removeItem('isLoggedIn');
+
+  const today = new Date();
+  const curDay = String(today.getDate()).padStart(2, '0');
+  const curMonth = String(today.getMonth() + 1).padStart(2, '0');
+  const curYear = today.getFullYear();
+  document.getElementById('candDopInput').value = `DOP: ${curDay}/${curMonth}/${curYear}`;
+
+  goToChangePwd.addEventListener('click', () => {
+    loginScreen.style.display = 'none';
+    changePwdScreen.style.display = 'block';
+    oldPassInput.value = '';
+    newPassInput.value = '';
+    confirmPassInput.value = '';
+    pwdStatusMsg.style.display = 'none';
+  });
+
+  backToLogin.addEventListener('click', () => {
+    changePwdScreen.style.display = 'none';
+    loginScreen.style.display = 'block';
+    errorMsg.style.display = 'none';
+  });
+
+  saveNewPwdBtn.addEventListener('click', () => {
+    const oldP = oldPassInput.value.trim();
+    const newP = newPassInput.value.trim();
+    const confP = confirmPassInput.value.trim();
+    const activePass = localStorage.getItem('system_auth_pwd') || DEFAULT_ADMIN_PASS;
+
+    if (oldP !== activePass) {
+      pwdStatusMsg.innerText = "❌ पुराना पासवर्ड गलत है!";
+      pwdStatusMsg.style.color = "#ef4444";
+      pwdStatusMsg.style.display = "block";
+      return;
+    }
+
+    if (newP.length < 4) {
+      pwdStatusMsg.innerText = "❌ नया पासवर्ड कम से कम 4 अक्षरों का होना चाहिए!";
+      pwdStatusMsg.style.color = "#ef4444";
+      pwdStatusMsg.style.display = "block";
+      return;
+    }
+
+    if (newP !== confP) {
+      pwdStatusMsg.innerText = "❌ नया पासवर्ड और कन्फर्म पासवर्ड मैच नहीं हो रहे!";
+      pwdStatusMsg.style.color = "#ef4444";
+      pwdStatusMsg.style.display = "block";
+      return;
+    }
+
+    localStorage.setItem('system_auth_pwd', newP);
+    pwdStatusMsg.innerText = "✅ पासवर्ड बदल गया! अब नए पासवर्ड से लॉगिन करें।";
+    pwdStatusMsg.style.color = "#34d399";
+    pwdStatusMsg.style.display = "block";
+
+    setTimeout(() => {
+      changePwdScreen.style.display = 'none';
+      loginScreen.style.display = 'block';
+      loginPass.value = '';
+    }, 1200);
+  });
+
+  function handleLogin() {
+    const inputEmail = loginEmail.value.trim().toLowerCase();
+    const inputPass = loginPass.value.trim();
+    const adminActivePass = localStorage.getItem('system_auth_pwd') || DEFAULT_ADMIN_PASS;
+
+    let isAuthorized = false;
+    let isAdmin = false;
+
+    // Check if Admin
+    if (inputEmail === ADMIN_EMAIL.toLowerCase() && inputPass === adminActivePass) {
+      isAuthorized = true;
+      isAdmin = true;
+    } else {
+      // Check if Distributor / Assigned User
+      let dists = getDistributorsList();
+      let foundUser = dists.find(d => d.email.toLowerCase() === inputEmail && d.pass === inputPass);
+      if (foundUser) {
+        isAuthorized = true;
+        isAdmin = false;
+      }
+    }
+
+    if (isAuthorized) {
+      const remainingDays = checkAndHandleExpiry();
+
+      if (remainingDays > 0) {
+        sessionStorage.setItem('isLoggedIn', 'true');
+        loginScreen.style.display = 'none';
+        changePwdScreen.style.display = 'none';
+        errorMsg.style.display = 'none';
+        mainApp.style.display = 'block';
+
+        if (isAdmin) {
+          adminTabBtn.style.display = 'inline-block';
+        } else {
+          adminTabBtn.style.display = 'none';
         }
 
-    }catch(error){
-
-        showLogin();
+        updateValidityDisplay();
+        initAllCanvases();
+        cleanupOldHistoryRecords();
+      } else {
+        errorMsg.innerText = "⚠️ 60 दिनों की वैधता समाप्त हो चुकी है!";
+        errorMsg.style.display = 'block';
+      }
+    } else {
+      errorMsg.innerText = "⚠️ गलत ईमेल आईडी या पासवर्ड, या एडमिन द्वारा आईडी असाइन नहीं की गई है!";
+      errorMsg.style.display = 'block';
     }
-}
+  }
 
+  authBtn.addEventListener('click', handleLogin);
+  loginPass.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
 
-/* =========================================================
-   LOGIN
-========================================================= */
+  logoutBtn.addEventListener('click', () => {
+    sessionStorage.removeItem('isLoggedIn');
+    mainApp.style.display = 'none';
+    changePwdScreen.style.display = 'none';
+    loginScreen.style.display = 'block';
+    loginPass.value = '';
+    adminTabBtn.style.display = 'none';
+  });
 
-let loginType="customer";
+  // ==========================================
+  // CROPPING ENGINE (Universal & Manual)
+  // ==========================================
+  let cropper = null;
+  let activeCropType = 'card_front';
+  let rawNamePassportImg = null;
+  let frontCardRawData = null;
+  let backCardRawData = null;
 
+  const cropModal = document.getElementById('cropModal');
+  const imageToCrop = document.getElementById('imageToCrop');
+  const cropSaveBtn = document.getElementById('cropSaveBtn');
+  const cropCancelBtn = document.getElementById('cropCancelBtn');
 
-function showLogin(){
+  function openCropEngine(fileOrDataUrl, type) {
+    activeCropType = type;
+    
+    const handleLoadedImage = (src) => {
+      imageToCrop.src = src;
+      cropModal.classList.add('active-modal');
+      if (cropper) cropper.destroy();
 
-    document.getElementById(
-        "app"
-    ).innerHTML = `
+      let targetRatio = 1013 / 638;
+      if (type === 'passport' || type === 'name_passport') targetRatio = 35 / 45;
+      if (type === 'photo4x6') targetRatio = 1200 / 1800;
 
-    <div class="login-page">
+      cropper = new Cropper(imageToCrop, {
+        aspectRatio: targetRatio,
+        viewMode: 1,
+        autoCropArea: 0.98
+      });
+    };
 
-        <div class="login-box">
+    if (typeof fileOrDataUrl === 'string') {
+      handleLoadedImage(fileOrDataUrl);
+    } else {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        handleLoadedImage(e.target.result);
+      };
+      reader.readAsDataURL(fileOrDataUrl);
+    }
+  }
 
-            <div class="login-logo">
-                ID CARD PRINTING PORTAL
-            </div>
+  function autoFitCardToCanvas(dataUrl, targetCanvas, ctx, isFront) {
+    const img = new Image();
+    img.onload = function() {
+      ctx.clearRect(0, 0, CARD_W, CARD_H);
 
-            <div
-                class="login-subtitle"
-                id="loginSubtitle"
-            >
-                Customer Login
-            </div>
+      const srcRatio = img.width / img.height;
+      const targetRatio = CARD_W / CARD_H;
+      let sX = 0, sY = 0, sW = img.width, sH = img.height;
 
+      if (srcRatio > targetRatio) {
+        sW = img.height * targetRatio;
+        sX = (img.width - sW) / 2;
+      } else {
+        sH = img.width / targetRatio;
+        sY = (img.height - sH) / 2;
+      }
 
-            <div class="field">
+      ctx.drawImage(img, sX, sY, sW, sH, 0, 0, CARD_W, CARD_H);
 
-                <label id="usernameLabel">
-                    Username
-                </label>
+      if (isFront) {
+        img1Loaded = true;
+        frontCardRawData = dataUrl;
+        document.getElementById('manualCropFrontBtn').style.display = 'inline-block';
+      } else {
+        img2Loaded = true;
+        backCardRawData = dataUrl;
+        document.getElementById('manualCropBackBtn').style.display = 'inline-block';
+      }
 
-                <input
-                    id="loginUsername"
-                    type="text"
-                    autocomplete="username"
-                    placeholder="Enter username"
-                >
+      if (img1Loaded && img2Loaded) {
+        addCardBtn.disabled = false;
+      }
+    };
+    img.src = dataUrl;
+  }
 
-            </div>
+  function openManualCropForCard(side) {
+    if (side === 'front' && frontCardRawData) {
+      openCropEngine(frontCardRawData, 'card_front');
+    } else if (side === 'back' && backCardRawData) {
+      openCropEngine(backCardRawData, 'card_back');
+    }
+  }
 
+  cropSaveBtn.addEventListener('click', () => {
+    if (!cropper) return;
 
-            <div class="field">
-
-                <label>
-                    Password
-                </label>
-
-                <input
-                    id="loginPassword"
-                    type="password"
-                    autocomplete="current-password"
-                    placeholder="Enter password"
-                >
-
-            </div>
-
-
-            <button
-                class="btn btn-primary login-btn"
-                onclick="login()"
-            >
-                Login
-            </button>
-
-
-            <div
-                id="loginError"
-                class="login-error"
-            ></div>
-
-
-            <div class="login-bottom">
-
-                <button
-                    class="btn btn-small"
-                    onclick="showHelp()"
-                >
-                    Help
-                </button>
-
-                <button
-                    class="btn btn-small"
-                    onclick="adminMode()"
-                >
-                    Admin Login
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    `;
-}
-
-
-function adminMode(){
-
-    loginType="admin";
-
-    document.getElementById(
-        "loginSubtitle"
-    ).innerText =
-        "Administrator Login";
-
-    document.getElementById(
-        "usernameLabel"
-    ).innerText =
-        "Admin Email";
-
-    document.getElementById(
-        "loginUsername"
-    ).placeholder =
-        "Enter admin email";
-}
-
-
-async function login(){
-
-    const username =
-        document.getElementById(
-            "loginUsername"
-        ).value.trim();
-
-    const password =
-        document.getElementById(
-            "loginPassword"
-        ).value;
-
-    const error =
-        document.getElementById(
-            "loginError"
-        );
-
-    error.innerText="";
-
-    if(!username || !password){
-
-        error.innerText =
-            "Username and password required.";
-
-        return;
+    if (activeCropType === 'card_front' || activeCropType === 'card_back') {
+      const croppedCanvas = cropper.getCroppedCanvas({ width: 1013, height: 638, imageSmoothingQuality: 'high' });
+      if (activeCropType === 'card_front') {
+        ctx1.clearRect(0, 0, CARD_W, CARD_H);
+        ctx1.drawImage(croppedCanvas, 0, 0);
+        img1Loaded = true;
+      } else {
+        ctx2.clearRect(0, 0, CARD_W, CARD_H);
+        ctx2.drawImage(croppedCanvas, 0, 0);
+        img2Loaded = true;
+      }
+      if (img1Loaded && img2Loaded) addCardBtn.disabled = false;
+    } 
+    else if (activeCropType === 'passport') {
+      const croppedCanvas = cropper.getCroppedCanvas({ width: 413, height: 531, imageSmoothingQuality: 'high' });
+      passportCtx.clearRect(0, 0, 413, 531);
+      passportCtx.drawImage(croppedCanvas, 0, 0);
+      passportLoaded = true;
+      document.getElementById('make4x6CustomPassportBtn').disabled = false;
+      document.getElementById('makeA4CustomPassportBtn').disabled = false;
+    }
+    else if (activeCropType === 'name_passport') {
+      rawNamePassportImg = cropper.getCroppedCanvas({ width: 413, height: 531, imageSmoothingQuality: 'high' });
+      renderNamePassportPreview();
+      namePassportLoaded = true;
+      document.getElementById('make4x6NamePassportBtn').disabled = false;
+      document.getElementById('makeA4NamePassportBtn').disabled = false;
+    }
+    else if (activeCropType === 'photo4x6') {
+      const croppedCanvas = cropper.getCroppedCanvas({ width: 1200, height: 1800, imageSmoothingQuality: 'high' });
+      ctx4x6.clearRect(0, 0, 1200, 1800);
+      ctx4x6.drawImage(croppedCanvas, 0, 0);
+      photo4x6Loaded = true;
+      document.getElementById('downloadDirect4x6Pdf').disabled = false;
+      document.getElementById('generateA4Custom4x6Btn').disabled = false;
     }
 
-    try{
+    closeCropper();
+  });
 
-        const result =
-            await api(
-                "/api/login",
-                {
-                    method:"POST",
+  cropCancelBtn.addEventListener('click', closeCropper);
 
-                    body:JSON.stringify({
+  function closeCropper() {
+    cropModal.classList.remove('active-modal');
+    if (cropper) {
+      cropper.destroy();
+      cropper = null;
+    }
+  }
 
-                        type:loginType,
+  // ==========================================
+  // TAB 1: 5 CARDS SYSTEM LOGIC
+  // ==========================================
+  const CARD_W = 1013, CARD_H = 638, A4_W = 2480, A4_H = 3508, GAP_2_5MM_PX = 30, MAX_CARDS = 5;
+  let addedCardsCount = 0, img1Loaded = false, img2Loaded = false;
 
-                        username,
+  const canvas1 = document.getElementById('canvas1');
+  const ctx1 = canvas1.getContext('2d');
+  const canvas2 = document.getElementById('canvas2');
+  const ctx2 = canvas2.getContext('2d');
+  const a4Canvas = document.getElementById('a4Canvas');
+  const a4Ctx = a4Canvas.getContext('2d');
 
-                        password
+  const addCardBtn = document.getElementById('addCardBtn');
+  const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+  const resetPageBtn = document.getElementById('resetPageBtn');
+  const slotCounter = document.getElementById('slotCounter');
 
-                    })
-                }
-            );
+  document.getElementById('card1Input').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      document.getElementById('file1Name').innerText = `✅ Auto-Fitted: ${file.name}`;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        autoFitCardToCanvas(evt.target.result, canvas1, ctx1, true);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
 
-        if(result.role==="admin"){
+  document.getElementById('card2Input').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      document.getElementById('file2Name').innerText = `✅ Auto-Fitted: ${file.name}`;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        autoFitCardToCanvas(evt.target.result, canvas2, ctx2, false);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
 
-            showAdmin();
+  addCardBtn.addEventListener('click', () => {
+    if (addedCardsCount >= MAX_CARDS) return;
+    const totalPairWidth = (CARD_W * 2) + GAP_2_5MM_PX;
+    const startX = (A4_W - totalPairWidth) / 2;
+    const startY = 45;
+    const currentY = startY + (addedCardsCount * (CARD_H + 45));
 
-        }else{
+    a4Ctx.drawImage(canvas1, startX, currentY, CARD_W, CARD_H);
+    const backCardX = startX + CARD_W + GAP_2_5MM_PX;
+    a4Ctx.drawImage(canvas2, backCardX, currentY, CARD_W, CARD_H);
 
-            showCustomer(result);
+    a4Ctx.strokeStyle = '#000000';
+    a4Ctx.lineWidth = 6;
+    a4Ctx.strokeRect(startX, currentY, CARD_W, CARD_H);
+    a4Ctx.strokeRect(backCardX, currentY, CARD_W, CARD_H);
+
+    addedCardsCount++;
+    if (addedCardsCount < MAX_CARDS) {
+      slotCounter.innerText = `Cards on Page: ${addedCardsCount} / ${MAX_CARDS} (Next Slot: #${addedCardsCount + 1})`;
+    } else {
+      slotCounter.innerText = `✅ Page Full: 5 / 5 Cards Added!`;
+    }
+
+    downloadPdfBtn.disabled = false;
+    clearCurrentCardInputs();
+  });
+
+  function clearCurrentCardInputs() {
+    [ctx1, ctx2].forEach((ctx, i) => {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, CARD_W, CARD_H);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = 'bold 24px Poppins';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${i === 0 ? 'Front' : 'Back'} Card Preview`, CARD_W / 2, CARD_H / 2);
+    });
+    document.getElementById('file1Name').innerText = 'इमेज चुनें (Auto-Crop)';
+    document.getElementById('file2Name').innerText = 'इमेज चुनें (Auto-Crop)';
+    document.getElementById('card1Input').value = '';
+    document.getElementById('card2Input').value = '';
+    document.getElementById('manualCropFrontBtn').style.display = 'none';
+    document.getElementById('manualCropBackBtn').style.display = 'none';
+    img1Loaded = false; img2Loaded = false; addCardBtn.disabled = true;
+    frontCardRawData = null; backCardRawData = null;
+  }
+
+  function resetCardA4Sheet() {
+    addedCardsCount = 0;
+    a4Ctx.fillStyle = '#ffffff';
+    a4Ctx.fillRect(0, 0, A4_W, A4_H);
+    const totalPairWidth = (CARD_W * 2) + GAP_2_5MM_PX;
+    const startX = (A4_W - totalPairWidth) / 2;
+    for (let i = 0; i < MAX_CARDS; i++) {
+      const currentY = 45 + (i * (CARD_H + 45));
+      a4Ctx.strokeStyle = '#e2e8f0';
+      a4Ctx.lineWidth = 2;
+      a4Ctx.strokeRect(startX, currentY, CARD_W, CARD_H);
+      a4Ctx.strokeRect(startX + CARD_W + GAP_2_5MM_PX, currentY, CARD_W, CARD_H);
+    }
+    slotCounter.innerText = `Cards on Page: 0 / 5 (Next Slot: #1)`;
+    downloadPdfBtn.disabled = true;
+  }
+
+  resetPageBtn.addEventListener('click', () => {
+    if (confirm('क्या आप A4 शीट खाली करना चाहते हैं?')) {
+      resetCardA4Sheet();
+      clearCurrentCardInputs();
+    }
+  });
+
+  downloadPdfBtn.addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    pdf.addImage(a4Canvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
+    
+    const fileName = `A4_Cards_Sheet_${addedCardsCount}_Cards.pdf`;
+    const blob = pdf.output('blob');
+    pdf.save(fileName);
+    saveToHistory('ID Card Print (5-Slots)', fileName, blob, 'application/pdf');
+  });
+
+  // ==========================================
+  // TAB 2: PASSPORT SIZE PHOTOS (STANDARD)
+  // ==========================================
+  const passportCanvas = document.getElementById('passportCanvas');
+  const passportCtx = passportCanvas.getContext('2d');
+  const passportSheetCanvas = document.getElementById('passportSheetCanvas');
+  const passportSheetCtx = passportSheetCanvas.getContext('2d');
+  const passportQtyInput = document.getElementById('passportQtyInput');
+  let passportLoaded = false;
+  let passportSheetFormat = '4x6';
+
+  function setPassportQty(qty) {
+    passportQtyInput.value = qty;
+  }
+
+  document.getElementById('passportInput').addEventListener('change', (e) => {
+    if (e.target.files[0]) {
+      document.getElementById('passportFileName').innerText = e.target.files[0].name;
+      openCropEngine(e.target.files[0], 'passport');
+    }
+  });
+
+  document.getElementById('make4x6CustomPassportBtn').addEventListener('click', () => {
+    if (!passportLoaded) return;
+    passportSheetFormat = '4x6';
+    const targetQty = Math.max(1, Math.min(8, parseInt(passportQtyInput.value) || 8));
+
+    passportSheetCanvas.width = 1800;
+    passportSheetCanvas.height = 1200;
+
+    passportSheetCtx.fillStyle = '#ffffff';
+    passportSheetCtx.fillRect(0, 0, 1800, 1200);
+
+    const pw = 413, ph = 531;
+    const startX = 50, startY = 50, gapX = 20, gapY = 35;
+    const maxCols = 4;
+
+    let placed = 0;
+    for (let r = 0; r < 2; r++) {
+      for (let c = 0; c < maxCols; c++) {
+        if (placed >= targetQty) break;
+        const x = startX + c * (pw + gapX);
+        const y = startY + r * (ph + gapY);
+        passportSheetCtx.drawImage(passportCanvas, x, y, pw, ph);
+        passportSheetCtx.strokeStyle = '#000000';
+        passportSheetCtx.lineWidth = 2;
+        passportSheetCtx.strokeRect(x, y, pw, ph);
+        placed++;
+      }
+    }
+
+    document.getElementById('passportSheetTitle').innerText = `Passport 4×6 Sheet (${targetQty} Photos Generated)`;
+    document.getElementById('downloadPassportPdfBtn').disabled = false;
+  });
+
+  document.getElementById('makeA4CustomPassportBtn').addEventListener('click', () => {
+    if (!passportLoaded) return;
+    passportSheetFormat = 'a4';
+    const targetQty = Math.max(1, Math.min(30, parseInt(passportQtyInput.value) || 30));
+
+    passportSheetCanvas.width = 2480;
+    passportSheetCanvas.height = 3508;
+
+    passportSheetCtx.fillStyle = '#ffffff';
+    passportSheetCtx.fillRect(0, 0, 2480, 3508);
+
+    const pw = 413, ph = 531;
+    const startX = 75, startY = 80, gapX = 30, gapY = 40;
+    const maxCols = 5;
+
+    let placed = 0;
+    for (let r = 0; r < 6; r++) {
+      for (let c = 0; c < maxCols; c++) {
+        if (placed >= targetQty) break;
+        const x = startX + c * (pw + gapX);
+        const y = startY + r * (ph + gapY);
+        passportSheetCtx.drawImage(passportCanvas, x, y, pw, ph);
+        passportSheetCtx.strokeStyle = '#000000';
+        passportSheetCtx.lineWidth = 2;
+        passportSheetCtx.strokeRect(x, y, pw, ph);
+        placed++;
+      }
+    }
+
+    document.getElementById('passportSheetTitle').innerText = `Passport A4 Sheet (${targetQty} Photos Generated)`;
+    document.getElementById('downloadPassportPdfBtn').disabled = false;
+  });
+
+  document.getElementById('downloadPassportPdfBtn').addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    let fileName = '';
+    let pdf;
+    if (passportSheetFormat === '4x6') {
+      pdf = new jsPDF({ orientation: 'landscape', unit: 'in', format: [4, 6] });
+      pdf.addImage(passportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 6, 4);
+      fileName = `Passport_Photos_4x6_${passportQtyInput.value}_Qty.pdf`;
+    } else {
+      pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      pdf.addImage(passportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
+      fileName = `Passport_Photos_A4_${passportQtyInput.value}_Qty.pdf`;
+    }
+    const blob = pdf.output('blob');
+    pdf.save(fileName);
+    saveToHistory('Passport Photos', fileName, blob, 'application/pdf');
+  });
+
+  // ==========================================
+  // TAB 3: NAME & DATE PASSPORT (3 FONT SLIDERS)
+  // ==========================================
+  const namePassportCanvas = document.getElementById('namePassportCanvas');
+  const namePassportCtx = namePassportCanvas.getContext('2d');
+  const namePassportSheetCanvas = document.getElementById('namePassportSheetCanvas');
+  const namePassportSheetCtx = namePassportSheetCanvas.getContext('2d');
+  const namePassportQtyInput = document.getElementById('namePassportQtyInput');
+  let namePassportLoaded = false;
+  let namePassportSheetFormat = '4x6';
+
+  let currentNameFontSize = 24;
+  let currentDobFontSize = 20;
+  let currentDopFontSize = 20;
+
+  function setNamePassportQty(qty) {
+    namePassportQtyInput.value = qty;
+  }
+
+  function updateNameFontSize(val) {
+    currentNameFontSize = parseInt(val) || 24;
+    document.getElementById('nameFontLabel').innerText = `Size: ${currentNameFontSize}px`;
+    renderNamePassportPreview();
+  }
+
+  function updateDobFontSize(val) {
+    currentDobFontSize = parseInt(val) || 20;
+    document.getElementById('dobFontLabel').innerText = `Size: ${currentDobFontSize}px`;
+    renderNamePassportPreview();
+  }
+
+  function updateDopFontSize(val) {
+    currentDopFontSize = parseInt(val) || 20;
+    document.getElementById('dopFontLabel').innerText = `Size: ${currentDopFontSize}px`;
+    renderNamePassportPreview();
+  }
+
+  document.getElementById('namePassportInput').addEventListener('change', (e) => {
+    if (e.target.files[0]) {
+      document.getElementById('namePassportFileName').innerText = e.target.files[0].name;
+      openCropEngine(e.target.files[0], 'name_passport');
+    }
+  });
+
+  function wrapNameText(context, text, maxWidth) {
+    const words = text.split(' ');
+    const lines = [];
+    let currentLine = words[0];
+
+    for (let i = 1; i < words.length; i++) {
+      const word = words[i];
+      const width = context.measureText(currentLine + " " + word).width;
+      if (width < maxWidth) {
+        currentLine += " " + word;
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
+    }
+    lines.push(currentLine);
+    return lines;
+  }
+
+  function renderNamePassportPreview() {
+    namePassportCtx.fillStyle = '#ffffff';
+    namePassportCtx.fillRect(0, 0, 413, 531);
+
+    if (rawNamePassportImg) {
+      namePassportCtx.drawImage(rawNamePassportImg, 0, 0, 413, 531);
+    }
+
+    const cName = document.getElementById('candNameInput').value.trim();
+    let rawDob = document.getElementById('candDobInput').value.trim();
+    let rawDop = document.getElementById('candDopInput').value.trim();
+
+    let formattedDob = '';
+    if (rawDob) {
+      formattedDob = rawDob.toUpperCase().startsWith('DOB:') ? rawDob : `DOB: ${rawDob}`;
+    }
+
+    let formattedDop = '';
+    if (rawDop) {
+      formattedDop = rawDop.toUpperCase().startsWith('DOP:') ? rawDop : `DOP: ${rawDop}`;
+    }
+
+    if (cName || formattedDob || formattedDop) {
+      namePassportCtx.font = `900 ${currentNameFontSize}px Poppins, Arial, sans-serif`;
+      const nameLines = cName ? wrapNameText(namePassportCtx, cName.toUpperCase(), 390) : [];
+      
+      let dateLineCount = 0;
+      if (formattedDob) dateLineCount++;
+      if (formattedDop) dateLineCount++;
+
+      const nameBlockHeight = nameLines.length * (currentNameFontSize + 8);
+      const dobBlockHeight = formattedDob ? (currentDobFontSize + 8) : 0;
+      const dopBlockHeight = formattedDop ? (currentDopFontSize + 8) : 0;
+      
+      const stripHeight = Math.max(120, nameBlockHeight + dobBlockHeight + dopBlockHeight + 16);
+      const stripY = 531 - stripHeight;
+
+      namePassportCtx.fillStyle = '#ffffff';
+      namePassportCtx.fillRect(0, stripY, 413, stripHeight);
+
+      namePassportCtx.strokeStyle = '#000000';
+      namePassportCtx.lineWidth = 3;
+      namePassportCtx.beginPath();
+      namePassportCtx.moveTo(0, stripY);
+      namePassportCtx.lineTo(413, stripY);
+      namePassportCtx.stroke();
+
+      namePassportCtx.fillStyle = '#000000';
+      namePassportCtx.textAlign = 'center';
+
+      let yPos = stripY + currentNameFontSize + 6;
+
+      namePassportCtx.font = `900 ${currentNameFontSize}px Poppins, Arial, sans-serif`;
+      nameLines.forEach(line => {
+        namePassportCtx.fillText(line, 413 / 2, yPos);
+        yPos += currentNameFontSize + 6;
+      });
+
+      if (formattedDob) {
+        yPos += 2;
+        namePassportCtx.font = `700 ${currentDobFontSize}px Poppins, Arial, sans-serif`;
+        namePassportCtx.fillText(formattedDob, 413 / 2, yPos);
+        yPos += currentDobFontSize + 6;
+      }
+
+      if (formattedDop) {
+        yPos += 2;
+        namePassportCtx.font = `700 ${currentDopFontSize}px Poppins, Arial, sans-serif`;
+        namePassportCtx.fillText(formattedDop, 413 / 2, yPos);
+      }
+    }
+  }
+
+  document.getElementById('make4x6NamePassportBtn').addEventListener('click', () => {
+    if (!namePassportLoaded) return;
+    namePassportSheetFormat = '4x6';
+    const targetQty = Math.max(1, Math.min(8, parseInt(namePassportQtyInput.value) || 8));
+
+    namePassportSheetCanvas.width = 1800;
+    namePassportSheetCanvas.height = 1200;
+
+    namePassportSheetCtx.fillStyle = '#ffffff';
+    namePassportSheetCtx.fillRect(0, 0, 1800, 1200);
+
+    const pw = 413, ph = 531;
+    const startX = 50, startY = 50, gapX = 20, gapY = 35;
+    const maxCols = 4;
+
+    let placed = 0;
+    for (let r = 0; r < 2; r++) {
+      for (let c = 0; c < maxCols; c++) {
+        if (placed >= targetQty) break;
+        const x = startX + c * (pw + gapX);
+        const y = startY + r * (ph + gapY);
+        namePassportSheetCtx.drawImage(namePassportCanvas, x, y, pw, ph);
+        namePassportSheetCtx.strokeStyle = '#000000';
+        namePassportSheetCtx.lineWidth = 2;
+        namePassportSheetCtx.strokeRect(x, y, pw, ph);
+        placed++;
+      }
+    }
+
+    document.getElementById('namePassportSheetTitle').innerText = `Name & Date 4×6 Sheet (${targetQty} Photos Generated)`;
+    document.getElementById('downloadNamePassportPdfBtn').disabled = false;
+  });
+
+  document.getElementById('makeA4NamePassportBtn').addEventListener('click', () => {
+    if (!namePassportLoaded) return;
+    namePassportSheetFormat = 'a4';
+    const targetQty = Math.max(1, Math.min(30, parseInt(namePassportQtyInput.value) || 30));
+
+    namePassportSheetCanvas.width = 2480;
+    namePassportSheetCanvas.height = 3508;
+
+    namePassportSheetCtx.fillStyle = '#ffffff';
+    namePassportSheetCtx.fillRect(0, 0, 2480, 3508);
+
+    const pw = 413, ph = 531;
+    const startX = 75, startY = 80, gapX = 30, gapY = 40;
+    const maxCols = 5;
+
+    let placed = 0;
+    for (let r = 0; r < 6; r++) {
+      for (let c = 0; c < maxCols; c++) {
+        if (placed >= targetQty) break;
+        const x = startX + c * (pw + gapX);
+        const y = startY + r * (ph + gapY);
+        namePassportSheetCtx.drawImage(namePassportCanvas, x, y, pw, ph);
+        namePassportSheetCtx.strokeStyle = '#000000';
+        namePassportSheetCtx.lineWidth = 2;
+        namePassportSheetCtx.strokeRect(x, y, pw, ph);
+        placed++;
+      }
+    }
+
+    document.getElementById('namePassportSheetTitle').innerText = `Name & Date A4 Sheet (${targetQty} Photos Generated)`;
+    document.getElementById('downloadNamePassportPdfBtn').disabled = false;
+  });
+
+  document.getElementById('downloadNamePassportPdfBtn').addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    let fileName = '';
+    let pdf;
+    if (namePassportSheetFormat === '4x6') {
+      pdf = new jsPDF({ orientation: 'landscape', unit: 'in', format: [4, 6] });
+      pdf.addImage(namePassportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 6, 4);
+      fileName = `Name_Date_Passport_4x6_${namePassportQtyInput.value}_Qty.pdf`;
+    } else {
+      pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      pdf.addImage(namePassportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
+      fileName = `Name_Date_Passport_A4_${namePassportQtyInput.value}_Qty.pdf`;
+    }
+    const blob = pdf.output('blob');
+    pdf.save(fileName);
+    saveToHistory('Name & Date Passport', fileName, blob, 'application/pdf');
+  });
+
+  // ==========================================
+  // TAB 4: 4x6 PHOTO PRINT
+  // ==========================================
+  const canvas4x6 = document.getElementById('canvas4x6');
+  const ctx4x6 = canvas4x6.getContext('2d');
+  const a4_4x6_SheetCanvas = document.getElementById('a4_4x6_SheetCanvas');
+  const a4_4x6_SheetCtx = a4_4x6_SheetCanvas.getContext('2d');
+  const photo4x6QtyInput = document.getElementById('photo4x6QtyInput');
+  let photo4x6Loaded = false;
+
+  function set4x6Qty(qty) {
+    photo4x6QtyInput.value = qty;
+  }
+
+  document.getElementById('photo4x6Input').addEventListener('change', (e) => {
+    if (e.target.files[0]) {
+      document.getElementById('photo4x6FileName').innerText = e.target.files[0].name;
+      openCropEngine(e.target.files[0], 'photo4x6');
+    }
+  });
+
+  document.getElementById('downloadDirect4x6Pdf').addEventListener('click', () => {
+    if (!photo4x6Loaded) return;
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'in', format: [4, 6] });
+    pdf.addImage(canvas4x6.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 4, 6);
+    const fileName = 'Photo_4x6_Print.pdf';
+    const blob = pdf.output('blob');
+    pdf.save(fileName);
+    saveToHistory('4x6 Photo (Single)', fileName, blob, 'application/pdf');
+  });
+
+  document.getElementById('generateA4Custom4x6Btn').addEventListener('click', () => {
+    if (!photo4x6Loaded) return;
+    const qty = Math.max(1, Math.min(4, parseInt(photo4x6QtyInput.value) || 2));
+
+    a4_4x6_SheetCanvas.width = 2480;
+    a4_4x6_SheetCanvas.height = 3508;
+
+    a4_4x6_SheetCtx.fillStyle = '#ffffff';
+    a4_4x6_SheetCtx.fillRect(0, 0, 2480, 3508);
+
+    const pw = 1140, ph = 1680;
+    const gapX = 60, gapY = 60;
+    const startX = 70, startY = 40;
+
+    const positions = [
+      { x: startX, y: startY },
+      { x: startX + pw + gapX, y: startY },
+      { x: startX, y: startY + ph + gapY },
+      { x: startX + pw + gapX, y: startY + ph + gapY }
+    ];
+
+    for (let i = 0; i < qty; i++) {
+      const pos = positions[i];
+      a4_4x6_SheetCtx.drawImage(canvas4x6, pos.x, pos.y, pw, ph);
+      a4_4x6_SheetCtx.strokeStyle = '#000000';
+      a4_4x6_SheetCtx.lineWidth = 4;
+      a4_4x6_SheetCtx.strokeRect(pos.x, pos.y, pw, ph);
+    }
+
+    document.getElementById('photo4x6SheetTitle').innerText = `A4 4×6 Photo Sheet (${qty} Photos on 1 A4)`;
+    document.getElementById('downloadA4_4x6_PdfBtn').disabled = false;
+  });
+
+  document.getElementById('downloadA4_4x6_PdfBtn').addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    pdf.addImage(a4_4x6_SheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
+    const fileName = `4x6_Photos_A4_Sheet_${photo4x6QtyInput.value}_Qty.pdf`;
+    const blob = pdf.output('blob');
+    pdf.save(fileName);
+    saveToHistory('4x6 Photo A4 Sheet', fileName, blob, 'application/pdf');
+  });
+
+  // ==========================================================
+  // TAB 5: PDF ARRANGER (DRAG & DROP / HOLD & MOVE)
+  // ==========================================================
+  let arrangedPdfPagesList = [];
+  let draggedArrangerIdx = null;
+
+  document.getElementById('arrangerPdfInput').addEventListener('change', async function(e) {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+
+    for (const file of files) {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const viewport = page.getViewport({ scale: 0.35 });
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+        arrangedPdfPagesList.push({
+          sourceBytes: arrayBuffer,
+          pageIndex: i - 1,
+          thumbDataUrl: canvas.toDataURL('image/jpeg', 0.8),
+          rotation: 0,
+          originalDocName: file.name
+        });
+      }
+    }
+
+    renderArrangerGrid();
+    this.value = '';
+  });
+
+  function renderArrangerGrid() {
+    const grid = document.getElementById('arrangerGridList');
+    const container = document.getElementById('arrangerContainerArea');
+    const countDisplay = document.getElementById('arrangerTotalPagesCount');
+
+    grid.innerHTML = '';
+    countDisplay.innerText = arrangedPdfPagesList.length;
+
+    if (arrangedPdfPagesList.length > 0) {
+      container.style.display = 'block';
+    } else {
+      container.style.display = 'none';
+      return;
+    }
+
+    arrangedPdfPagesList.forEach((item, idx) => {
+      const card = document.createElement('div');
+      card.className = 'draggable-card';
+      card.draggable = true;
+      card.dataset.index = idx;
+
+      card.addEventListener('dragstart', (e) => {
+        draggedArrangerIdx = idx;
+        card.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+
+      card.addEventListener('dragend', () => {
+        card.classList.remove('dragging');
+        document.querySelectorAll('.draggable-card').forEach(c => c.classList.remove('drag-over'));
+      });
+
+      card.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        card.classList.add('drag-over');
+      });
+
+      card.addEventListener('dragleave', () => {
+        card.classList.remove('drag-over');
+      });
+
+      card.addEventListener('drop', (e) => {
+        e.preventDefault();
+        card.classList.remove('drag-over');
+        if (draggedArrangerIdx !== null && draggedArrangerIdx !== idx) {
+          const itemToMove = arrangedPdfPagesList.splice(draggedArrangerIdx, 1)[0];
+          arrangedPdfPagesList.splice(idx, 0, itemToMove);
+          renderArrangerGrid();
+        }
+      });
+
+      const img = document.createElement('img');
+      img.src = item.thumbDataUrl;
+      img.style.transform = `rotate(${item.rotation}deg)`;
+      card.appendChild(img);
+
+      const label = document.createElement('div');
+      label.className = 'file-label';
+      label.innerText = `Page ${idx + 1}`;
+      card.appendChild(label);
+
+      const toolsBar = document.createElement('div');
+      toolsBar.className = 'card-tools-bar';
+
+      const rotateBtn = document.createElement('button');
+      rotateBtn.className = 'mini-tool-btn';
+      rotateBtn.innerHTML = '🔄 Rotate';
+      rotateBtn.title = 'Rotate 90°';
+      rotateBtn.onclick = (e) => {
+        e.stopPropagation();
+        rotateArrangerPage(idx);
+      };
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'mini-tool-btn btn-del';
+      delBtn.innerHTML = '🗑️';
+      delBtn.title = 'Delete Page';
+      delBtn.onclick = (e) => {
+        e.stopPropagation();
+        deleteArrangerPage(idx);
+      };
+
+      toolsBar.appendChild(rotateBtn);
+      toolsBar.appendChild(delBtn);
+      card.appendChild(toolsBar);
+
+      grid.appendChild(card);
+    });
+  }
+
+  function rotateArrangerPage(index) {
+    arrangedPdfPagesList[index].rotation = (arrangedPdfPagesList[index].rotation + 90) % 360;
+    renderArrangerGrid();
+  }
+
+  function deleteArrangerPage(index) {
+    arrangedPdfPagesList.splice(index, 1);
+    renderArrangerGrid();
+  }
+
+  document.getElementById('clearArrangerBtn').addEventListener('click', () => {
+    if (confirm('क्या आप सभी अरेंज किए गए पेज मिटाना चाहते हैं?')) {
+      arrangedPdfPagesList = [];
+      renderArrangerGrid();
+    }
+  });
+
+  document.getElementById('saveArrangedPdfBtn').addEventListener('click', async () => {
+    if (!arrangedPdfPagesList.length) return;
+
+    const { PDFDocument, degrees } = PDFLib;
+    const outPdf = await PDFDocument.create();
+
+    const loadedDocsMap = new Map();
+
+    for (const pageObj of arrangedPdfPagesList) {
+      let srcDoc = loadedDocsMap.get(pageObj.sourceBytes);
+      if (!srcDoc) {
+        srcDoc = await PDFDocument.load(pageObj.sourceBytes);
+        loadedDocsMap.set(pageObj.sourceBytes, srcDoc);
+      }
+
+      const [copiedPage] = await outPdf.copyPages(srcDoc, [pageObj.pageIndex]);
+      
+      if (pageObj.rotation !== 0) {
+        const currentRot = copiedPage.getRotation().angle;
+        copiedPage.setRotation(degrees(currentRot + pageObj.rotation));
+      }
+
+      outPdf.addPage(copiedPage);
+    }
+
+    const pdfBytes = await outPdf.save();
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const fileName = `Arranged_Document_${arrangedPdfPagesList.length}_Pages.pdf`;
+
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    link.click();
+    saveToHistory('PDF Arranger', fileName, blob, 'application/pdf');
+  });
+
+  // ==========================================================
+  // TAB 6: UNIVERSAL MERGE (DRAG & DROP RE-ORDER SUPPORT)
+  // ==========================================================
+  let universalFiles = [];
+  let draggedUniversalIdx = null;
+
+  document.getElementById('universalMultiInput').addEventListener('change', function(e) {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+
+    universalFiles = universalFiles.concat(files);
+    renderUniversalGallery();
+    this.value = '';
+  });
+
+  function removeUniversalFile(index) {
+    universalFiles.splice(index, 1);
+    renderUniversalGallery();
+  }
+
+  function renderUniversalGallery() {
+    const gallery = document.getElementById('universalGalleryList');
+    const container = document.getElementById('universalGalleryContainer');
+    const countDisplay = document.getElementById('universalSelectedCount');
+
+    gallery.innerHTML = '';
+    countDisplay.innerText = universalFiles.length;
+
+    if (universalFiles.length > 0) {
+      container.style.display = 'block';
+    } else {
+      container.style.display = 'none';
+      return;
+    }
+
+    universalFiles.forEach((file, idx) => {
+      const item = document.createElement('div');
+      item.className = 'draggable-card';
+      item.draggable = true;
+
+      item.addEventListener('dragstart', (e) => {
+        draggedUniversalIdx = idx;
+        item.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+
+      item.addEventListener('dragend', () => {
+        item.classList.remove('dragging');
+        document.querySelectorAll('#universalGalleryList .draggable-card').forEach(c => c.classList.remove('drag-over'));
+      });
+
+      item.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        item.classList.add('drag-over');
+      });
+
+      item.addEventListener('dragleave', () => {
+        item.classList.remove('drag-over');
+      });
+
+      item.addEventListener('drop', (e) => {
+        e.preventDefault();
+        item.classList.remove('drag-over');
+        if (draggedUniversalIdx !== null && draggedUniversalIdx !== idx) {
+          const moved = universalFiles.splice(draggedUniversalIdx, 1)[0];
+          universalFiles.splice(idx, 0, moved);
+          renderUniversalGallery();
+        }
+      });
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'item-delete-btn';
+      delBtn.innerHTML = '✖';
+      delBtn.title = 'Remove this file';
+      delBtn.onclick = function(e) {
+        e.stopPropagation();
+        removeUniversalFile(idx);
+      };
+      item.appendChild(delBtn);
+
+      if (file.type === 'application/pdf') {
+        const icon = document.createElement('div');
+        icon.style.height = '135px';
+        icon.style.display = 'flex';
+        icon.style.alignItems = 'center';
+        icon.style.justifyContent = 'center';
+        icon.style.fontSize = '36px';
+        icon.innerText = '📄';
+        item.appendChild(icon);
+      } else {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        item.appendChild(img);
+      }
+
+      const label = document.createElement('div');
+      label.className = 'file-label';
+      label.innerText = file.name;
+      label.title = file.name;
+      item.appendChild(label);
+
+      gallery.appendChild(item);
+    });
+  }
+
+  document.getElementById('clearUniversalListBtn').addEventListener('click', () => {
+    universalFiles = [];
+    renderUniversalGallery();
+    document.getElementById('universalMultiInput').value = '';
+  });
+
+  document.getElementById('convertUniversalToPdfBtn').addEventListener('click', async () => {
+    if (!universalFiles.length) return;
+
+    const { PDFDocument } = PDFLib;
+    const mergedPdf = await PDFDocument.create();
+
+    for (let i = 0; i < universalFiles.length; i++) {
+      const file = universalFiles[i];
+      const fileBytes = await file.arrayBuffer();
+
+      if (file.type === 'application/pdf') {
+        const externalPdf = await PDFDocument.load(fileBytes);
+        const copiedPages = await mergedPdf.copyPages(externalPdf, externalPdf.getPageIndices());
+        copiedPages.forEach((page) => mergedPdf.addPage(page));
+      } else {
+        let embeddedImage;
+        if (file.type === 'image/png') {
+          embeddedImage = await mergedPdf.embedPng(fileBytes);
+        } else {
+          embeddedImage = await mergedPdf.embedJpg(fileBytes);
         }
 
-    }catch(err){
-
-        error.innerText =
-            err.message;
-    }
-}
-
-
-/* =========================================================
-   HELP
-========================================================= */
-
-async function showHelp(){
-
-    try{
-
-        const data =
-            await api(
-                "/api/help"
-            );
-
-        alert(
-            "HELP\n\n"+
-            "Email: "+
-            data.email+
-            "\nMobile: "+
-            data.mobile
-        );
-
-    }catch(error){
-
-        alert(
-            "Please contact administrator."
-        );
-    }
-}
-
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-async function logout(){
-
-    try{
-
-        await api(
-            "/api/logout",
-            {
-                method:"POST"
-            }
-        );
-
-    }finally{
-
-        start();
-    }
-}
-
-
-/* =========================================================
-   CUSTOMER
-========================================================= */
-
-function showCustomer(user){
-
-    document.getElementById(
-        "app"
-    ).innerHTML = `
-
-    <div class="container">
-
-
-        <div class="topbar">
-
-            <div class="logo">
-                ID CARD PRINTING PORTAL
-            </div>
-
-            <div class="top-actions">
-
-                <button
-                    class="btn btn-small"
-                    onclick="showHelp()"
-                >
-                    Help
-                </button>
-
-                <button
-                    class="btn btn-small btn-danger"
-                    onclick="logout()"
-                >
-                    Logout
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <div class="tool-bar">
-
-            <button
-                class="tool-btn"
-                onclick="openTool('id',this)"
-            >
-                🪪 ID Card
-            </button>
-
-            <button
-                class="tool-btn"
-                onclick="openTool('passport',this)"
-            >
-                👤 Passport Photo
-            </button>
-
-            <button
-                class="tool-btn"
-                onclick="openTool('passportName',this)"
-            >
-                📄 Name & Date
-            </button>
-
-            <button
-                class="tool-btn"
-                onclick="openTool('4x6',this)"
-            >
-                🖼️ 4×6 Photo
-            </button>
-
-            <button
-                class="tool-btn"
-                onclick="openTool('arranger',this)"
-            >
-                📑 PDF Arranger
-            </button>
-
-            <button
-                class="tool-btn"
-                onclick="openTool('topdf',this)"
-            >
-                📄 Images → PDF
-            </button>
-
-            <button
-                class="tool-btn"
-                onclick="openTool('resize',this)"
-            >
-                📐 Image Resize
-            </button>
-
-            <button
-                class="tool-btn"
-                onclick="openTool('pdfjpg',this)"
-            >
-                🖼️ PDF → JPG
-            </button>
-
-            <button
-                class="tool-btn"
-                onclick="openTool('compress',this)"
-            >
-                🗜️ PDF Compress
-            </button>
-
-            <button
-                class="tool-btn"
-                onclick="openTool('history',this)"
-            >
-                📁 History
-            </button>
-
-        </div>
-
-
-        <div class="account-bar">
-
-            <div class="validity">
-
-                Account Validity:
-
-                <b>
-                    ${user.daysLeft ?? 0}
-                    Days
-                </b>
-
-            </div>
-
-            <div>
-
-                Welcome,
-
-                <b>
-                    ${escapeHTML(user.name)}
-                </b>
-
-            </div>
-
-        </div>
-
-
-        <div id="customerToolArea"></div>
-
-    </div>
-
-    `;
-
-    openTool(
-        "id",
-        document.querySelector(
-            ".tool-btn"
-        )
-    );
-}
-
-
-/* =========================================================
-   TOOL ROUTER
-========================================================= */
-
-function openTool(tool,button){
-
-    document
-        .querySelectorAll(
-            ".tool-btn"
-        )
-        .forEach(
-            b =>
-                b.classList.remove(
-                    "active"
-                )
-        );
-
-    if(button){
-
-        button.classList.add(
-            "active"
-        );
+        const page = mergedPdf.addPage([595.28, 841.89]);
+        const imgDims = embeddedImage.scaleToFit(555.28, 801.89);
+
+        page.drawImage(embeddedImage, {
+          x: (595.28 - imgDims.width) / 2,
+          y: (841.89 - imgDims.height) / 2,
+          width: imgDims.width,
+          height: imgDims.height
+        });
+      }
     }
 
-    const area =
-        document.getElementById(
-            "customerToolArea"
-        );
-
-
-    switch(tool){
-
-        case "id":
-            idCardTool(area);
-            break;
-
-        case "passport":
-            passportTool(area,false);
-            break;
-
-        case "passportName":
-            passportTool(area,true);
-            break;
-
-        case "4x6":
-            fourSixTool(area);
-            break;
-
-        case "resize":
-            resizeTool(area);
-            break;
-
-        case "topdf":
-            imagePDFTool(area);
-            break;
-
-        case "pdfjpg":
-            pdfTool(
-                area,
-                "PDF to JPG"
-            );
-            break;
-
-        case "compress":
-            pdfTool(
-                area,
-                "PDF Compressor"
-            );
-            break;
-
-        case "arranger":
-            pdfTool(
-                area,
-                "PDF Arranger"
-            );
-            break;
-
-        case "history":
-            historyTool(area);
-            break;
-    }
-}
-
-
-/* =========================================================
-   ID CARD TOOL
-========================================================= */
-
-function idCardTool(area){
-
-    area.innerHTML = `
-
-    <div class="hero">
-
-        <span class="pill">
-            1013 × 638 PX • 300 DPI •
-            AUTO CROP • SMART FIT
-        </span>
-
-        <h1>
-            ID Card Generator
-        </h1>
-
-        <p>
-            Upload the ID image and preview the
-            final 1013 × 638 card before downloading.
-        </p>
-
-    </div>
-
-
-    <div class="card">
-
-        <h3 class="card-title">
-            Upload ID Card
-        </h3>
-
-        <div class="drop-zone">
-
-            <input
-                id="idFile"
-                class="file-input"
-                type="file"
-                accept="image/*,application/pdf"
-            >
-
-            <span class="note">
-                JPG / PNG / PDF
-            </span>
-
-        </div>
-
-
-        <div class="dimension-info">
-
-            Standard output:
-
-            <strong>
-                1013 × 638 px
-            </strong>
-
-            &nbsp; • &nbsp;
-
-            300 DPI
-
-            &nbsp; • &nbsp;
-
-            Broad Black Border
-
-        </div>
-
-    </div>
-
-
-    <div
-        class="preview-layout"
-        style="margin-top:18px"
-    >
-
-        <div class="card">
-
-            <div class="preview-label">
-                ORIGINAL PREVIEW
-            </div>
-
-            <div class="preview-box">
-
-                <img
-                    id="idOriginal"
-                    alt=""
-                >
-
-                <span
-                    id="idOriginalText"
-                    class="note"
-                >
-                    Upload a file
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <div class="card">
-
-            <div class="preview-label">
-                FINAL ID CARD PREVIEW
-            </div>
-
-            <div class="preview-box">
-
-                <div
-                    id="idFinal"
-                    class="id-card-preview"
-                ></div>
-
-                <span class="note">
-                    1013 × 638 px
-                </span>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="card" style="margin-top:18px">
-
-        <h3>
-            Print Sheet Preview
-        </h3>
-
-        <div class="print-preview-wrapper">
-
-            <div
-                id="idA4Preview"
-                class="a4-sheet"
-            ></div>
-
-        </div>
-
-
-        <div class="download-row">
-
-            <button
-                class="btn btn-primary"
-                onclick="downloadID()"
-            >
-                Download ID Card
-            </button>
-
-            <button
-                class="btn btn-success"
-                onclick="downloadIDA4()"
-            >
-                Download in A4
-            </button>
-
-        </div>
-
-    </div>
-
-    `;
-
-
-    document
-        .getElementById("idFile")
-        .addEventListener(
-            "change",
-            previewID
-        );
-}
-
-
-function previewID(event){
-
-    const file =
-        event.target.files[0];
-
-    if(!file)return;
-
-    if(file.type.startsWith("image/")){
-
-        const url =
-            URL.createObjectURL(file);
-
-        document.getElementById(
-            "idOriginal"
-        ).src=url;
-
-        document.getElementById(
-            "idOriginalText"
-        ).innerText =
-            file.name;
-
-        const final =
-            document.getElementById(
-                "idFinal"
-            );
-
-        final.innerHTML = `
-
-            <img
-                src="${url}"
-                alt=""
-            >
-
-        `;
-
-        createIDA4Preview(url);
-    }
-}
-
-
-function createIDA4Preview(url){
-
-    const sheet =
-        document.getElementById(
-            "idA4Preview"
-        );
-
-    if(!sheet)return;
-
-    sheet.innerHTML="";
-
-    for(
-        let i=0;
-        i<10;
-        i++
-    ){
-
-        sheet.innerHTML += `
-
-            <div class="id-slot">
-
-                <img
-                    src="${url}"
-                    alt=""
-                >
-
-            </div>
-
-        `;
-    }
-}
-
-
-async function downloadID(){
-
-    const file =
-        document.getElementById(
-            "idFile"
-        ).files[0];
-
-    if(!file){
-
-        alert(
-            "Please upload an ID image."
-        );
-
-        return;
+    const mergedPdfBytes = await mergedPdf.save();
+    const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+    const fileName = `Merged_Combined_Document.pdf`;
+    
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    link.click();
+    saveToHistory('Universal PDF Merge', fileName, blob, 'application/pdf');
+  });
+
+  // ==========================================================
+  // TAB 7: CUSTOM IMAGE RESIZER
+  // ==========================================================
+  let originalResizerImg = null;
+  let resizerOriginalWidth = 0;
+  let resizerOriginalHeight = 0;
+  const resizerCanvas = document.getElementById('resizerPreviewCanvas');
+  const resizerCtx = resizerCanvas.getContext('2d');
+  const DPI_SCALE = 300;
+
+  document.getElementById('resizerImageInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    document.getElementById('resizerFileName').innerText = `✅ ${file.name}`;
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      originalResizerImg = new Image();
+      originalResizerImg.onload = function() {
+        resizerOriginalWidth = originalResizerImg.width;
+        resizerOriginalHeight = originalResizerImg.height;
+
+        document.getElementById('resizerUnitSelect').value = 'px';
+        document.getElementById('resizerWidthInput').value = resizerOriginalWidth;
+        document.getElementById('resizerHeightInput').value = resizerOriginalHeight;
+
+        document.getElementById('resizerControlsPanel').style.display = 'block';
+        updateResizerCanvas();
+      };
+      originalResizerImg.src = evt.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function getPixelDimensions() {
+    const unit = document.getElementById('resizerUnitSelect').value;
+    const wVal = parseFloat(document.getElementById('resizerWidthInput').value) || 1;
+    const hVal = parseFloat(document.getElementById('resizerHeightInput').value) || 1;
+
+    let targetW = wVal;
+    let targetH = hVal;
+
+    if (unit === 'mm') {
+      targetW = Math.round((wVal / 25.4) * DPI_SCALE);
+      targetH = Math.round((hVal / 25.4) * DPI_SCALE);
+    } else if (unit === 'cm') {
+      targetW = Math.round((wVal / 2.54) * DPI_SCALE);
+      targetH = Math.round((hVal / 2.54) * DPI_SCALE);
     }
 
-    await processImage(
-        file,
-        "ID-Card",
-        1013,
-        638,
-        "ID-Card-1013x638.jpg"
-    );
-}
+    return {
+      width: Math.max(1, targetW),
+      height: Math.max(1, targetH)
+    };
+  }
 
+  function updateResizerCanvas() {
+    if (!originalResizerImg) return;
+    const dims = getPixelDimensions();
 
-async function downloadIDA4(){
+    resizerCanvas.width = dims.width;
+    resizerCanvas.height = dims.height;
 
-    const image =
-        getPreviewImage(
-            "idFinal"
-        );
+    resizerCtx.clearRect(0, 0, dims.width, dims.height);
+    resizerCtx.drawImage(originalResizerImg, 0, 0, dims.width, dims.height);
 
-    if(!image){
+    const unit = document.getElementById('resizerUnitSelect').value;
+    const wInp = document.getElementById('resizerWidthInput').value;
+    const hInp = document.getElementById('resizerHeightInput').value;
 
-        alert(
-            "Please upload an ID image."
-        );
+    document.getElementById('resizerOutputInfo').innerText = `Target: ${wInp} x ${hInp} ${unit} (${dims.width} x ${dims.height} px)`;
+  }
 
-        return;
+  function onResizerDimensionChange(changed) {
+    if (!originalResizerImg) return;
+    const isLocked = document.getElementById('resizerAspectLock').checked;
+
+    if (isLocked && resizerOriginalWidth > 0 && resizerOriginalHeight > 0) {
+      const ratio = resizerOriginalHeight / resizerOriginalWidth;
+      if (changed === 'width') {
+        const w = parseFloat(document.getElementById('resizerWidthInput').value) || 0;
+        document.getElementById('resizerHeightInput').value = (w * ratio).toFixed(1);
+      } else {
+        const h = parseFloat(document.getElementById('resizerHeightInput').value) || 0;
+        document.getElementById('resizerWidthInput').value = (h / ratio).toFixed(1);
+      }
+    }
+    updateResizerCanvas();
+  }
+
+  function onResizerUnitChange() {
+    if (!originalResizerImg) return;
+    const unit = document.getElementById('resizerUnitSelect').value;
+
+    if (unit === 'px') {
+      document.getElementById('resizerWidthInput').value = resizerOriginalWidth;
+      document.getElementById('resizerHeightInput').value = resizerOriginalHeight;
+    } else if (unit === 'mm') {
+      document.getElementById('resizerWidthInput').value = ((resizerOriginalWidth / DPI_SCALE) * 25.4).toFixed(1);
+      document.getElementById('resizerHeightInput').value = ((resizerOriginalHeight / DPI_SCALE) * 25.4).toFixed(1);
+    } else if (unit === 'cm') {
+      document.getElementById('resizerWidthInput').value = ((resizerOriginalWidth / DPI_SCALE) * 2.54).toFixed(2);
+      document.getElementById('resizerHeightInput').value = ((resizerOriginalHeight / DPI_SCALE) * 2.54).toFixed(2);
+    }
+    updateResizerCanvas();
+  }
+
+  document.getElementById('downloadResizedJpgBtn').addEventListener('click', () => {
+    if (!originalResizerImg) return;
+    const dims = getPixelDimensions();
+    const dataUrl = resizerCanvas.toDataURL('image/jpeg', 0.95);
+    const fileName = `Resized_${dims.width}x${dims.height}px.jpg`;
+    
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = fileName;
+    link.click();
+    saveToHistory('Image Resizer (JPG)', fileName, dataUrl, 'image/jpeg');
+  });
+
+  document.getElementById('downloadResizedPngBtn').addEventListener('click', () => {
+    if (!originalResizerImg) return;
+    const dims = getPixelDimensions();
+    const dataUrl = resizerCanvas.toDataURL('image/png');
+    const fileName = `Resized_${dims.width}x${dims.height}px.png`;
+
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = fileName;
+    link.click();
+    saveToHistory('Image Resizer (PNG)', fileName, dataUrl, 'image/png');
+  });
+
+  // ==========================================================
+  // TAB 8: PDF TO HIGH-DPI JPG CONVERTER
+  // ==========================================================
+  let pdfToJpgDoc = null;
+  let activeDpiValue = 300;
+
+  function setPdfDpi(dpi) {
+    activeDpiValue = dpi;
+    document.getElementById('manualDpiInput').value = dpi;
+    document.getElementById('currentDpiDisplay').innerText = `${dpi} DPI`;
+  }
+
+  function updateManualDpi(val) {
+    let dpi = parseInt(val) || 300;
+    if (dpi < 50) dpi = 50;
+    if (dpi > 1200) dpi = 1200;
+    activeDpiValue = dpi;
+    document.getElementById('currentDpiDisplay').innerText = `${dpi} DPI`;
+  }
+
+  document.getElementById('pdfToJpgInput').addEventListener('change', async function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    document.getElementById('pdfToJpgStatus').innerText = `✅ ${file.name}`;
+    const arrayBuffer = await file.arrayBuffer();
+
+    pdfToJpgDoc = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+    document.getElementById('pdfToJpgControls').style.display = 'block';
+  });
+
+  document.getElementById('startPdfToJpgBtn').addEventListener('click', async () => {
+    if (!pdfToJpgDoc) return;
+
+    const progress = document.getElementById('pdfConversionProgress');
+    const scaleFactor = activeDpiValue / 72;
+    const totalPages = pdfToJpgDoc.numPages;
+
+    if (totalPages === 1) {
+      progress.innerText = `⏳ Rendering 1 page at ${activeDpiValue} DPI...`;
+      const page = await pdfToJpgDoc.getPage(1);
+      const viewport = page.getViewport({ scale: scaleFactor });
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+
+      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+      canvas.toBlob((blob) => {
+        const fileName = `Page_1_${activeDpiValue}DPI.jpg`;
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+        link.click();
+        progress.innerText = `✅ Download Complete (1 Page @ ${activeDpiValue} DPI)`;
+        saveToHistory('PDF to JPG (Single)', fileName, blob, 'image/jpeg');
+      }, 'image/jpeg', 0.95);
+
+    } else {
+      const zip = new JSZip();
+      for (let i = 1; i <= totalPages; i++) {
+        progress.innerText = `⏳ Processing Page ${i} / ${totalPages} at ${activeDpiValue} DPI...`;
+        const page = await pdfToJpgDoc.getPage(i);
+        const viewport = page.getViewport({ scale: scaleFactor });
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+        const imgData = canvas.toDataURL('image/jpeg', 0.95).split(',')[1];
+        zip.file(`Page_${i}_${activeDpiValue}DPI.jpg`, imgData, { base64: true });
+      }
+
+      progress.innerText = '📦 Creating ZIP archive...';
+      const zipContent = await zip.generateAsync({ type: 'blob' });
+      const fileName = `PDF_to_JPG_${activeDpiValue}DPI_Bundle.zip`;
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(zipContent);
+      link.download = fileName;
+      link.click();
+      progress.innerText = `✅ Complete! ${totalPages} Pages Downloaded in ZIP.`;
+      saveToHistory('PDF to JPG (Batch ZIP)', fileName, zipContent, 'application/zip');
+    }
+  });
+
+  // ==========================================================
+  // TAB 9: INTERACTIVE PDF COMPRESSOR
+  // ==========================================================
+  let compressOriginalFile = null;
+  let compressPdfDoc = null;
+  let origFileSizeInKB = 0;
+
+  document.getElementById('pdfCompressInput').addEventListener('change', async function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    compressOriginalFile = file;
+    origFileSizeInKB = (file.size / 1024).toFixed(1);
+    
+    document.getElementById('pdfCompressStatus').innerText = `✅ ${file.name}`;
+    document.getElementById('origFileSizeDisplay').innerText = formatBytes(file.size);
+
+    const arrayBuffer = await file.arrayBuffer();
+    compressPdfDoc = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+
+    document.getElementById('compressorControlsArea').style.display = 'block';
+    onCompressSliderChange(document.getElementById('compressQualitySlider').value);
+  });
+
+  function onCompressSliderChange(val) {
+    const quality = parseInt(val);
+    let levelText = 'Medium';
+    if (quality < 35) levelText = 'High Compression (Smallest Size)';
+    else if (quality > 75) levelText = 'Light Compression (High Quality)';
+    
+    document.getElementById('compressQualityLabel').innerText = `${quality}% (${levelText})`;
+
+    const ratio = Math.pow(quality / 100, 1.3);
+    const estBytes = compressOriginalFile.size * Math.max(0.15, ratio);
+    document.getElementById('estFileSizeDisplay').innerText = formatBytes(estBytes);
+  }
+
+  function formatBytes(bytes) {
+    if (bytes < 1024) return bytes + ' Bytes';
+    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    else return (bytes / 1048576).toFixed(2) + ' MB';
+  }
+
+  document.getElementById('startCompressDownloadBtn').addEventListener('click', async () => {
+    if (!compressPdfDoc) return;
+
+    const progress = document.getElementById('compressProgressMsg');
+    const qualityVal = parseInt(document.getElementById('compressQualitySlider').value);
+    const jpegQuality = qualityVal / 100;
+    
+    const renderScale = Math.max(1.0, (qualityVal / 100) * 2.2); 
+    const totalPages = compressPdfDoc.numPages;
+
+    progress.innerText = `⏳ Compressing ${totalPages} pages...`;
+
+    const { jsPDF } = window.jspdf;
+    let outPdf = null;
+
+    for (let i = 1; i <= totalPages; i++) {
+      progress.innerText = `⏳ Compressing Page ${i} of ${totalPages}...`;
+      const page = await compressPdfDoc.getPage(i);
+      const viewport = page.getViewport({ scale: renderScale });
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+
+      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+      const imgData = canvas.toDataURL('image/jpeg', jpegQuality);
+
+      const orientation = viewport.width > viewport.height ? 'landscape' : 'portrait';
+      if (i === 1) {
+        outPdf = new jsPDF({ orientation: orientation, unit: 'pt', format: [viewport.width, viewport.height] });
+      } else {
+        outPdf.addPage([viewport.width, viewport.height], orientation);
+      }
+
+      outPdf.addImage(imgData, 'JPEG', 0, 0, viewport.width, viewport.height, undefined, 'FAST');
     }
 
-    await downloadCanvasAsA4(
-        image,
-        "ID-Card-A4.pdf"
-    );
-}
-
-
-/* =========================================================
-   PASSPORT
-========================================================= */
-
-function passportTool(area,nameDate=false){
-
-    area.innerHTML = `
-
-    <div class="hero">
-
-        <span class="pill">
-            35 × 45 MM • 413 × 531 PX •
-            300 DPI
-        </span>
-
-        <h1>
-            ${
-                nameDate
-                ?
-                "Name & Date Passport Photo"
-                :
-                "Indian Passport Photo"
-            }
-        </h1>
-
-        <p>
-            Standard 35 × 45 mm photo.
-        </p>
-
-    </div>
-
-
-    <div class="card">
-
-        <div class="drop-zone">
-
-            <input
-                id="passportFile"
-                class="file-input"
-                type="file"
-                accept="image/*"
-            >
-
-            <span class="note">
-                JPG / PNG
-            </span>
-
-        </div>
-
-
-        <div class="dimension-panel">
-
-            <div class="field">
-
-                <label>
-                    Preset
-                </label>
-
-                <select
-                    id="passportPreset"
-                    onchange="passportPresetChanged()"
-                >
-
-                    <option value="india">
-                        India — 35×45 mm
-                    </option>
-
-                    <option value="2x2">
-                        2×2 inch — 51×51 mm
-                    </option>
-
-                    <option value="custom">
-                        Custom
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div class="field">
-
-                <label>
-                    Width PX
-                </label>
-
-                <input
-                    id="passportWidth"
-                    value="413"
-                    type="number"
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label>
-                    Height PX
-                </label>
-
-                <input
-                    id="passportHeight"
-                    value="531"
-                    type="number"
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label>
-                    DPI
-                </label>
-
-                <select id="passportDPI">
-
-                    <option>
-                        150
-                    </option>
-
-                    <option>
-                        200
-                    </option>
-
-                    <option selected>
-                        300
-                    </option>
-
-                    <option>
-                        600
-                    </option>
-
-                </select>
-
-            </div>
-
-        </div>
-
-
-        <div class="dimension-info">
-
-            Selected:
-
-            <strong id="passportDimensionText">
-                35 × 45 mm • 413 × 531 px
-            </strong>
-
-        </div>
-
-    </div>
-
-
-    <div
-        class="preview-layout"
-        style="margin-top:18px"
-    >
-
-        <div class="card">
-
-            <div class="preview-label">
-                ORIGINAL
-            </div>
-
-            <div class="preview-box">
-
-                <img
-                    id="passportOriginal"
-                    alt=""
-                >
-
-            </div>
-
-        </div>
-
-
-        <div class="card">
-
-            <div class="preview-label">
-                FINAL OUTPUT
-            </div>
-
-            <div class="preview-box">
-
-                <img
-                    id="passportFinal"
-                    alt=""
-                >
-
-                <span class="note">
-                    413 × 531 px @ 300 DPI
-                </span>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="card" style="margin-top:18px">
-
-        <h3>
-            A4 Print Preview
-        </h3>
-
-        <div class="print-preview-wrapper">
-
-            <div
-                id="passportA4Preview"
-                class="a4-sheet"
-            ></div>
-
-        </div>
-
-
-        <div class="download-row">
-
-            <button
-                class="btn btn-primary"
-                onclick="downloadPassport()"
-            >
-                Download Passport
-            </button>
-
-            <button
-                class="btn btn-success"
-                onclick="downloadPassportA4()"
-            >
-                Download in A4
-            </button>
-
-        </div>
-
-    </div>
-
-    `;
-
-
-    document
-        .getElementById(
-            "passportFile"
-        )
-        .addEventListener(
-            "change",
-            previewPassport
-        );
-}
-
-
-function passportPresetChanged(){
-
-    const preset =
-        document.getElementById(
-            "passportPreset"
-        ).value;
-
-    const width =
-        document.getElementById(
-            "passportWidth"
-        );
-
-    const height =
-        document.getElementById(
-            "passportHeight"
-        );
-
-    const text =
-        document.getElementById(
-            "passportDimensionText"
-        );
-
-
-    if(preset==="india"){
-
-        width.value=413;
-        height.value=531;
-
-        text.innerText =
-            "35 × 45 mm • 413 × 531 px";
-    }
-
-
-    if(preset==="2x2"){
-
-        width.value=600;
-        height.value=600;
-
-        text.innerText =
-            "51 × 51 mm • 600 × 600 px";
-    }
-
-
-    if(preset==="custom"){
-
-        text.innerText =
-            "Custom dimensions";
-    }
-}
-
-
-function previewPassport(event){
-
-    const file =
-        event.target.files[0];
-
-    if(!file)return;
-
-    const url =
-        URL.createObjectURL(file);
-
-    document.getElementById(
-        "passportOriginal"
-    ).src=url;
-
-    document.getElementById(
-        "passportFinal"
-    ).src=url;
-
-    createPassportA4(url);
-}
-
-
-function createPassportA4(url){
-
-    const sheet =
-        document.getElementById(
-            "passportA4Preview"
-        );
-
-    if(!sheet)return;
-
-    sheet.innerHTML="";
-
-    for(
-        let i=0;
-        i<24;
-        i++
-    ){
-
-        sheet.innerHTML += `
-
-            <img
-                class="a4-passport"
-                src="${url}"
-                alt=""
-            >
-
-        `;
-    }
-}
-
-
-async function downloadPassport(){
-
-    const file =
-        document.getElementById(
-            "passportFile"
-        ).files[0];
-
-    if(!file){
-
-        alert(
-            "Please select photo."
-        );
-
-        return;
-    }
-
-    await processImage(
-        file,
-        "Passport-Photo",
-        Number(
-            document.getElementById(
-                "passportWidth"
-            ).value
-        ),
-        Number(
-            document.getElementById(
-                "passportHeight"
-            ).value
-        ),
-        "Passport-Photo.jpg"
-    );
-}
-
-
-async function downloadPassportA4(){
-
-    const image =
-        getPreviewImage(
-            "passportFinal"
-        );
-
-    if(!image){
-
-        alert(
-            "Please select photo."
-        );
-
-        return;
-    }
-
-    await downloadCanvasAsA4(
-        image,
-        "Passport-Photos-A4.pdf"
-    );
-}
-
-
-/* =========================================================
-   4x6
-========================================================= */
-
-function fourSixTool(area){
-
-    area.innerHTML = `
-
-    <div class="hero">
-
-        <span class="pill">
-            4 × 6 INCH • 10.16 × 15.24 CM •
-            1200 × 1800 PX @ 300 DPI
-        </span>
-
-        <h1>
-            4×6 Photo Print
-        </h1>
-
-        <p>
-            Standard 4×6 inch photo with live
-            preview and A4 print-sheet generation.
-        </p>
-
-    </div>
-
-
-    <div class="card">
-
-        <div class="drop-zone">
-
-            <input
-                id="fourSixFile"
-                class="file-input"
-                type="file"
-                accept="image/*"
-            >
-
-            <span class="note">
-                JPG / PNG
-            </span>
-
-        </div>
-
-
-        <div class="dimension-panel">
-
-            <div class="field">
-
-                <label>
-                    Preset
-                </label>
-
-                <select>
-
-                    <option selected>
-                        4×6 inch
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div class="field">
-
-                <label>
-                    Width
-                </label>
-
-                <input
-                    value="1200"
-                    disabled
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label>
-                    Height
-                </label>
-
-                <input
-                    value="1800"
-                    disabled
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label>
-                    DPI
-                </label>
-
-                <input
-                    value="300"
-                    disabled
-                >
-
-            </div>
-
-        </div>
-
-
-        <div class="dimension-info">
-
-            Physical size:
-
-            <strong>
-                4 × 6 inch
-            </strong>
-
-            &nbsp; • &nbsp;
-
-            10.16 × 15.24 cm
-
-            &nbsp; • &nbsp;
-
-            1200 × 1800 px @ 300 DPI
-
-        </div>
-
-    </div>
-
-
-    <div
-        class="preview-layout"
-        style="margin-top:18px"
-    >
-
-        <div class="card">
-
-            <div class="preview-label">
-                ORIGINAL PREVIEW
-            </div>
-
-            <div class="preview-box">
-
-                <img
-                    id="fourSixOriginal"
-                    alt=""
-                >
-
-            </div>
-
-        </div>
-
-
-        <div class="card">
-
-            <div class="preview-label">
-                FINAL 4×6 PREVIEW
-            </div>
-
-            <div class="preview-box">
-
-                <img
-                    id="fourSixFinal"
-                    alt=""
-                    style="
-                        width:240px;
-                        aspect-ratio:2/3;
-                        object-fit:cover;
-                    "
-                >
-
-                <span class="note">
-                    1200 × 1800 px
-                </span>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="card" style="margin-top:18px">
-
-        <h3>
-            A4 Print Preview
-        </h3>
-
-        <p class="note">
-            Photos are automatically arranged on
-            an A4 sheet with print-safe spacing.
-        </p>
-
-
-        <div class="print-preview-wrapper">
-
-            <div
-                id="fourSixA4"
-                class="a4-sheet photo-4x6"
-            ></div>
-
-        </div>
-
-
-        <div class="download-row">
-
-            <button
-                class="btn btn-primary"
-                onclick="download46()"
-            >
-                Download 4×6 JPG
-            </button>
-
-            <button
-                class="btn btn-success"
-                onclick="download46A4()"
-            >
-                Download in A4
-            </button>
-
-        </div>
-
-    </div>
-
-    `;
-
-
-    document
-        .getElementById(
-            "fourSixFile"
-        )
-        .addEventListener(
-            "change",
-            preview46
-        );
-}
-
-
-function preview46(event){
-
-    const file =
-        event.target.files[0];
-
-    if(!file)return;
-
-    const url =
-        URL.createObjectURL(file);
-
-    document.getElementById(
-        "fourSixOriginal"
-    ).src=url;
-
-    document.getElementById(
-        "fourSixFinal"
-    ).src=url;
-
-    create46A4(url);
-}
-
-
-function create46A4(url){
-
-    const sheet =
-        document.getElementById(
-            "fourSixA4"
-        );
-
-    if(!sheet)return;
-
-    sheet.innerHTML="";
-
-    /*
-       A4 portrait:
-       210 × 297 mm
-
-       4×6:
-       101.6 × 152.4 mm
-
-       Two 4×6 photos fit side-by-side
-       with sensible margins.
-    */
-
-    for(
-        let i=0;
-        i<4;
-        i++
-    ){
-
-        sheet.innerHTML += `
-
-            <img
-                class="a4-photo"
-                src="${url}"
-                alt=""
-            >
-
-        `;
-    }
-}
-
-
-async function download46(){
-
-    const file =
-        document.getElementById(
-            "fourSixFile"
-        ).files[0];
-
-    if(!file){
-
-        alert(
-            "Please select a photo."
-        );
-
-        return;
-    }
-
-    await processImage(
-        file,
-        "4x6-Photo",
-        1200,
-        1800,
-        "4x6-1200x1800.jpg"
-    );
-}
-
-
-async function download46A4(){
-
-    const image =
-        getPreviewImage(
-            "fourSixFinal"
-        );
-
-    if(!image){
-
-        alert(
-            "Please select a photo."
-        );
-
-        return;
-    }
-
-    await downloadCanvasAsA4(
-        image,
-        "4x6-Photos-A4.pdf"
-    );
-}
-
-
-/* =========================================================
-   RESIZE
-========================================================= */
-
-function resizeTool(area){
-
-    area.innerHTML = `
-
-    <div class="hero">
-
-        <span class="pill">
-            GLOBAL DIMENSION PRESETS
-        </span>
-
-        <h1>
-            Image Resizer
-        </h1>
-
-        <p>
-            Choose a standard size or enter
-            custom dimensions.
-        </p>
-
-    </div>
-
-
-    <div class="card">
-
-        <div class="drop-zone">
-
-            <input
-                id="resizeFile"
-                class="file-input"
-                type="file"
-                accept="image/*"
-            >
-
-        </div>
-
-
-        <div class="dimension-panel">
-
-            <div class="field">
-
-                <label>
-                    Standard Size
-                </label>
-
-                <select
-                    id="resizePreset"
-                    onchange="resizePreset()"
-                >
-
-                    <option value="idCard">
-                        ID Card — 1013×638
-                    </option>
-
-                    <option value="passport">
-                        Passport — 413×531
-                    </option>
-
-                    <option value="photo4x6">
-                        4×6 — 1200×1800
-                    </option>
-
-                    <option value="a4">
-                        A4 — 2480×3508
-                    </option>
-
-                    <option value="a5">
-                        A5 — 1748×2480
-                    </option>
-
-                    <option value="a3">
-                        A3 — 3508×4961
-                    </option>
-
-                    <option value="square2x2">
-                        2×2 — 600×600
-                    </option>
-
-                    <option value="custom">
-                        Custom
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div class="field">
-
-                <label>
-                    Width
-                </label>
-
-                <input
-                    id="resizeWidth"
-                    value="1013"
-                    type="number"
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label>
-                    Height
-                </label>
-
-                <input
-                    id="resizeHeight"
-                    value="638"
-                    type="number"
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label>
-                    DPI
-                </label>
-
-                <input
-                    id="resizeDPI"
-                    value="300"
-                    type="number"
-                >
-
-            </div>
-
-        </div>
-
-
-        <div class="actions">
-
-            <button
-                class="btn btn-primary"
-                onclick="downloadResize()"
-            >
-                Resize & Download
-            </button>
-
-        </div>
-
-    </div>
-
-    `;
-}
-
-
-function resizePreset(){
-
-    const key =
-        document.getElementById(
-            "resizePreset"
-        ).value;
-
-    if(key==="custom")return;
-
-    const d =
-        DIMENSIONS[key];
-
-    document.getElementById(
-        "resizeWidth"
-    ).value=d.width;
-
-    document.getElementById(
-        "resizeHeight"
-    ).value=d.height;
-
-    document.getElementById(
-        "resizeDPI"
-    ).value=d.dpi || 300;
-}
-
-
-async function downloadResize(){
-
-    const file =
-        document.getElementById(
-            "resizeFile"
-        ).files[0];
-
-    if(!file){
-
-        alert(
-            "Please select an image."
-        );
-
-        return;
-    }
-
-    const width =
-        Number(
-            document.getElementById(
-                "resizeWidth"
-            ).value
-        );
-
-    const height =
-        Number(
-            document.getElementById(
-                "resizeHeight"
-            ).value
-        );
-
-    await processImage(
-        file,
-        "Image-Resize",
-        width,
-        height,
-        "resized-image.jpg"
-    );
-}
-
-
-/* =========================================================
-   IMAGE TO PDF
-========================================================= */
-
-function imagePDFTool(area){
-
-    area.innerHTML = `
-
-    <div class="hero">
-
-        <span class="pill">
-            JPG • PNG → PDF
-        </span>
-
-        <h1>
-            Image to PDF
-        </h1>
-
-    </div>
-
-
-    <div class="card">
-
-        <div class="drop-zone">
-
-            <input
-                id="pdfImages"
-                class="file-input"
-                type="file"
-                accept="image/jpeg,image/png"
-                multiple
-            >
-
-            <span class="note">
-                Multiple images supported
-            </span>
-
-        </div>
-
-
-        <div class="dimension-info">
-
-            Default page:
-
-            <strong>
-                A4 • 210 × 297 mm •
-                2480 × 3508 px @ 300 DPI
-            </strong>
-
-        </div>
-
-
-        <div class="actions">
-
-            <button
-                class="btn btn-primary"
-                onclick="createPDF()"
-            >
-                Create PDF
-            </button>
-
-        </div>
-
-    </div>
-
-    `;
-}
-
-
-async function createPDF(){
-
-    const files =
-        [
-            ...document.getElementById(
-                "pdfImages"
-            ).files
-        ];
-
-    if(!files.length){
-
-        alert(
-            "Select images."
-        );
-
-        return;
-    }
-
-    const form =
-        new FormData();
-
-    files.forEach(
-        file =>
-            form.append(
-                "files",
-                file
-            )
-    );
-
-    try{
-
-        const response =
-            await fetch(
-                "/api/process/images-to-pdf",
-                {
-                    method:"POST",
-                    body:form
-                }
-            );
-
-        if(!response.ok){
-
-            const data =
-                await response
-                    .json();
-
-            throw new Error(
-                data.error
-            );
-        }
-
-        const blob =
-            await response.blob();
-
-        downloadBlob(
-            blob,
-            "images-to-pdf.pdf"
-        );
-
-    }catch(error){
-
-        alert(error.message);
-    }
-}
-
-
-/* =========================================================
-   PDF TOOLS
-========================================================= */
-
-function pdfTool(area,title){
-
-    area.innerHTML = `
-
-    <div class="hero">
-
-        <span class="pill">
-            PDF PROCESSING
-        </span>
-
-        <h1>
-            ${title}
-        </h1>
-
-    </div>
-
-
-    <div class="card">
-
-        <div class="drop-zone">
-
-            <input
-                id="pdfFile"
-                class="file-input"
-                type="file"
-                accept="application/pdf"
-            >
-
-        </div>
-
-
-        <div class="dimension-panel">
-
-            <div class="field">
-
-                <label>
-                    DPI
-                </label>
-
-                <select id="pdfDPI">
-
-                    <option>
-                        72
-                    </option>
-
-                    <option>
-                        96
-                    </option>
-
-                    <option>
-                        150
-                    </option>
-
-                    <option>
-                        200
-                    </option>
-
-                    <option selected>
-                        300
-                    </option>
-
-                    <option>
-                        600
-                    </option>
-
-                </select>
-
-            </div>
-
-        </div>
-
-
-        <div class="actions">
-
-            <button
-                class="btn btn-primary"
-                onclick="analyzePDF('${title}')"
-            >
-                Analyze PDF
-            </button>
-
-        </div>
-
-
-        <div
-            id="pdfResult"
-            style="margin-top:18px"
-        ></div>
-
-    </div>
-
-    `;
-}
-
-
-async function analyzePDF(tool){
-
-    const file =
-        document.getElementById(
-            "pdfFile"
-        ).files[0];
-
-    if(!file){
-
-        alert(
-            "Please choose a PDF."
-        );
-
-        return;
-    }
-
-    const form =
-        new FormData();
-
-    form.append(
-        "file",
-        file
-    );
-
-    form.append(
-        "tool",
-        tool
-    );
-
-    form.append(
-        "dpi",
-        document.getElementById(
-            "pdfDPI"
-        ).value
-    );
-
-    try{
-
-        const response =
-            await fetch(
-                "/api/process/pdf-info",
-                {
-                    method:"POST",
-                    body:form
-                }
-            );
-
-        const data =
-            await response.json();
-
-        if(!response.ok){
-
-            throw new Error(
-                data.error
-            );
-        }
-
-        document.getElementById(
-            "pdfResult"
-        ).innerHTML = `
-
-            <div class="dimension-info">
-
-                Pages:
-
-                <strong>
-                    ${data.pages}
-                </strong>
-
-            </div>
-
-            ${
-                data.dimensions
-                    .map(
-                        p => `
-
-                        <div
-                            class="history-row"
-                        >
-
-                            <span>
-                                Page ${p.page}
-                            </span>
-
-                            <span>
-                                ${p.width.toFixed(1)}
-                                ×
-                                ${p.height.toFixed(1)}
-                                pt
-                            </span>
-
-                        </div>
-
-                        `
-                    )
-                    .join("")
-            }
-
-        `;
-
-    }catch(error){
-
-        alert(error.message);
-    }
-}
-
-
-/* =========================================================
-   HISTORY
-========================================================= */
-
-async function historyTool(area){
-
-    try{
-
-        const history =
-            await api(
-                "/api/history"
-            );
-
-        area.innerHTML = `
-
-        <div class="hero">
-
-            <span class="pill">
-                SERVER SIDE • 30 DAYS
-            </span>
-
-            <h1>
-                30-Day History
-            </h1>
-
-            <p>
-                History is stored on the server,
-                not browser storage.
-            </p>
-
-        </div>
-
-
-        <div class="card">
-
-            ${
-                history.length
-                ?
-                history.map(
-                    item => `
-
-                    <div class="history-row">
-
-                        <div>
-
-                            <b>
-                                ${escapeHTML(
-                                    item.tool
-                                )}
-                            </b>
-
-                            <br>
-
-                            <span class="note">
-                                ${escapeHTML(
-                                    item.file_name
-                                )}
-                            </span>
-
-                        </div>
-
-
-                        <div>
-
-                            ${new Date(
-                                item.created_at
-                            ).toLocaleString()}
-
-                            <br>
-
-                            <span class="note">
-                                ${escapeHTML(
-                                    item.status
-                                )}
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                    `
-                ).join("")
-                :
-                `
-                    <div class="note">
-                        No history available.
-                    </div>
-                `
-            }
-
-        </div>
-
-        `;
-
-    }catch(error){
-
-        area.innerHTML = `
-
-        <div class="card">
-
-            Unable to load history.
-
-        </div>
-
-        `;
-    }
-}
-
-
-/* =========================================================
-   IMAGE PROCESS
-========================================================= */
-
-async function processImage(
-    file,
-    tool,
-    width,
-    height,
-    filename
-){
-
-    const form =
-        new FormData();
-
-    form.append(
-        "file",
-        file
-    );
-
-    form.append(
-        "tool",
-        tool
-    );
-
-    form.append(
-        "width",
-        width
-    );
-
-    form.append(
-        "height",
-        height
-    );
-
-    form.append(
-        "quality",
-        "92"
-    );
-
-    try{
-
-        const response =
-            await fetch(
-                "/api/process/image",
-                {
-                    method:"POST",
-                    body:form
-                }
-            );
-
-        if(!response.ok){
-
-            const data =
-                await response.json();
-
-            throw new Error(
-                data.error ||
-                "Processing failed"
-            );
-        }
-
-        const blob =
-            await response.blob();
-
-        downloadBlob(
-            blob,
-            filename
-        );
-
-    }catch(error){
-
-        alert(error.message);
-    }
-}
-
-
-/* =========================================================
-   GET PREVIEW IMAGE
-========================================================= */
-
-function getPreviewImage(id){
-
-    const element =
-        document.getElementById(id);
-
-    if(!element)return null;
-
-    if(element.tagName==="IMG"){
-
-        return element.src || null;
-    }
-
-    const img =
-        element.querySelector(
-            "img"
-        );
-
-    return img
-        ? img.src
-        : null;
-}
-
-
-/* =========================================================
-   CLIENT SIDE A4 PDF
-========================================================= */
-
-async function downloadCanvasAsA4(
-    imageSrc,
-    filename
-){
-
-    /*
-       This generates a printable A4 canvas
-       in the browser.
-
-       For a true PDF file, backend should use
-       a PDF library such as PDFKit/Puppeteer.
-    */
-
-    const img =
-        new Image();
-
-    img.onload =
-        () => {
-
-            const canvas =
-                document.createElement(
-                    "canvas"
-                );
-
-            /*
-               A4 at 150 DPI for browser
-               generation to keep memory reasonable.
-            */
-
-            canvas.width=1240;
-            canvas.height=1754;
-
-            const ctx =
-                canvas.getContext(
-                    "2d"
-                );
-
-            ctx.fillStyle="white";
-
-            ctx.fillRect(
-                0,
-                0,
-                canvas.width,
-                canvas.height
-            );
-
-
-            /*
-               Determine layout based on
-               current tool.
-            */
-
-            const area =
-                document.getElementById(
-                    "customerToolArea"
-                );
-
-            const fourSix =
-                !!area.querySelector(
-                    "#fourSixA4"
-                );
-
-            const passport =
-                !!area.querySelector(
-                    "#passportA4Preview"
-                );
-
-
-            if(fourSix){
-
-                drawRepeated(
-                    ctx,
-                    img,
-                    2,
-                    3,
-                    110,
-                    110,
-                    560,
-                    840
-                );
-
-            }else if(passport){
-
-                drawRepeated(
-                    ctx,
-                    img,
-                    4,
-                    5,
-                    130,
-                    120,
-                    245,
-                    315
-                );
-
-            }else{
-
-                drawRepeated(
-                    ctx,
-                    img,
-                    2,
-                    5,
-                    80,
-                    100,
-                    1080,
-                    400
-                );
-            }
-
-
-            /*
-               Download PNG representation.
-
-               Production backend can convert
-               this exact layout to PDF.
-            */
-
-            canvas.toBlob(
-                blob => {
-
-                    downloadBlob(
-                        blob,
-                        filename
-                            .replace(
-                                ".pdf",
-                                ".png"
-                            )
-                    );
-
-                },
-                "image/png"
-            );
-
-        };
-
-    img.src=imageSrc;
-}
-
-
-function drawRepeated(
-    ctx,
-    img,
-    cols,
-    rows,
-    startX,
-    startY,
-    cellW,
-    cellH
-){
-
-    let count=0;
-
-    for(
-        let row=0;
-        row<rows;
-        row++
-    ){
-
-        for(
-            let col=0;
-            col<cols;
-            col++
-        ){
-
-            const x =
-                startX +
-                col *
-                (cellW+20);
-
-            const y =
-                startY +
-                row *
-                (cellH+20);
-
-            if(
-                x+cellW >
-                ctx.canvas.width ||
-                y+cellH >
-                ctx.canvas.height
-            ){
-                continue;
-            }
-
-            ctx.drawImage(
-                img,
-                x,
-                y,
-                cellW,
-                cellH
-            );
-
-            count++;
-        }
-    }
-}
-
-
-/* =========================================================
-   DOWNLOAD
-========================================================= */
-
-function downloadBlob(
-    blob,
-    filename
-){
-
-    const url =
-        URL.createObjectURL(
-            blob
-        );
-
-    const a =
-        document.createElement(
-            "a"
-        );
-
-    a.href=url;
-
-    a.download=filename;
-
-    document.body.appendChild(a);
-
-    a.click();
-
-    a.remove();
-
-    setTimeout(
-        () =>
-            URL.revokeObjectURL(
-                url
-            ),
-        1000
-    );
-}
-
-
-/* =========================================================
-   ADMIN DASHBOARD
-========================================================= */
-
-async function showAdmin(){
-
-    document.getElementById(
-        "app"
-    ).innerHTML = `
-
-    <div class="admin-layout">
-
-        <aside class="admin-sidebar">
-
-            <h2>
-                ID Card Printing
-            </h2>
-
-            <button
-                class="btn btn-primary"
-                onclick="adminPage('dashboard')"
-            >
-                Dashboard
-            </button>
-
-            <button
-                class="btn"
-                onclick="adminPage('customers')"
-            >
-                Customers
-            </button>
-
-            <button
-                class="btn"
-                onclick="adminPage('payments')"
-            >
-                Payments
-            </button>
-
-            <button
-                class="btn"
-                onclick="logout()"
-            >
-                Logout
-            </button>
-
-        </aside>
-
-
-        <main class="admin-main">
-
-            <div id="adminContent"></div>
-
-        </main>
-
-    </div>
-
-    `;
-
-    adminPage("dashboard");
-}
-
-
-/* =========================================================
-   ADMIN PAGES
-========================================================= */
-
-async function adminPage(page){
-
-    const area =
-        document.getElementById(
-            "adminContent"
-        );
-
-
-    if(page==="dashboard"){
-
-        const customers =
-            await api(
-                "/api/admin/customers"
-            );
-
-        const active =
-            customers.filter(
-                c => c.active
-            ).length;
-
-        area.innerHTML = `
-
-        <h1>
-            Admin Dashboard
-        </h1>
-
-        <p class="note">
-            Customer account and payment management
-        </p>
-
-
-        <div class="stats">
-
-            <div class="stat">
-
-                <small>
-                    Total Customers
-                </small>
-
-                <strong>
-                    ${customers.length}
-                </strong>
-
-            </div>
-
-
-            <div class="stat">
-
-                <small>
-                    Active Customers
-                </small>
-
-                <strong>
-                    ${active}
-                </strong>
-
-            </div>
-
-
-            <div class="stat">
-
-                <small>
-                    Pending Payments
-                </small>
-
-                <strong>
-                    ₹${customers.reduce(
-                        (s,c)=>
-                            s+
-                            Number(
-                                c.pending||0
-                            ),
-                        0
-                    ).toLocaleString("en-IN")}
-                </strong>
-
-            </div>
-
-
-            <div class="stat">
-
-                <small>
-                    History
-                </small>
-
-                <strong>
-                    30 Days
-                </strong>
-
-            </div>
-
-        </div>
-
-        `;
-
-        return;
-    }
-
-
-    if(page==="customers"){
-
-        const customers =
-            await api(
-                "/api/admin/customers"
-            );
-
-        area.innerHTML = `
-
-        <div style="
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            gap:15px;
-            flex-wrap:wrap;
-        ">
-
-            <div>
-
-                <h1>
-                    Customers
-                </h1>
-
-                <p class="note">
-                    Only Admin can create customer accounts.
-                </p>
-
-            </div>
-
-
-            <button
-                class="btn btn-primary"
-                onclick="createCustomer()"
-            >
-                + Create Customer
-            </button>
-
-        </div>
-
-
-        <div
-            class="card"
-            style="margin-top:20px"
-        >
-
-            <div class="table-wrapper">
-
-                <table class="table">
-
-                    <thead>
-
-                        <tr>
-
-                            <th>
-                                Name
-                            </th>
-
-                            <th>
-                                Username
-                            </th>
-
-                            <th>
-                                Mobile
-                            </th>
-
-                            <th>
-                                Status
-                            </th>
-
-                            <th>
-                                Validity
-                            </th>
-
-                            <th>
-                                Action
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody>
-
-                    ${
-                        customers.map(
-                            c => `
-
-                            <tr>
-
-                                <td>
-                                    ${escapeHTML(
-                                        c.name
-                                    )}
-                                </td>
-
-                                <td>
-                                    ${escapeHTML(
-                                        c.username
-                                    )}
-                                </td>
-
-                                <td>
-                                    ${escapeHTML(
-                                        c.mobile
-                                    )}
-                                </td>
-
-                                <td>
-
-                                    <span
-                                        class="badge
-                                        ${
-                                            c.active
-                                            ?
-                                            "badge-green"
-                                            :
-                                            "badge-yellow"
-                                        }"
-                                    >
-
-                                        ${
-                                            c.active
-                                            ?
-                                            "Active"
-                                            :
-                                            "Inactive"
-                                        }
-
-                                    </span>
-
-                                </td>
-
-                                <td>
-                                    ${c.daysLeft}
-                                    Days
-                                </td>
-
-                                <td>
-
-                                    <button
-                                        class="btn btn-small"
-                                        onclick="
-                                            toggleCustomer(
-                                                ${c.id},
-                                                ${!c.active}
-                                            )
-                                        "
-                                    >
-
-                                        ${
-                                            c.active
-                                            ?
-                                            "Disable"
-                                            :
-                                            "Enable"
-                                        }
-
-                                    </button>
-
-                                </td>
-
-                            </tr>
-
-                            `
-                        ).join("")
-                    }
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
-        `;
-
-        return;
-    }
-
-
-    if(page==="payments"){
-
-        const payments =
-            await api(
-                "/api/admin/payments"
-            );
-
-        area.innerHTML = `
-
-        <div style="
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            gap:15px;
-            flex-wrap:wrap;
-        ">
-
-            <div>
-
-                <h1>
-                    Payments
-                </h1>
-
-                <p class="note">
-                    Customer payment records
-                </p>
-
-            </div>
-
-
-            <button
-                class="btn btn-primary"
-                onclick="recordPayment()"
-            >
-                + Record Payment
-            </button>
-
-        </div>
-
-
-        <div
-            class="card"
-            style="margin-top:20px"
-        >
-
-            <div class="table-wrapper">
-
-                <table class="table">
-
-                    <thead>
-
-                        <tr>
-
-                            <th>
-                                Customer
-                            </th>
-
-                            <th>
-                                Amount
-                            </th>
-
-                            <th>
-                                Status
-                            </th>
-
-                            <th>
-                                Date
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody>
-
-                    ${
-                        payments.map(
-                            p => `
-
-                            <tr>
-
-                                <td>
-
-                                    ${escapeHTML(
-                                        p.name
-                                    )}
-
-                                    <br>
-
-                                    <small>
-                                        ${escapeHTML(
-                                            p.username
-                                        )}
-                                    </small>
-
-                                </td>
-
-
-                                <td>
-                                    ₹${Number(
-                                        p.amount
-                                    ).toLocaleString(
-                                        "en-IN"
-                                    )}
-                                </td>
-
-
-                                <td>
-                                    ${escapeHTML(
-                                        p.status
-                                    )}
-                                </td>
-
-
-                                <td>
-
-                                    ${
-                                        p.created_at
-                                        ?
-                                        new Date(
-                                            p.created_at
-                                        ).toLocaleString()
-                                        :
-                                        "-"
-                                    }
-
-                                </td>
-
-                            </tr>
-
-                            `
-                        ).join("")
-                    }
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
-        `;
-    }
-}
-
-
-/* =========================================================
-   CREATE CUSTOMER
-========================================================= */
-
-async function createCustomer(){
-
-    const name =
-        prompt(
-            "Customer Name:"
-        );
-
-    if(!name)return;
-
-    const username =
-        prompt(
-            "Customer Username:"
-        );
-
-    if(!username)return;
-
-    const password =
-        prompt(
-            "Customer Password:"
-        );
-
-    if(!password)return;
-
-    const mobile =
-        prompt(
-            "Mobile Number:"
-        ) || "";
-
-    const email =
-        prompt(
-            "Email:"
-        ) || "";
-
-    const days =
-        prompt(
-            "Validity Days:",
-            "365"
-        ) || "365";
-
-    try{
-
-        const result =
-            await api(
-                "/api/admin/customers",
-                {
-                    method:"POST",
-
-                    body:JSON.stringify({
-
-                        name,
-
-                        username,
-
-                        password,
-
-                        mobile,
-
-                        email,
-
-                        validityDays:
-                            Number(days)
-
-                    })
-                }
-            );
-
-        alert(
-            "Customer created successfully.\n\n"+
-            "Username: "+
-            result.username+
-            "\nExpiry: "+
-            new Date(
-                result.expiresAt
-            ).toLocaleDateString()
-        );
-
-        adminPage(
-            "customers"
-        );
-
-    }catch(error){
-
-        alert(
-            error.message
-        );
-    }
-}
-
-
-/* =========================================================
-   CUSTOMER STATUS
-========================================================= */
-
-async function toggleCustomer(
-    id,
-    active
-){
-
-    try{
-
-        await api(
-            "/api/admin/customers/"+id,
-            {
-                method:"PATCH",
-
-                body:JSON.stringify({
-                    active
-                })
-            }
-        );
-
-        adminPage(
-            "customers"
-        );
-
-    }catch(error){
-
-        alert(
-            error.message
-        );
-    }
-}
-
-
-/* =========================================================
-   PAYMENT
-========================================================= */
-
-async function recordPayment(){
-
-    const customers =
-        await api(
-            "/api/admin/customers"
-        );
-
-    const list =
-        customers
-            .map(
-                c =>
-                `${c.id}: ${c.name} (${c.username})`
-            )
-            .join("\n");
-
-    const id =
-        prompt(
-            "Customer ID:\n\n"+
-            list
-        );
-
-    if(!id)return;
-
-    const amount =
-        prompt(
-            "Payment Amount:"
-        );
-
-    if(!amount)return;
-
-    try{
-
-        await api(
-            "/api/admin/payments",
-            {
-                method:"POST",
-
-                body:JSON.stringify({
-
-                    customerId:
-                        Number(id),
-
-                    amount:
-                        Number(amount),
-
-                    status:
-                        "Paid"
-
-                })
-            }
-        );
-
-        alert(
-            "Payment recorded."
-        );
-
-        adminPage(
-            "payments"
-        );
-
-    }catch(error){
-
-        alert(
-            error.message
-        );
-    }
-}
-
-
-/* =========================================================
-   START
-========================================================= */
-
-start();
-
+    const fileName = `Compressed_${qualityVal}pct_${compressOriginalFile.name}`;
+    const blob = outPdf.output('blob');
+    progress.innerText = `✅ Compression Complete! Downloading...`;
+    outPdf.save(fileName);
+    saveToHistory('PDF Compressor', fileName, blob, 'application/pdf');
+  });
+
+  function initAllCanvases() {
+    clearCurrentCardInputs();
+    resetCardA4Sheet();
+
+    passportCtx.fillStyle = '#ffffff';
+    passportCtx.fillRect(0, 0, 413, 531);
+    passportCtx.fillStyle = '#94a3b8';
+    passportCtx.font = 'bold 20px Poppins';
+    passportCtx.textAlign = 'center';
+    passportCtx.fillText('Passport Preview', 413 / 2, 531 / 2);
+
+    namePassportCtx.fillStyle = '#ffffff';
+    namePassportCtx.fillRect(0, 0, 413, 531);
+    namePassportCtx.fillStyle = '#94a3b8';
+    namePassportCtx.font = 'bold 20px Poppins';
+    namePassportCtx.textAlign = 'center';
+    namePassportCtx.fillText('Name & Date Preview', 413 / 2, 531 / 2);
+
+    ctx4x6.fillStyle = '#ffffff';
+    ctx4x6.fillRect(0, 0, 1200, 1800);
+    ctx4x6.fillStyle = '#94a3b8';
+    ctx4x6.font = 'bold 36px Poppins';
+    ctx4x6.textAlign = 'center';
+    ctx4x6.fillText('4×6 Photo Preview', 1200 / 2, 1800 / 2);
+
+    a4_4x6_SheetCtx.fillStyle = '#ffffff';
+    a4_4x6_SheetCtx.fillRect(0, 0, 2480, 3508);
+  }
 </script>
 
 </body>
