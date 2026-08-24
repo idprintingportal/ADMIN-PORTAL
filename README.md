@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
@@ -78,7 +79,11 @@
       font-weight: 600;
       border-radius: 20px;
       cursor: pointer;
+      text-decoration: none;
       transition: 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
     .top-reg-btn:hover { background: rgba(56, 189, 248, 0.3); transform: translateY(-1px); }
 
@@ -602,28 +607,6 @@
       max-height: 70vh;
       display: block;
     }
-
-    /* Modal for Registration / Contact popup */
-    .contact-modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      z-index: 99999;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .contact-modal-box {
-      background: var(--card-bg);
-      border: 1px solid var(--accent-blue);
-      padding: 30px;
-      border-radius: 20px;
-      max-width: 380px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-    }
   </style>
 </head>
 <body>
@@ -634,18 +617,8 @@
 
 <!-- Top Registration & Support Buttons -->
 <div class="top-reg-nav" id="topNavRegistrationBox">
-  <button class="top-reg-btn" onclick="openContactModal('email')">📧 1 - Email Registration</button>
-  <button class="top-reg-btn" onclick="openContactModal('whatsapp')">💬 2 - Whatsapp Support</button>
-</div>
-
-<!-- Contact Popup Modal -->
-<div id="contactModalPopup" class="contact-modal">
-  <div class="contact-modal-box">
-    <h3 style="color: var(--accent-blue); margin-bottom: 10px;" id="modalTitle">Contact Details</h3>
-    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6;" id="modalDesc"></p>
-    <a id="modalActionBtn" href="#" target="_blank" class="action-btn btn-download" style="display:inline-block; text-decoration:none; margin-bottom: 10px; width:100%;">Open Now</a>
-    <button onclick="closeContactModal()" class="action-btn btn-reset" style="width:100%;">बंद करें</button>
-  </div>
+  <a href="mailto:idprintingportal@gmail.com" class="top-reg-btn">📧 1 - Email Registration</a>
+  <a href="https://wa.me/917887575671?text=Hello%20Sir,%20I%20want%20to%20register%20for%20ID%20Printing%20Portal." target="_blank" class="top-reg-btn">💬 2 - Whatsapp Support</a>
 </div>
 
 <!-- 1. Login Screen -->
@@ -1227,31 +1200,6 @@
   const ADMIN_EMAIL = "oneplus777000@gmail.com";
   const DEFAULT_ADMIN_PASS = "Pass@123";
   const SIXTY_DAYS_MS = 60 * 24 * 60 * 60 * 1000;
-
-  // Contact Modal Handlers
-  function openContactModal(type) {
-    const modal = document.getElementById('contactModalPopup');
-    const title = document.getElementById('modalTitle');
-    const desc = document.getElementById('modalDesc');
-    const btn = document.getElementById('modalActionBtn');
-
-    if (type === 'email') {
-      title.innerText = "📧 Email Registration & Support";
-      desc.innerHTML = "हमारे पोर्टल से जुड़ने या सहायता के लिए इस ईमेल पर संपर्क करें:<br><br><strong style='color:#38bdf8;'>idprintingportal@gmail.com</strong>";
-      btn.innerText = "Send Email Now";
-      btn.href = "mailto:idprintingportal@gmail.com";
-    } else {
-      title.innerText = "💬 WhatsApp Support & Registration";
-      desc.innerHTML = "व्हाट्सएप पर तुरंत सहायता या रजिस्ट्रेशन के लिए संपर्क करें:<br><br><strong style='color:#34d399;'>+91 7887575671</strong>";
-      btn.innerText = "Open WhatsApp Chat";
-      btn.href = "https://wa.me/917887575671";
-    }
-    modal.style.display = 'flex';
-  }
-
-  function closeContactModal() {
-    document.getElementById('contactModalPopup').style.display = 'none';
-  }
 
   // ==========================================================
   // 60-DAYS SECURE ACTIVATION ENGINE
