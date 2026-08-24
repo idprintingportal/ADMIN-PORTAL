@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
@@ -1310,7 +1311,7 @@
   }
 
   // ==========================================================
-  // DISTRIBUTOR / ACCOUNT MANAGEMENT (ADMIN PANEL WITH TIMELINE & MSG)
+  // DISTRIBUTOR / ACCOUNT MANAGEMENT (ADMIN PANEL WITH TIMELINE)
   // ==========================================================
   function getDistributorsList() {
     let list = localStorage.getItem('portal_distributors_list');
@@ -1680,7 +1681,6 @@
       let dists = getDistributorsList();
       let foundUser = dists.find(d => d.email.toLowerCase() === inputEmail && d.pass === inputPass);
       if (foundUser) {
-        // Check if distributor account is expired (30 days from assignment)
         const distExpTime = foundUser.expiryTime || (foundUser.assignedTimestamp + THIRTY_MS);
         if (Date.now() <= distExpTime) {
           isAuthorized = true;
@@ -1710,16 +1710,18 @@
           adminTabBtn.style.display = 'none';
           switchTabDirect('tab-cards');
           
-          // Show Admin Message in Distributor Portal if any
+          // Display Admin Broadcast Message inside Distributor Portal
           if (loggedInDistributor && loggedInDistributor.adminMessage) {
-            document.getElementById('distributorNoticeTextinnerText') = loggedInDistributor.adminMessage;
             document.getElementById('distributorNoticeText').innerText = loggedInDistributor.adminMessage;
             document.getElementById('distributorNoticeBanner').style.display = 'block';
           } else {
             document.getElementById('distributorNoticeBanner').style.display = 'none';
           }
           
-          document.getElementById('validityCounterBadge').innerHTML = `👤 Distributor Portal (${loggedInDistributor.name})`;
+          const now = Date.now();
+          const distRemMs = (loggedInDistributor.expiryTime || (loggedInDistributor.assignedTimestamp + THIRTY_MS)) - now;
+          const distDays = Math.ceil(distRemMs / (24 * 60 * 60 * 1000));
+          document.getElementById('validityCounterBadge').innerHTML = `👤 ${loggedInDistributor.name} | ⏳ Validity: <strong style="color:#fbbf24;">${distDays} Days Left</strong>`;
         }
 
         initAllCanvases();
