@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
@@ -617,7 +616,7 @@
 
 <!-- Top Contact for Registration Button -->
 <div class="top-reg-nav" id="topNavRegistrationBox">
-  <a href="https://wa.me/917887575671?text=Hello%20Sir,%20I%20want%20to%20register%20for%20ID%20Printing%20Portal.%20Please%20assign%20me%20ID." target="_blank" class="top-reg-btn">
+  <a href="https://wa.me/917887575671?text=Hello%20Sir,%20I%20want%20to%20register%20for%20ID%20Printing%20Portal." target="_blank" class="top-reg-btn">
     💬 Contact for Registration (WhatsApp No: 7887575671 OR Call - 9284961107)
   </a>
 </div>
