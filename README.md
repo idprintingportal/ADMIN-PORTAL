@@ -1105,11 +1105,11 @@
       </div>
     </div>
 
-    <!-- TAB 10: 30-DAY PRINT HISTORY (PERSISTENT UNLESS ADMIN CLEARS) -->
+    <!-- TAB 10: HISTORY (WITH DELETE OPTION) -->
     <div id="tab-history" class="tab-content">
-      <div class="badge">Persistent Storage • Retained Until Admin Clears</div>
+      <div class="badge">Persistent Storage • Retained Until Cleared</div>
       <h1>Print & Download History</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">आपके द्वारा डाउनलोड की गई सभी फाइल्स का रिकॉर्ड सुरक्षित है। यह तब तक नहीं मिटेगा जब तक एडमिन इसे क्लियर नहीं करता।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">आपके द्वारा डाउनलोड की गई सभी फाइल्स का रिकॉर्ड सुरक्षित है। आप यहाँ से किसी भी रिकॉर्ड को डिलीट भी कर सकते हैं।</p>
 
       <div style="text-align: right; margin-bottom: 10px;">
         <button onclick="clearAllHistoryDB()" class="action-btn btn-reset" style="padding: 6px 14px; font-size: 11px;">🗑️ Clear Entire History Now</button>
@@ -1168,7 +1168,7 @@
               <th>Business / Name</th>
               <th>Login Email</th>
               <th>Password</th>
-              <th>Expiry / Validity</th>
+              <th>Expiry / Validity Timeline</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -1207,21 +1207,27 @@
   const ADMIN_EMAIL = "oneplus777000@gmail.com";
   const INITIAL_PASS = "Pass@123";
   const EXPIRED_PASS = "Harshal@6195";
-  const ONE_YEAR_DAYS = 365;
-  const ONE_YEAR_MS = ONE_YEAR_DAYS * 24 * 60 * 60 * 1000;
+  const THIRTY_DAYS = 30;
+  const THIRTY_MS = THIRTY_DAYS * 24 * 60 * 60 * 1000;
 
   // ==========================================================
-  // 1-YEAR VALIDITY & SILENT PASSWORD ENGINE
+  // 30-DAYS VALIDITY & SILENT PASSWORD ENGINE
   // ==========================================================
+  function getActivationExpiryTime() {
+    let firstLoginTime = localStorage.getItem('system_first_login_date');
+    if (!firstLoginTime) {
+      firstLoginTime = Date.now().toString();
+      localStorage.setItem('system_first_login_date', firstLoginTime);
+    }
+    return parseInt(firstLoginTime, 10) + THIRTY_MS;
+  }
+
   function checkAndHandleExpiry() {
-    const firstLoginTime = localStorage.getItem('system_first_login_date');
-    if (!firstLoginTime) return null;
-
-    const elapsed = Date.now() - parseInt(firstLoginTime, 10);
-    const daysRemaining = Math.ceil((ONE_YEAR_MS - elapsed) / (24 * 60 * 60 * 1000));
+    const expTime = getActivationExpiryTime();
+    const remainingMs = expTime - Date.now();
+    const daysRemaining = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
 
     if (daysRemaining <= 0) {
-      localStorage.removeItem('system_auth_pwd');
       return 0;
     }
     return daysRemaining;
@@ -1237,18 +1243,11 @@
 
   function updateValidityDisplay() {
     const badge = document.getElementById('validityCounterBadge');
-    const firstLoginTime = localStorage.getItem('system_first_login_date');
-    
-    if (!firstLoginTime) {
-      badge.innerHTML = `⏳ Account Validity: <strong style="color:#fbbf24;">365 Days Left</strong>`;
-      return;
-    }
-
     const remainingDays = checkAndHandleExpiry();
 
-    if (remainingDays !== null && remainingDays > 0) {
-      badge.innerHTML = `⏳ Account Validity: <strong style="color:#fbbf24;">${remainingDays} Days Left</strong> (of 365 Days)`;
-      if (remainingDays <= 15) {
+    if (remainingDays > 0) {
+      badge.innerHTML = `⏳ Account Validity: <strong style="color:#fbbf24;">${remainingDays} Days Left</strong> (of 30 Days)`;
+      if (remainingDays <= 5) {
         badge.style.borderColor = '#ef4444';
         badge.style.color = '#f87171';
         badge.style.background = 'rgba(239, 68, 68, 0.15)';
@@ -1266,7 +1265,7 @@
   }
 
   // ==========================================================
-  // DISTRIBUTOR / ACCOUNT MANAGEMENT (ADMIN PANEL)
+  // DISTRIBUTOR / ACCOUNT MANAGEMENT (ADMIN PANEL WITH TIMELINE)
   // ==========================================================
   function getDistributorsList() {
     let list = localStorage.getItem('portal_distributors_list');
@@ -1306,9 +1305,20 @@
       return;
     }
 
-    const expiryDateText = "Lifetime (Until Admin Deletes)";
+    // Calculate Expiry Timeline for Distributor (30 Days from creation)
+    const assignedTimestamp = Date.now();
+    const distExpiryTime = assignedTimestamp + THIRTY_MS;
+    const expiryDateFormatted = new Date(distExpiryTime).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' });
 
-    dists.push({ id: Date.now(), name, email, pass, expiryDateText });
+    dists.push({ 
+      id: Date.now(), 
+      name, 
+      email, 
+      pass, 
+      assignedDate: new Date(assignedTimestamp).toLocaleDateString('en-IN'),
+      expiryDateText: `Active until ${expiryDateFormatted} (30 Days)` 
+    });
+
     saveDistributorsList(dists);
 
     msg.innerText = "✅ डिस्ट्रीब्यूटर आईडी सफलतापूर्वक असाइन कर दी गई है!";
@@ -1354,7 +1364,7 @@
   }
 
   // ==========================================================
-  // INDEXEDDB HISTORY STORAGE ENGINE (NO AUTO-DELETE)
+  // INDEXEDDB HISTORY STORAGE ENGINE (WITH DELETE RECORD OPTION)
   // ==========================================================
   const DB_NAME = 'PrintPortalPersistentDB';
   const DB_STORE = 'print_records';
@@ -1417,7 +1427,10 @@
             <td><strong style="color:var(--accent-blue);">${rec.feature}</strong></td>
             <td>${rec.fileName}</td>
             <td style="color:#94a3b8; font-size:11px;">${rec.dateFormatted}</td>
-            <td><button class="history-download-btn" onclick="reDownloadHistoryFile(${rec.id})">📥 Download</button></td>
+            <td>
+              <button class="history-download-btn" onclick="reDownloadHistoryFile(${rec.id})">📥 Download</button>
+              <button class="history-delete-btn" onclick="deleteHistoryRecord(${rec.id})" style="margin-left: 5px;">🗑️ Delete</button>
+            </td>
           `;
           tbody.appendChild(tr);
         });
@@ -1444,6 +1457,15 @@
       link.download = rec.fileName;
       link.click();
     };
+  }
+
+  async function deleteHistoryRecord(recordId) {
+    if (!confirm('क्या आप इस रिकॉर्ड को हटाना चाहते हैं?')) return;
+    const db = await openHistoryDB();
+    const tx = db.transaction(DB_STORE, 'readwrite');
+    const store = tx.objectStore(DB_STORE);
+    store.delete(recordId);
+    tx.oncomplete = () => renderHistoryTable();
   }
 
   async function clearAllHistoryDB() {
@@ -1573,29 +1595,33 @@
     }
 
     if (isAuthorized) {
-      if (!localStorage.getItem('system_first_login_date')) {
-        localStorage.setItem('system_first_login_date', Date.now().toString());
-      }
+      const remainingDays = checkAndHandleExpiry();
 
-      sessionStorage.setItem('isLoggedIn', 'true');
-      loginScreen.style.display = 'none';
-      changePwdScreen.style.display = 'none';
-      errorMsg.style.display = 'none';
-      mainApp.style.display = 'block';
-      
-      const topNavReg = document.getElementById('topNavRegistrationBox');
-      if (topNavReg) topNavReg.style.display = 'none';
+      if (remainingDays > 0) {
+        sessionStorage.setItem('isLoggedIn', 'true');
+        loginScreen.style.display = 'none';
+        changePwdScreen.style.display = 'none';
+        errorMsg.style.display = 'none';
+        mainApp.style.display = 'block';
+        
+        const topNavReg = document.getElementById('topNavRegistrationBox');
+        if (topNavReg) topNavReg.style.display = 'none';
 
-      if (isAdmin) {
-        adminTabBtn.style.display = 'inline-block';
+        if (isAdmin) {
+          adminTabBtn.style.display = 'inline-block';
+        } else {
+          adminTabBtn.style.display = 'none';
+          switchTabDirect('tab-cards');
+        }
+
+        updateValidityDisplay();
+        initAllCanvases();
       } else {
-        adminTabBtn.style.display = 'none';
-        switchTabDirect('tab-cards');
+        errorMsg.innerText = "⚠️ 30 दिनों की वैधता समाप्त हो चुकी है!";
+        errorMsg.style.display = 'block';
       }
-
-      updateValidityDisplay();
-      initAllCanvases();
     } else {
+      errorMsg.innerText = "⚠️ गलत ईमेल आईडी या पासवर्ड, या एडमिन द्वारा आईडी असाइन नहीं की गई है!";
       errorMsg.style.display = 'block';
     }
   }
@@ -2285,9 +2311,9 @@
     saveToHistory('4x6 Photo A4 Sheet', fileName, blob, 'application/pdf');
   });
 
-  // ==========================================
+  // ==========================================================
   // TAB 5: PDF ARRANGER ENGINE (DRAG & DROP / HOLD & MOVE)
-  // ==========================================
+  // ==========================================================
   let arrangedPdfPagesList = [];
   let draggedArrangerIdx = null;
 
