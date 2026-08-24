@@ -643,7 +643,7 @@
 <div id="contactModalPopup" class="contact-modal">
   <div class="contact-modal-box">
     <h3 style="color: var(--accent-blue); margin-bottom: 10px;" id="modalTitle">Contact Details</h3>
-    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6;" id="modalDesc"></p>
+    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;" id="modalDesc"></p>
     <a id="modalActionBtn" href="#" target="_blank" class="action-btn btn-download" style="display:inline-block; text-decoration:none; margin-bottom: 10px; width:100%;">Open Now</a>
     <button onclick="closeContactModal()" class="action-btn btn-reset" style="width:100%;">बंद करें</button>
   </div>
@@ -1238,12 +1238,12 @@
 
     if (type === 'email') {
       title.innerText = "📧 Email Registration & Support";
-      desc.innerHTML = "हमारे पोर्टल से जुड़ने या सहायता के लिए इस ईमेल पर संपर्क करें:<br><br><strong style='color:#38bdf8;'>idprintingportal@gmail.com</strong>";
+      desc.innerText = "हमारे पोर्टल से जुड़ने या सहायता के लिए इस ईमेल पर संपर्क करें: idprintingportal@gmail.com";
       btn.innerText = "Send Email Now";
       btn.href = "mailto:idprintingportal@gmail.com";
     } else {
       title.innerText = "💬 WhatsApp Support & Registration";
-      desc.innerHTML = "व्हाट्सएप पर तुरंत सहायता या रजिस्ट्रेशन के लिए संपर्क करें:<br><br><strong style='color:#34d399;'>+91 7887575671</strong>";
+      desc.innerText = "व्हाट्सएप पर तुरंत सहायता या रजिस्ट्रेशन के लिए संपर्क करें: 7887575671";
       btn.innerText = "Open WhatsApp Chat";
       btn.href = "https://wa.me/917887575671";
     }
@@ -1335,9 +1335,10 @@
       return;
     }
 
+    const assignedDate = new Date().toLocaleDateString('en-IN');
     const expiryDateText = "Lifetime (Until Admin Deletes)";
 
-    dists.push({ id: Date.now(), name, email, pass, expiryDateText });
+    dists.push({ id: Date.now(), name, email, pass, assignedDate, expiryDateText });
     saveDistributorsList(dists);
 
     msg.innerText = "✅ डिस्ट्रीब्यूटर आईडी सफलतापूर्वक असाइन कर दी गई है!";
