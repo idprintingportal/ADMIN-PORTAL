@@ -1613,7 +1613,6 @@
           adminTabBtn.style.display = 'inline-block';
         } else {
           adminTabBtn.style.display = 'none';
-          // Force active tab to ID Card if accidentally on admin tab
           switchTabDirect('tab-cards');
         }
 
@@ -1693,42 +1692,6 @@
     }
   }
 
-  function autoFitCardToCanvas(dataUrl, targetCanvas, ctx, isFront) {
-    const img = new Image();
-    img.onload = function() {
-      ctx.clearRect(0, 0, CARD_W, CARD_H);
-
-      const srcRatio = img.width / img.height;
-      const targetRatio = CARD_W / CARD_H;
-      let sX = 0, sY = 0, sW = img.width, sH = img.height;
-
-      if (srcRatio > targetRatio) {
-        sW = img.height * targetRatio;
-        sX = (img.width - sW) / 2;
-      } else {
-        sH = img.width / targetRatio;
-        sY = (img.height - sH) / 2;
-      }
-
-      ctx.drawImage(img, sX, sY, sW, sH, 0, 0, CARD_W, CARD_H);
-
-      if (isFront) {
-        img1Loaded = true;
-        frontCardRawData = dataUrl;
-        document.getElementById('manualCropFrontBtn').style.display = 'inline-block';
-      } else {
-        img2Loaded = true;
-        backCardRawData = dataUrl;
-        document.getElementById('manualCropBackBtn').style.display = 'inline-block';
-      }
-
-      if (img1Loaded && img2Loaded) {
-        addCardBtn.disabled = false;
-      }
-    };
-    img.src = dataUrl;
-  }
-
   function openManualCropForCard(side) {
     if (side === 'front' && frontCardRawData) {
       openCropEngine(frontCardRawData, 'card_front');
@@ -1791,7 +1754,7 @@
   }
 
   // ==========================================
-  // TAB 1: 5 CARDS SYSTEM LOGIC
+  // TAB 1: 5 CARDS SYSTEM LOGIC (FIXED FILE SELECTORS)
   // ==========================================
   const CARD_W = 1013, CARD_H = 638, A4_W = 2480, A4_H = 3508, GAP_2_5MM_PX = 30, MAX_CARDS = 5;
   let addedCardsCount = 0, img1Loaded = false, img2Loaded = false;
@@ -1808,25 +1771,57 @@
   const resetPageBtn = document.getElementById('resetPageBtn');
   const slotCounter = document.getElementById('slotCounter');
 
-  document.getElementById('card1Input').addEventListener('change', (e) => {
+  document.getElementById('card1Input').addEventListener('change', async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      document.getElementById('file1Name').innerText = `✅ Auto-Fitted: ${file.name}`;
+    if (!file) return;
+    document.getElementById('file1Name').innerText = `✅ Loaded: ${file.name}`;
+    if (file.type === 'application/pdf') {
+      const arrayBuffer = await file.arrayBuffer();
+      try {
+        const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+        const page = await pdf.getPage(1);
+        const viewport = page.getViewport({ scale: 2.5 });
+        const tmpCanvas = document.createElement('canvas');
+        const tmpCtx = tmpCanvas.getContext('2d');
+        tmpCanvas.width = viewport.width;
+        tmpCanvas.height = viewport.height;
+        await page.render({ canvasContext: tmpCtx, viewport: viewport }).promise;
+        frontCardRawData = tmpCanvas.toDataURL('image/jpeg', 0.95);
+        openCropEngine(frontCardRawData, 'card_front');
+      } catch(err) { alert("PDF Error"); }
+    } else {
       const reader = new FileReader();
       reader.onload = function(evt) {
-        autoFitCardToCanvas(evt.target.result, canvas1, ctx1, true);
+        frontCardRawData = evt.target.result;
+        openCropEngine(frontCardRawData, 'card_front');
       };
       reader.readAsDataURL(file);
     }
   });
 
-  document.getElementById('card2Input').addEventListener('change', (e) => {
+  document.getElementById('card2Input').addEventListener('change', async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      document.getElementById('file2Name').innerText = `✅ Auto-Fitted: ${file.name}`;
+    if (!file) return;
+    document.getElementById('file2Name').innerText = `✅ Loaded: ${file.name}`;
+    if (file.type === 'application/pdf') {
+      const arrayBuffer = await file.arrayBuffer();
+      try {
+        const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+        const page = await pdf.getPage(1);
+        const viewport = page.getViewport({ scale: 2.5 });
+        const tmpCanvas = document.createElement('canvas');
+        const tmpCtx = tmpCanvas.getContext('2d');
+        tmpCanvas.width = viewport.width;
+        tmpCanvas.height = viewport.height;
+        await page.render({ canvasContext: tmpCtx, viewport: viewport }).promise;
+        backCardRawData = tmpCanvas.toDataURL('image/jpeg', 0.95);
+        openCropEngine(backCardRawData, 'card_back');
+      } catch(err) { alert("PDF Error"); }
+    } else {
       const reader = new FileReader();
       reader.onload = function(evt) {
-        autoFitCardToCanvas(evt.target.result, canvas2, ctx2, false);
+        backCardRawData = evt.target.result;
+        openCropEngine(backCardRawData, 'card_back');
       };
       reader.readAsDataURL(file);
     }
@@ -1868,8 +1863,8 @@
       ctx.textAlign = 'center';
       ctx.fillText(`${i === 0 ? 'Front' : 'Back'} Card Preview`, CARD_W / 2, CARD_H / 2);
     });
-    document.getElementById('file1Name').innerText = 'इमेज चुनें (Auto-Crop)';
-    document.getElementById('file2Name').innerText = 'इमेज चुनें (Auto-Crop)';
+    document.getElementById('file1Name').innerText = 'इमेज या PDF चुनें';
+    document.getElementById('file2Name').innerText = 'इमेज या PDF चुनें';
     document.getElementById('card1Input').value = '';
     document.getElementById('card2Input').value = '';
     document.getElementById('manualCropFrontBtn').style.display = 'none';
