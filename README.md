@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
@@ -73,7 +74,7 @@
       background: rgba(56, 189, 248, 0.15);
       border: 1px solid rgba(56, 189, 248, 0.4);
       color: var(--accent-blue);
-      padding: 9px 18px;
+      padding: 10px 22px;
       font-size: 13px;
       font-weight: 600;
       border-radius: 20px;
@@ -614,10 +615,11 @@
   ID CARD PRINT & CONVERTER PORTAL
 </div>
 
-<!-- Top Registration & Support Buttons -->
+<!-- Top Contact for Registration Button -->
 <div class="top-reg-nav" id="topNavRegistrationBox">
-  <a href="mailto:idprintingportal@gmail.com" class="top-reg-btn">📧 1 - Email Registration</a>
-  <a href="https://wa.me/917887575671?text=Hello%20Sir,%20I%20want%20to%20register%20for%20ID%20Printing%20Portal." target="_blank" class="top-reg-btn">💬 2 - Whatsapp Support</a>
+  <a href="https://wa.me/917887575671?text=Hello%20Sir,%20I%20want%20to%20register%20for%20ID%20Printing%20Portal.%20Please%20assign%20me%20ID." target="_blank" class="top-reg-btn">
+    💬 Contact for Registration (WhatsApp No: 7887575671 OR Call - 9284961107)
+  </a>
 </div>
 
 <!-- 1. Login Screen -->
