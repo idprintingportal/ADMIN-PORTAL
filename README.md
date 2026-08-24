@@ -581,16 +581,32 @@
     }
     .history-delete-btn:hover { background: rgba(239, 68, 68, 0.4); }
 
-    #cropModal {
-      display: none;
+    /* Modal System */
+    .generic-modal {
+      display: none !important;
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.85);
-      z-index: 10000;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 99999;
       align-items: center;
       justify-content: center;
-      flex-direction: column;
       padding: 20px;
+    }
+
+    .generic-modal.active-modal {
+      display: flex !important;
+    }
+
+    .generic-modal-box {
+      background: var(--card-bg);
+      border: 1px solid var(--accent-blue);
+      border-radius: 20px;
+      padding: 30px 24px;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
     }
 
     .crop-wrapper {
@@ -686,13 +702,13 @@
       <div class="upload-section">
         <label class="upload-box" for="card1Input">
           <strong style="display:block; font-size:14px; margin-bottom:4px;">📁 Front Side</strong>
-          <div id="file1Name" style="font-size: 12px; color: var(--text-muted);">इमेज चुनें (Auto-Crop)</div>
+          <div id="file1Name" style="font-size: 12px; color: var(--text-muted);">इमेज या PDF चुनें</div>
         </label>
         <input type="file" id="card1Input" accept="image/*,application/pdf">
 
         <label class="upload-box" for="card2Input">
           <strong style="display:block; font-size:14px; margin-bottom:4px;">📁 Back Side</strong>
-          <div id="file2Name" style="font-size: 12px; color: var(--text-muted);">इमेज चुनें (Auto-Crop)</div>
+          <div id="file2Name" style="font-size: 12px; color: var(--text-muted);">इमेज या PDF चुनें</div>
         </label>
         <input type="file" id="card2Input" accept="image/*,application/pdf">
       </div>
@@ -1597,6 +1613,8 @@
           adminTabBtn.style.display = 'inline-block';
         } else {
           adminTabBtn.style.display = 'none';
+          // Force active tab to ID Card if accidentally on admin tab
+          switchTabDirect('tab-cards');
         }
 
         updateValidityDisplay();
@@ -1610,6 +1628,12 @@
       errorMsg.innerText = "⚠️ गलत ईमेल आईडी या पासवर्ड, या एडमिन द्वारा आईडी असाइन नहीं की गई है!";
       errorMsg.style.display = 'block';
     }
+  }
+
+  function switchTabDirect(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
   }
 
   authBtn.addEventListener('click', handleLogin);
