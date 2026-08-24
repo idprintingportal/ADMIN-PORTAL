@@ -8,34 +8,59 @@
 
 <style>
 :root{
-    --bg:#090812;
-    --panel:#12111b;
-    --panel2:#181624;
-    --line:#302b3b;
-    --text:#f7f4fb;
-    --muted:#aaa3b3;
-    --primary:#7a67ff;
-    --secondary:#f05bd5;
-    --green:#5edb9c;
-    --red:#ff7182;
+    --bg:#08070d;
+    --panel:#111019;
+    --panel2:#171521;
+    --panel3:#1c1928;
+    --line:#302b3d;
+    --text:#f8f6fb;
+    --muted:#aaa4b5;
+
+    --primary:#806cff;
+    --primary2:#a07cff;
+    --pink:#f05bd5;
+
+    --green:#55d99a;
+    --red:#ff687c;
     --yellow:#ffc857;
+    --blue:#62b5ff;
 }
 
 *{
     box-sizing:border-box;
 }
 
+html{
+    scroll-behavior:smooth;
+}
+
 body{
     margin:0;
+    min-height:100vh;
+
+    color:var(--text);
+
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
     background:
         radial-gradient(
-            circle at 50% 0%,
-            #28183d 0%,
+            circle at 50% -10%,
+            rgba(122,77,180,.35),
             transparent 38%
         ),
-        var(--bg);
-    color:var(--text);
-    font-family:Inter,Arial,system-ui,sans-serif;
+        radial-gradient(
+            circle at 100% 20%,
+            rgba(74,55,170,.16),
+            transparent 30%
+        ),
+        #08070d;
 }
 
 button,
@@ -48,144 +73,222 @@ button{
     cursor:pointer;
 }
 
+img{
+    max-width:100%;
+}
+
 .hidden{
     display:none!important;
 }
 
-/* =========================
-   COMMON
-========================= */
+
+/* =========================================================
+   GLOBAL
+========================================================= */
 
 .container{
     width:100%;
-    max-width:1450px;
+    max-width:1500px;
     margin:auto;
     padding:20px;
 }
 
-.topbar{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:14px 0 20px;
-    border-bottom:1px solid #4b3c51;
-}
-
-.logo{
-    font-size:26px;
-    font-weight:900;
-    letter-spacing:.7px;
-    background:linear-gradient(
-        90deg,
-        #ad8bff,
-        #ff5bd5
-    );
-    -webkit-background-clip:text;
-    color:transparent;
-}
-
-.top-actions{
-    display:flex;
-    gap:8px;
-}
-
 .btn{
+    min-width:140px;
+    height:46px;
+
+    padding:0 18px;
+
+    border-radius:12px;
+
     border:1px solid var(--line);
-    background:#171522;
+
     color:white;
-    padding:10px 15px;
-    border-radius:11px;
-    transition:.2s;
+
+    background:#171520;
+
+    transition:
+        .2s ease;
 }
 
 .btn:hover{
-    border-color:#8a78ff;
     transform:translateY(-1px);
+    border-color:#8072ff;
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.25);
 }
 
 .btn-primary{
     background:
         linear-gradient(
             135deg,
-            var(--primary),
-            #9d72ff
+            #6d5cff,
+            #9b6cff
         );
-    border-color:#a18dff;
+
+    border-color:#9b8fff;
+}
+
+.btn-success{
+    background:
+        linear-gradient(
+            135deg,
+            #248b61,
+            #35bb80
+        );
+
+    border-color:#62dba3;
 }
 
 .btn-danger{
-    background:#542c35;
-    border-color:#88444f;
+    background:#3c1c25;
+    border-color:#6b303c;
 }
 
-/* =========================
+.btn-small{
+    min-width:auto;
+    height:38px;
+    padding:0 13px;
+}
+
+.badge{
+    display:inline-flex;
+    align-items:center;
+
+    min-height:28px;
+
+    padding:0 10px;
+
+    border-radius:20px;
+
+    font-size:12px;
+    font-weight:700;
+}
+
+.badge-green{
+    color:#86edb7;
+    background:#11291f;
+    border:1px solid #275d44;
+}
+
+.badge-blue{
+    color:#92d1ff;
+    background:#112433;
+    border:1px solid #2b5a78;
+}
+
+.badge-yellow{
+    color:#ffd76c;
+    background:#302714;
+    border:1px solid #67532a;
+}
+
+
+/* =========================================================
    LOGIN
-========================= */
+========================================================= */
 
 .login-page{
     min-height:100vh;
+
     display:flex;
-    justify-content:center;
     align-items:center;
+    justify-content:center;
+
     padding:20px;
 }
 
 .login-box{
-    width:430px;
+    width:440px;
     max-width:100%;
-    background:rgba(18,17,27,.95);
-    border:1px solid var(--line);
-    border-radius:22px;
-    padding:32px;
+
+    padding:34px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(25,22,36,.98),
+            rgba(13,12,19,.98)
+        );
+
+    border:1px solid #393247;
+
+    border-radius:24px;
+
     box-shadow:
-        0 25px 80px rgba(0,0,0,.6);
+        0 35px 100px rgba(0,0,0,.65);
 }
 
 .login-logo{
     text-align:center;
-    font-size:28px;
+
+    font-size:27px;
     font-weight:900;
+
+    letter-spacing:.5px;
+
     background:
         linear-gradient(
             90deg,
-            #aa87ff,
-            #ff60d1
+            #aa8bff,
+            #ff61d3
         );
+
     -webkit-background-clip:text;
+    background-clip:text;
+
     color:transparent;
 }
 
 .login-subtitle{
     text-align:center;
+
     color:var(--muted);
-    margin-bottom:25px;
+
+    margin-top:8px;
+    margin-bottom:28px;
 }
 
 .field{
-    margin:14px 0;
+    margin:15px 0;
 }
 
 .field label{
     display:block;
-    color:var(--muted);
+
+    color:#bbb5c5;
+
     font-size:12px;
-    margin-bottom:6px;
+    font-weight:600;
+
+    margin-bottom:7px;
 }
 
 .field input,
 .field select{
+
     width:100%;
-    padding:11px;
-    border-radius:9px;
-    border:1px solid var(--line);
-    background:#0d0c13;
+
+    height:44px;
+
+    padding:0 12px;
+
     color:white;
+
+    background:#0c0b12;
+
+    border:1px solid #302b3b;
+
+    border-radius:10px;
+
     outline:none;
 }
 
 .field input:focus,
 .field select:focus{
-    border-color:#8170ff;
+    border-color:#8072ff;
+    box-shadow:
+        0 0 0 3px rgba(128,108,255,.12);
 }
 
 .login-btn{
@@ -195,200 +298,588 @@ button{
 
 .login-bottom{
     display:flex;
+
     justify-content:center;
+
     gap:10px;
+
     margin-top:18px;
 }
 
 .login-error{
-    text-align:center;
     min-height:20px;
+
+    text-align:center;
+
     color:var(--red);
-    margin-top:10px;
+
+    font-size:13px;
+
+    margin-top:12px;
 }
 
-/* =========================
-   TOOL BAR
-========================= */
+
+/* =========================================================
+   TOPBAR
+========================================================= */
+
+.topbar{
+
+    display:flex;
+
+    justify-content:space-between;
+    align-items:center;
+
+    gap:20px;
+
+    padding:12px 0 18px;
+
+    border-bottom:1px solid #443b4c;
+}
+
+.logo{
+    font-size:24px;
+    font-weight:900;
+
+    letter-spacing:.5px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #b18cff,
+            #ff5bd5
+        );
+
+    -webkit-background-clip:text;
+    background-clip:text;
+
+    color:transparent;
+}
+
+.top-actions{
+    display:flex;
+    gap:8px;
+}
+
+
+/* =========================================================
+   TOOL NAV
+========================================================= */
 
 .tool-bar{
+
     display:flex;
+
     flex-wrap:wrap;
+
     justify-content:center;
+
     gap:9px;
+
     padding:20px 0;
 }
 
 .tool-btn{
-    background:#171522;
-    color:#fff;
-    border:1px solid var(--line);
-    padding:10px 14px;
+
+    min-width:145px;
+    height:44px;
+
+    padding:0 14px;
+
+    color:white;
+
+    background:#15131e;
+
+    border:1px solid #312c3d;
+
     border-radius:11px;
+
+    font-size:12px;
+    font-weight:700;
+
+    transition:.2s;
 }
 
 .tool-btn:hover{
-    border-color:#8271ff;
+    border-color:#7e70ff;
 }
 
 .tool-btn.active{
+
     background:
         linear-gradient(
             135deg,
-            #5e86ff,
-            #7c67ff
+            #5f72ff,
+            #8064ff
         );
-    border-color:#9a9cff;
+
+    border-color:#9a92ff;
+
+    box-shadow:
+        0 7px 22px rgba(91,77,255,.2);
 }
 
-/* =========================
-   ACCOUNT BAR
-========================= */
+
+/* =========================================================
+   ACCOUNT
+========================================================= */
 
 .account-bar{
+
     display:flex;
-    justify-content:space-between;
+
     align-items:center;
-    padding:15px 20px;
-    border:1px solid #46404f;
-    border-radius:18px;
-    background:#14121c;
+    justify-content:space-between;
+
+    gap:15px;
+
+    padding:15px 18px;
+
+    background:#121019;
+
+    border:1px solid #3a3445;
+
+    border-radius:17px;
 }
 
 .validity{
-    border:1px solid #568b61;
-    background:#15221a;
-    color:#9ee9a2;
-    border-radius:24px;
+
     padding:9px 15px;
+
+    border-radius:20px;
+
+    color:#9eeeb9;
+
+    background:#112119;
+
+    border:1px solid #285d43;
+
+    font-size:13px;
 }
 
 .validity b{
-    color:var(--yellow);
+    color:#ffd05d;
 }
 
-/* =========================
+
+/* =========================================================
    HERO
-========================= */
+========================================================= */
 
 .hero{
     text-align:center;
-    padding:30px 10px;
+
+    padding:30px 10px 24px;
 }
 
 .hero h1{
+
+    margin:13px 0 8px;
+
     font-size:36px;
-    margin:20px 0 10px;
+
     background:
         linear-gradient(
             90deg,
-            #b887ff,
-            #ff60d0
+            #b38aff,
+            #ff62d3
         );
+
     -webkit-background-clip:text;
+    background-clip:text;
+
     color:transparent;
 }
 
 .hero p{
+    margin:0;
+
     color:var(--muted);
 }
 
 .pill{
-    display:inline-block;
-    border:1px solid #6684a9;
-    background:#182636;
-    color:#a9dcff;
-    padding:8px 18px;
-    border-radius:24px;
-    font-size:12px;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    padding:8px 15px;
+
+    border-radius:20px;
+
+    color:#a8d9ff;
+
+    background:#122332;
+
+    border:1px solid #315d7b;
+
+    font-size:11px;
+
+    font-weight:800;
+
+    letter-spacing:.3px;
 }
 
-/* =========================
+
+/* =========================================================
    CARDS
-========================= */
+========================================================= */
 
 .grid{
+
     display:grid;
-    grid-template-columns:1fr 1fr;
+
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
     gap:18px;
 }
 
 .card{
-    background:var(--panel);
-    border:1px solid var(--line);
+
+    background:
+        linear-gradient(
+            145deg,
+            #14121c,
+            #0f0e15
+        );
+
+    border:1px solid #302b3b;
+
     border-radius:17px;
+
     padding:20px;
 }
+
+.card-title{
+    margin-top:0;
+}
+
+
+/* =========================================================
+   UPLOAD
+========================================================= */
 
 .drop-zone{
-    min-height:180px;
-    border:2px dashed #646b83;
-    border-radius:15px;
+
+    min-height:170px;
+
     display:flex;
-    justify-content:center;
+
     align-items:center;
+    justify-content:center;
+
     flex-direction:column;
-    padding:20px;
+
+    gap:12px;
+
     text-align:center;
+
+    border:2px dashed #55566b;
+
+    border-radius:15px;
+
+    background:#0c0b12;
 }
 
-.preview{
-    display:block;
+.drop-zone:hover{
+    border-color:#8277ff;
+}
+
+.file-input{
+
+    width:100%;
+
+    color:#aaa5b3;
+}
+
+
+/* =========================================================
+   DIMENSION PANEL
+========================================================= */
+
+.dimension-panel{
+
+    display:grid;
+
+    grid-template-columns:
+        1.4fr 1fr 1fr 1fr;
+
+    gap:10px;
+
+    margin-top:16px;
+}
+
+.dimension-info{
+
+    margin-top:12px;
+
+    padding:12px;
+
+    border-radius:10px;
+
+    background:#0d0c13;
+
+    border:1px solid #292532;
+
+    color:#aaa5b3;
+
+    font-size:12px;
+}
+
+.dimension-info strong{
+    color:white;
+}
+
+
+/* =========================================================
+   PREVIEW
+========================================================= */
+
+.preview-layout{
+
+    display:grid;
+
+    grid-template-columns:
+        minmax(0,1fr)
+        minmax(0,1fr);
+
+    gap:18px;
+
+    margin-top:18px;
+}
+
+.preview-box{
+
+    min-height:280px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    flex-direction:column;
+
+    gap:12px;
+
+    padding:18px;
+
+    background:#09080d;
+
+    border:1px solid #302b3b;
+
+    border-radius:14px;
+}
+
+.preview-box img{
+
     max-width:100%;
     max-height:400px;
-    margin:15px auto;
-    border-radius:9px;
+
+    object-fit:contain;
+
+    border-radius:8px;
 }
 
-.controls{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:12px;
-    margin-top:15px;
+.preview-label{
+
+    width:100%;
+
+    color:#aaa5b3;
+
+    font-size:12px;
 }
+
+
+/* =========================================================
+   ACTIONS
+========================================================= */
 
 .actions{
+
     display:flex;
+
+    flex-wrap:wrap;
+
     justify-content:flex-end;
+
     gap:10px;
-    margin-top:15px;
+
+    margin-top:18px;
 }
 
-/* =========================
-   ID CARD
-========================= */
+.download-row{
 
-.print-sheet{
+    display:flex;
+
+    flex-wrap:wrap;
+
+    justify-content:center;
+
+    gap:12px;
+
+    margin-top:18px;
+}
+
+
+/* =========================================================
+   PRINT SHEET
+========================================================= */
+
+.print-preview-wrapper{
+
+    overflow:auto;
+
+    padding:15px;
+
+    background:#050509;
+
+    border-radius:14px;
+
+    border:1px solid #2d2937;
+}
+
+.a4-sheet{
+
+    width:794px;
+    min-height:1123px;
+
+    margin:auto;
+
     background:white;
-    padding:12px;
+
+    color:#000;
+
+    padding:35px;
+
+    box-shadow:
+        0 15px 60px rgba(0,0,0,.45);
+
     display:grid;
-    grid-template-columns:repeat(5,1fr);
-    gap:2.5mm;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    align-content:start;
+
+    gap:20px;
 }
 
-.id-card{
-    aspect-ratio:1013 / 638;
-    border:3px solid #000;
-    overflow:hidden;
+.a4-sheet.photo-4x6{
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap:15px;
+}
+
+.a4-photo{
+
+    width:100%;
+
+    aspect-ratio:4/6;
+
+    object-fit:cover;
+
+    border:1px solid #ddd;
+}
+
+.a4-passport{
+
+    width:138px;
+    height:177px;
+
+    object-fit:cover;
+
+    border:1px solid #bbb;
+}
+
+.a4-id{
+
+    width:100%;
+
+    aspect-ratio:1013/638;
+
+    object-fit:cover;
+
+    border:2px solid #000;
+}
+
+
+/* =========================================================
+   ID CARD
+========================================================= */
+
+.id-card-preview{
+
+    width:min(100%,650px);
+
+    aspect-ratio:1013/638;
+
     background:#eee;
+
+    border:4px solid #000;
+
+    overflow:hidden;
+
+    border-radius:6px;
+
+    margin:auto;
 }
 
-.id-card img{
+.id-card-preview img{
+
     width:100%;
     height:100%;
+
     object-fit:cover;
 }
 
-/* =========================
+.id-sheet{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap:15px;
+}
+
+.id-slot{
+
+    aspect-ratio:1013/638;
+
+    background:#eee;
+
+    border:2px solid #000;
+
+    overflow:hidden;
+}
+
+.id-slot img{
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+}
+
+
+/* =========================================================
    HISTORY
-========================= */
+========================================================= */
 
 .history-row{
+
     display:flex;
+
     justify-content:space-between;
+
     gap:20px;
-    padding:13px 0;
-    border-bottom:1px solid var(--line);
+
+    padding:14px 0;
+
+    border-bottom:1px solid #292531;
 }
 
 .note{
@@ -396,30 +887,42 @@ button{
     font-size:12px;
 }
 
-/* =========================
+
+/* =========================================================
    ADMIN
-========================= */
+========================================================= */
 
 .admin-layout{
+
     min-height:100vh;
+
     display:grid;
-    grid-template-columns:230px 1fr;
+
+    grid-template-columns:235px 1fr;
 }
 
 .admin-sidebar{
-    background:#0d0c14;
-    border-right:1px solid var(--line);
+
     padding:18px;
+
+    background:#0c0b11;
+
+    border-right:1px solid #302b3b;
 }
 
 .admin-sidebar h2{
-    font-size:17px;
-    margin-bottom:20px;
+
+    font-size:18px;
+
+    margin:5px 0 20px;
 }
 
 .admin-sidebar .btn{
+
     width:100%;
+
     margin:5px 0;
+
     text-align:left;
 }
 
@@ -428,16 +931,24 @@ button{
 }
 
 .stats{
+
     display:grid;
-    grid-template-columns:repeat(4,1fr);
+
+    grid-template-columns:
+        repeat(4,1fr);
+
     gap:12px;
 }
 
 .stat{
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:15px;
+
     padding:18px;
+
+    background:#121019;
+
+    border:1px solid #302b3b;
+
+    border-radius:15px;
 }
 
 .stat small{
@@ -445,135 +956,280 @@ button{
 }
 
 .stat strong{
+
     display:block;
-    font-size:25px;
-    margin-top:8px;
+
+    margin-top:7px;
+
+    font-size:26px;
 }
 
-/* =========================
+
+/* =========================================================
    TABLE
-========================= */
+========================================================= */
 
 .table-wrapper{
     overflow:auto;
 }
 
 .table{
+
     width:100%;
+
     min-width:800px;
+
     border-collapse:collapse;
 }
 
 .table th,
 .table td{
-    text-align:left;
+
     padding:12px;
-    border-bottom:1px solid var(--line);
+
+    text-align:left;
+
+    border-bottom:1px solid #2b2733;
 }
 
-.badge{
-    padding:5px 8px;
-    border-radius:7px;
-    font-size:11px;
+.table th{
+    color:#aaa4b5;
+    font-size:12px;
 }
 
-.badge-active{
-    background:#153023;
-    color:var(--green);
-}
 
-.badge-inactive{
-    background:#3a1b22;
-    color:var(--red);
-}
-
-/* =========================
+/* =========================================================
    RESPONSIVE
-========================= */
+========================================================= */
 
-@media(max-width:900px){
+@media(max-width:1000px){
 
-    .grid{
+    .grid,
+    .preview-layout{
+
         grid-template-columns:1fr;
     }
 
+    .dimension-panel{
+
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+
+    .stats{
+
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+
     .admin-layout{
+
         grid-template-columns:1fr;
     }
 
     .admin-sidebar{
-        border-right:none;
-        border-bottom:1px solid var(--line);
-    }
 
-    .stats{
-        grid-template-columns:1fr 1fr;
+        border-right:none;
+        border-bottom:1px solid #302b3b;
     }
 }
 
-@media(max-width:600px){
+@media(max-width:650px){
 
-    .logo{
-        font-size:18px;
+    .container{
+        padding:12px;
     }
 
     .topbar{
-        gap:10px;
+
         align-items:flex-start;
+
         flex-direction:column;
     }
 
     .account-bar{
+
         flex-direction:column;
+
         align-items:flex-start;
-        gap:10px;
     }
 
-    .controls{
+    .tool-btn{
+
+        flex:1 1 calc(50% - 10px);
+
+        min-width:0;
+    }
+
+    .dimension-panel{
+
         grid-template-columns:1fr;
     }
 
     .stats{
+
         grid-template-columns:1fr;
     }
 
-    .print-sheet{
-        grid-template-columns:1fr;
+    .a4-sheet{
+
+        transform-origin:top left;
+
+        width:700px;
+    }
+
+    .actions,
+    .download-row{
+
+        justify-content:center;
+    }
+
+    .btn{
+
+        width:100%;
     }
 }
 </style>
 </head>
 
+
 <body>
 
 <div id="app"></div>
 
+
 <script>
 
 /* =========================================================
-   API HELPER
+   GLOBAL DIMENSIONS
 ========================================================= */
 
-async function api(url, options = {}){
+const DIMENSIONS = {
 
-    const response = await fetch(url,{
-        ...options,
+    idCard:{
+        name:"Standard ID Card",
+        width:1013,
+        height:638,
+        unit:"px",
+        dpi:300,
+        ratio:"1013:638"
+    },
 
-        headers:
-            options.body instanceof FormData
-            ? options.headers
-            : {
-                "Content-Type":"application/json",
-                ...(options.headers || {})
+    passport:{
+        name:"Indian Passport Photo",
+        width:413,
+        height:531,
+        unit:"px",
+        mmWidth:35,
+        mmHeight:45,
+        dpi:300,
+        ratio:"7:9"
+    },
+
+    photo4x6:{
+        name:"4×6 Photo",
+        width:1200,
+        height:1800,
+        unit:"px",
+        inchWidth:4,
+        inchHeight:6,
+        dpi:300,
+        ratio:"2:3"
+    },
+
+    a4:{
+        name:"A4",
+        width:2480,
+        height:3508,
+        unit:"px",
+        mmWidth:210,
+        mmHeight:297,
+        dpi:300,
+        ratio:"1:1.414"
+    },
+
+    a5:{
+        name:"A5",
+        width:1748,
+        height:2480,
+        unit:"px",
+        mmWidth:148,
+        mmHeight:210,
+        dpi:300
+    },
+
+    a3:{
+        name:"A3",
+        width:3508,
+        height:4961,
+        unit:"px",
+        mmWidth:297,
+        mmHeight:420,
+        dpi:300
+    },
+
+    square2x2:{
+        name:"2×2 Visa Photo",
+        width:600,
+        height:600,
+        unit:"px",
+        inchWidth:2,
+        inchHeight:2,
+        dpi:300,
+        ratio:"1:1"
+    },
+
+    stamp:{
+        name:"Stamp Photo",
+        width:600,
+        height:600,
+        unit:"px",
+        inchWidth:2,
+        inchHeight:2,
+        dpi:300,
+        ratio:"1:1"
+    }
+};
+
+
+/* =========================================================
+   API
+========================================================= */
+
+async function api(url,options={}){
+
+    const response =
+        await fetch(
+            url,
+            {
+                ...options,
+
+                headers:
+                    options.body instanceof FormData
+                    ?
+                    options.headers
+                    :
+                    {
+                        "Content-Type":
+                            "application/json",
+
+                        ...(options.headers || {})
+                    }
             }
-    });
+        );
 
     const data =
-        await response.json().catch(() => ({}));
+        await response
+            .json()
+            .catch(
+                () => ({})
+            );
 
     if(!response.ok){
+
         throw new Error(
-            data.error || "Request failed"
+            data.error ||
+            "Request failed"
         );
     }
 
@@ -582,23 +1238,22 @@ async function api(url, options = {}){
 
 
 /* =========================================================
-   ESCAPE HTML
+   ESCAPE
 ========================================================= */
 
 function escapeHTML(value){
 
     return String(value ?? "")
-        .replace(/[&<>"']/g,function(char){
-
-            return {
+        .replace(
+            /[&<>"']/g,
+            char => ({
                 "&":"&amp;",
                 "<":"&lt;",
                 ">":"&gt;",
                 '"':"&quot;",
                 "'":"&#039;"
-            }[char];
-
-        });
+            }[char])
+        );
 }
 
 
@@ -611,7 +1266,9 @@ async function start(){
     try{
 
         const user =
-            await api("/api/me");
+            await api(
+                "/api/me"
+            );
 
         if(!user.loggedIn){
 
@@ -640,12 +1297,14 @@ async function start(){
    LOGIN
 ========================================================= */
 
-let loginType = "customer";
+let loginType="customer";
 
 
 function showLogin(){
 
-    document.getElementById("app").innerHTML = `
+    document.getElementById(
+        "app"
+    ).innerHTML = `
 
     <div class="login-page">
 
@@ -655,13 +1314,17 @@ function showLogin(){
                 ID CARD PRINTING PORTAL
             </div>
 
-            <div class="login-subtitle">
-                Secure Customer Portal
+            <div
+                class="login-subtitle"
+                id="loginSubtitle"
+            >
+                Customer Login
             </div>
+
 
             <div class="field">
 
-                <label>
+                <label id="usernameLabel">
                     Username
                 </label>
 
@@ -673,6 +1336,7 @@ function showLogin(){
                 >
 
             </div>
+
 
             <div class="field">
 
@@ -689,6 +1353,7 @@ function showLogin(){
 
             </div>
 
+
             <button
                 class="btn btn-primary login-btn"
                 onclick="login()"
@@ -696,22 +1361,24 @@ function showLogin(){
                 Login
             </button>
 
+
             <div
                 id="loginError"
                 class="login-error"
             ></div>
 
+
             <div class="login-bottom">
 
                 <button
-                    class="btn"
+                    class="btn btn-small"
                     onclick="showHelp()"
                 >
                     Help
                 </button>
 
                 <button
-                    class="btn"
+                    class="btn btn-small"
                     onclick="adminMode()"
                 >
                     Admin Login
@@ -729,21 +1396,22 @@ function showLogin(){
 
 function adminMode(){
 
-    loginType = "admin";
+    loginType="admin";
 
-    document.querySelector(
-        "#loginUsername"
-    ).placeholder = "Admin Email";
-
-    document.querySelector(
-        "#loginUsername"
-    ).previousElementSibling.innerText =
-        "Admin Email";
-
-    document.querySelector(
-        ".login-subtitle"
+    document.getElementById(
+        "loginSubtitle"
     ).innerText =
         "Administrator Login";
+
+    document.getElementById(
+        "usernameLabel"
+    ).innerText =
+        "Admin Email";
+
+    document.getElementById(
+        "loginUsername"
+    ).placeholder =
+        "Enter admin email";
 }
 
 
@@ -764,7 +1432,7 @@ async function login(){
             "loginError"
         );
 
-    error.innerText = "";
+    error.innerText="";
 
     if(!username || !password){
 
@@ -777,23 +1445,24 @@ async function login(){
     try{
 
         const result =
-            await api("/api/login",{
+            await api(
+                "/api/login",
+                {
+                    method:"POST",
 
-                method:"POST",
+                    body:JSON.stringify({
 
-                body:JSON.stringify({
+                        type:loginType,
 
-                    type:loginType,
+                        username,
 
-                    username,
+                        password
 
-                    password
+                    })
+                }
+            );
 
-                })
-
-            });
-
-        if(result.role === "admin"){
+        if(result.role==="admin"){
 
             showAdmin();
 
@@ -819,12 +1488,16 @@ async function showHelp(){
     try{
 
         const data =
-            await api("/api/help");
+            await api(
+                "/api/help"
+            );
 
         alert(
-            "HELP\n\n" +
-            "Email: " + data.email +
-            "\nMobile: " + data.mobile
+            "HELP\n\n"+
+            "Email: "+
+            data.email+
+            "\nMobile: "+
+            data.mobile
         );
 
     }catch(error){
@@ -842,47 +1515,55 @@ async function showHelp(){
 
 async function logout(){
 
-    await api(
-        "/api/logout",
-        {
-            method:"POST"
-        }
-    );
+    try{
 
-    start();
+        await api(
+            "/api/logout",
+            {
+                method:"POST"
+            }
+        );
+
+    }finally{
+
+        start();
+    }
 }
 
 
 /* =========================================================
-   CUSTOMER DASHBOARD
+   CUSTOMER
 ========================================================= */
 
 function showCustomer(user){
 
-    document.getElementById("app").innerHTML = `
+    document.getElementById(
+        "app"
+    ).innerHTML = `
 
     <div class="container">
+
 
         <div class="topbar">
 
             <div class="logo">
-                ID CARD PRINT & CONVERTER PORTAL
+                ID CARD PRINTING PORTAL
             </div>
 
             <div class="top-actions">
 
                 <button
-                    class="btn"
+                    class="btn btn-small"
                     onclick="showHelp()"
                 >
                     Help
                 </button>
 
                 <button
-                    class="btn btn-danger"
+                    class="btn btn-small btn-danger"
                     onclick="logout()"
                 >
-                    🔒 Logout
+                    Logout
                 </button>
 
             </div>
@@ -894,74 +1575,72 @@ function showCustomer(user){
 
             <button
                 class="tool-btn"
-                id="tool-id"
-                onclick="openTool('id')"
+                onclick="openTool('id',this)"
             >
-                🪪 ID Card (5 Slots)
+                🪪 ID Card
             </button>
 
             <button
                 class="tool-btn"
-                id="tool-passport"
-                onclick="openTool('passport')"
+                onclick="openTool('passport',this)"
             >
-                👤 Passport Photos
+                👤 Passport Photo
             </button>
 
             <button
                 class="tool-btn"
-                onclick="openTool('name')"
+                onclick="openTool('passportName',this)"
             >
-                📄 Name & Date Passport
+                📄 Name & Date
             </button>
 
             <button
                 class="tool-btn"
-                onclick="openTool('46')"
+                onclick="openTool('4x6',this)"
             >
-                🖼️ 4×6 Photo Print
+                🖼️ 4×6 Photo
             </button>
 
             <button
                 class="tool-btn"
-                onclick="openTool('arranger')"
+                onclick="openTool('arranger',this)"
             >
                 📑 PDF Arranger
             </button>
 
             <button
                 class="tool-btn"
-                onclick="openTool('topdf')"
+                onclick="openTool('topdf',this)"
             >
-                📄 PDF, JPG, PNG to PDF
+                📄 Images → PDF
             </button>
 
             <button
                 class="tool-btn"
-                onclick="openTool('resize')"
+                onclick="openTool('resize',this)"
             >
-                📐 Image Resizer
+                📐 Image Resize
             </button>
 
             <button
                 class="tool-btn"
-                onclick="openTool('pdfjpg')"
+                onclick="openTool('pdfjpg',this)"
             >
-                🖼️ PDF to JPG
+                🖼️ PDF → JPG
             </button>
 
             <button
                 class="tool-btn"
-                onclick="openTool('compress')"
+                onclick="openTool('compress',this)"
             >
-                🗜️ PDF Compressor
+                🗜️ PDF Compress
             </button>
 
             <button
                 class="tool-btn"
-                onclick="openTool('history')"
+                onclick="openTool('history',this)"
             >
-                📁 30-Day History
+                📁 History
             </button>
 
         </div>
@@ -971,20 +1650,23 @@ function showCustomer(user){
 
             <div class="validity">
 
-                ⏳ Account Validity:
+                Account Validity:
 
                 <b>
                     ${user.daysLeft ?? 0}
-                    Days Left
+                    Days
                 </b>
 
             </div>
 
             <div>
+
                 Welcome,
+
                 <b>
                     ${escapeHTML(user.name)}
                 </b>
+
             </div>
 
         </div>
@@ -996,7 +1678,12 @@ function showCustomer(user){
 
     `;
 
-    openTool("id");
+    openTool(
+        "id",
+        document.querySelector(
+            ".tool-btn"
+        )
+    );
 }
 
 
@@ -1004,109 +1691,88 @@ function showCustomer(user){
    TOOL ROUTER
 ========================================================= */
 
-function openTool(tool){
+function openTool(tool,button){
 
     document
-        .querySelectorAll(".tool-btn")
-        .forEach(button =>
-            button.classList.remove("active")
+        .querySelectorAll(
+            ".tool-btn"
+        )
+        .forEach(
+            b =>
+                b.classList.remove(
+                    "active"
+                )
         );
+
+    if(button){
+
+        button.classList.add(
+            "active"
+        );
+    }
 
     const area =
         document.getElementById(
             "customerToolArea"
         );
 
-    if(tool === "id"){
 
-        document
-            .getElementById("tool-id")
-            ?.classList.add("active");
+    switch(tool){
 
-        idCardTool(area);
+        case "id":
+            idCardTool(area);
+            break;
 
-        return;
-    }
+        case "passport":
+            passportTool(area,false);
+            break;
 
-    if(tool === "passport"){
+        case "passportName":
+            passportTool(area,true);
+            break;
 
-        passportTool(area);
+        case "4x6":
+            fourSixTool(area);
+            break;
 
-        return;
-    }
+        case "resize":
+            resizeTool(area);
+            break;
 
-    if(tool === "46"){
+        case "topdf":
+            imagePDFTool(area);
+            break;
 
-        fourSixTool(area);
+        case "pdfjpg":
+            pdfTool(
+                area,
+                "PDF to JPG"
+            );
+            break;
 
-        return;
-    }
+        case "compress":
+            pdfTool(
+                area,
+                "PDF Compressor"
+            );
+            break;
 
-    if(tool === "resize"){
+        case "arranger":
+            pdfTool(
+                area,
+                "PDF Arranger"
+            );
+            break;
 
-        imageResizeTool(area);
-
-        return;
-    }
-
-    if(tool === "topdf"){
-
-        imageToPDFTool(area);
-
-        return;
-    }
-
-    if(tool === "pdfjpg"){
-
-        pdfTool(
-            area,
-            "PDF to JPG"
-        );
-
-        return;
-    }
-
-    if(tool === "compress"){
-
-        pdfTool(
-            area,
-            "PDF Compressor"
-        );
-
-        return;
-    }
-
-    if(tool === "arranger"){
-
-        pdfTool(
-            area,
-            "PDF Arranger"
-        );
-
-        return;
-    }
-
-    if(tool === "name"){
-
-        passportTool(
-            area,
-            "Name & Date Passport"
-        );
-
-        return;
-    }
-
-    if(tool === "history"){
-
-        historyTool(area);
-
-        return;
+        case "history":
+            historyTool(area);
+            break;
     }
 }
 
 
 /* =========================================================
-   ID CARD
+   ID CARD TOOL
 ========================================================= */
 
 function idCardTool(area){
@@ -1116,42 +1782,89 @@ function idCardTool(area){
     <div class="hero">
 
         <span class="pill">
-            AUTO-DIMENSION • SMART CROP •
-            1013×638 • 2.5MM GAP • 5 CARDS
+            1013 × 638 PX • 300 DPI •
+            AUTO CROP • SMART FIT
         </span>
 
         <h1>
-            Card Generator System
+            ID Card Generator
         </h1>
 
         <p>
-            Upload front and back ID images.
-            System will fit them to standard ID size.
+            Upload the ID image and preview the
+            final 1013 × 638 card before downloading.
         </p>
 
     </div>
 
 
-    <div class="grid">
+    <div class="card">
+
+        <h3 class="card-title">
+            Upload ID Card
+        </h3>
+
+        <div class="drop-zone">
+
+            <input
+                id="idFile"
+                class="file-input"
+                type="file"
+                accept="image/*,application/pdf"
+            >
+
+            <span class="note">
+                JPG / PNG / PDF
+            </span>
+
+        </div>
+
+
+        <div class="dimension-info">
+
+            Standard output:
+
+            <strong>
+                1013 × 638 px
+            </strong>
+
+            &nbsp; • &nbsp;
+
+            300 DPI
+
+            &nbsp; • &nbsp;
+
+            Broad Black Border
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="preview-layout"
+        style="margin-top:18px"
+    >
 
         <div class="card">
 
-            <h3>
-                Front Side
-            </h3>
+            <div class="preview-label">
+                ORIGINAL PREVIEW
+            </div>
 
-            <div class="drop-zone">
-
-                <input
-                    id="frontImage"
-                    type="file"
-                    accept="image/*"
-                >
+            <div class="preview-box">
 
                 <img
-                    id="frontPreview"
-                    class="preview"
+                    id="idOriginal"
+                    alt=""
                 >
+
+                <span
+                    id="idOriginalText"
+                    class="note"
+                >
+                    Upload a file
+                </span>
 
             </div>
 
@@ -1160,22 +1873,20 @@ function idCardTool(area){
 
         <div class="card">
 
-            <h3>
-                Back Side
-            </h3>
+            <div class="preview-label">
+                FINAL ID CARD PREVIEW
+            </div>
 
-            <div class="drop-zone">
+            <div class="preview-box">
 
-                <input
-                    id="backImage"
-                    type="file"
-                    accept="image/*"
-                >
+                <div
+                    id="idFinal"
+                    class="id-card-preview"
+                ></div>
 
-                <img
-                    id="backPreview"
-                    class="preview"
-                >
+                <span class="note">
+                    1013 × 638 px
+                </span>
 
             </div>
 
@@ -1184,32 +1895,36 @@ function idCardTool(area){
     </div>
 
 
-    <div class="card" style="margin-top:20px">
+    <div class="card" style="margin-top:18px">
 
-        <div class="hero">
+        <h3>
+            Print Sheet Preview
+        </h3>
 
-            <span class="pill">
-                1013 × 638 PX
-            </span>
+        <div class="print-preview-wrapper">
 
-            <h2>
-                5-Slot Print Preview
-            </h2>
+            <div
+                id="idA4Preview"
+                class="a4-sheet"
+            ></div>
 
         </div>
 
-        <div
-            id="idPrintSheet"
-            class="print-sheet"
-        ></div>
 
-        <div class="actions">
+        <div class="download-row">
 
             <button
                 class="btn btn-primary"
-                onclick="generateIDCard()"
+                onclick="downloadID()"
             >
-                Generate ID Card
+                Download ID Card
+            </button>
+
+            <button
+                class="btn btn-success"
+                onclick="downloadIDA4()"
+            >
+                Download in A4
             </button>
 
         </div>
@@ -1220,277 +1935,307 @@ function idCardTool(area){
 
 
     document
-        .getElementById("frontImage")
+        .getElementById("idFile")
         .addEventListener(
             "change",
-            function(){
-
-                previewFile(
-                    this,
-                    "frontPreview"
-                );
-
-                updateIDPreview();
-            }
+            previewID
         );
-
-
-    document
-        .getElementById("backImage")
-        .addEventListener(
-            "change",
-            function(){
-
-                previewFile(
-                    this,
-                    "backPreview"
-                );
-
-            }
-        );
-
-
-    updateIDPreview();
 }
 
 
-function previewFile(input,id){
+function previewID(event){
 
     const file =
-        input.files[0];
+        event.target.files[0];
 
     if(!file)return;
 
-    document.getElementById(id).src =
-        URL.createObjectURL(file);
-}
+    if(file.type.startsWith("image/")){
 
+        const url =
+            URL.createObjectURL(file);
 
-function updateIDPreview(){
-
-    const sheet =
         document.getElementById(
-            "idPrintSheet"
-        );
+            "idOriginal"
+        ).src=url;
 
-    if(!sheet)return;
-
-    const front =
         document.getElementById(
-            "frontPreview"
-        )?.src;
+            "idOriginalText"
+        ).innerText =
+            file.name;
 
-    sheet.innerHTML = "";
+        const final =
+            document.getElementById(
+                "idFinal"
+            );
 
-    for(let i=0;i<5;i++){
+        final.innerHTML = `
 
-        const card =
-            document.createElement("div");
+            <img
+                src="${url}"
+                alt=""
+            >
 
-        card.className =
-            "id-card";
+        `;
 
-        if(front){
-
-            const img =
-                document.createElement("img");
-
-            img.src = front;
-
-            card.appendChild(img);
-        }
-
-        sheet.appendChild(card);
+        createIDA4Preview(url);
     }
 }
 
 
-async function generateIDCard(){
+function createIDA4Preview(url){
 
-    const input =
+    const sheet =
         document.getElementById(
-            "frontImage"
+            "idA4Preview"
         );
 
-    if(!input.files.length){
+    if(!sheet)return;
+
+    sheet.innerHTML="";
+
+    for(
+        let i=0;
+        i<10;
+        i++
+    ){
+
+        sheet.innerHTML += `
+
+            <div class="id-slot">
+
+                <img
+                    src="${url}"
+                    alt=""
+                >
+
+            </div>
+
+        `;
+    }
+}
+
+
+async function downloadID(){
+
+    const file =
+        document.getElementById(
+            "idFile"
+        ).files[0];
+
+    if(!file){
 
         alert(
-            "Please select Front Side image."
+            "Please upload an ID image."
         );
 
         return;
     }
 
-    const file =
-        input.files[0];
-
-    const form =
-        new FormData();
-
-    form.append(
-        "file",
-        file
+    await processImage(
+        file,
+        "ID-Card",
+        1013,
+        638,
+        "ID-Card-1013x638.jpg"
     );
+}
 
-    form.append(
-        "tool",
-        "ID Card"
-    );
 
-    form.append(
-        "width",
-        "1013"
-    );
+async function downloadIDA4(){
 
-    form.append(
-        "height",
-        "638"
-    );
-
-    form.append(
-        "quality",
-        "92"
-    );
-
-    try{
-
-        const response =
-            await fetch(
-                "/api/process/image",
-                {
-                    method:"POST",
-                    body:form
-                }
-            );
-
-        if(!response.ok){
-
-            const error =
-                await response.json();
-
-            throw new Error(
-                error.error ||
-                "Processing failed"
-            );
-        }
-
-        const blob =
-            await response.blob();
-
-        downloadBlob(
-            blob,
-            "ID-Card-1013x638.jpg"
+    const image =
+        getPreviewImage(
+            "idFinal"
         );
 
-    }catch(error){
+    if(!image){
 
-        alert(error.message);
+        alert(
+            "Please upload an ID image."
+        );
+
+        return;
     }
+
+    await downloadCanvasAsA4(
+        image,
+        "ID-Card-A4.pdf"
+    );
 }
 
 
 /* =========================================================
-   PASSPORT PHOTO
+   PASSPORT
 ========================================================= */
 
-function passportTool(
-    area,
-    customTitle="Passport Photos"
-){
+function passportTool(area,nameDate=false){
 
     area.innerHTML = `
 
     <div class="hero">
 
         <span class="pill">
-            35 × 45 MM • 300 DPI •
-            413 × 531 PX
+            35 × 45 MM • 413 × 531 PX •
+            300 DPI
         </span>
 
         <h1>
-            ${customTitle}
+            ${
+                nameDate
+                ?
+                "Name & Date Passport Photo"
+                :
+                "Indian Passport Photo"
+            }
         </h1>
 
         <p>
-            Indian standard passport photo:
-            35 mm × 45 mm.
+            Standard 35 × 45 mm photo.
         </p>
 
     </div>
 
 
-    <div class="grid">
+    <div class="card">
+
+        <div class="drop-zone">
+
+            <input
+                id="passportFile"
+                class="file-input"
+                type="file"
+                accept="image/*"
+            >
+
+            <span class="note">
+                JPG / PNG
+            </span>
+
+        </div>
+
+
+        <div class="dimension-panel">
+
+            <div class="field">
+
+                <label>
+                    Preset
+                </label>
+
+                <select
+                    id="passportPreset"
+                    onchange="passportPresetChanged()"
+                >
+
+                    <option value="india">
+                        India — 35×45 mm
+                    </option>
+
+                    <option value="2x2">
+                        2×2 inch — 51×51 mm
+                    </option>
+
+                    <option value="custom">
+                        Custom
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Width PX
+                </label>
+
+                <input
+                    id="passportWidth"
+                    value="413"
+                    type="number"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Height PX
+                </label>
+
+                <input
+                    id="passportHeight"
+                    value="531"
+                    type="number"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    DPI
+                </label>
+
+                <select id="passportDPI">
+
+                    <option>
+                        150
+                    </option>
+
+                    <option>
+                        200
+                    </option>
+
+                    <option selected>
+                        300
+                    </option>
+
+                    <option>
+                        600
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <div class="dimension-info">
+
+            Selected:
+
+            <strong id="passportDimensionText">
+                35 × 45 mm • 413 × 531 px
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="preview-layout"
+        style="margin-top:18px"
+    >
 
         <div class="card">
 
-            <div class="drop-zone">
-
-                <b>
-                    Select Photo
-                </b>
-
-                <input
-                    id="passportFile"
-                    type="file"
-                    accept="image/*"
-                    style="margin-top:15px"
-                >
-
+            <div class="preview-label">
+                ORIGINAL
             </div>
 
-            <div class="controls">
+            <div class="preview-box">
 
-                <div class="field">
-
-                    <label>
-                        Width
-                    </label>
-
-                    <input
-                        id="passportWidth"
-                        value="413"
-                        type="number"
-                    >
-
-                </div>
-
-                <div class="field">
-
-                    <label>
-                        Height
-                    </label>
-
-                    <input
-                        id="passportHeight"
-                        value="531"
-                        type="number"
-                    >
-
-                </div>
-
-                <div class="field">
-
-                    <label>
-                        DPI
-                    </label>
-
-                    <input
-                        value="300"
-                        disabled
-                    >
-
-                </div>
-
-            </div>
-
-            <div class="actions">
-
-                <button
-                    class="btn btn-primary"
-                    onclick="processPassport()"
+                <img
+                    id="passportOriginal"
+                    alt=""
                 >
-                    Generate Passport Photo
-                </button>
 
             </div>
 
@@ -1499,14 +2244,59 @@ function passportTool(
 
         <div class="card">
 
-            <h3>
-                Preview
-            </h3>
+            <div class="preview-label">
+                FINAL OUTPUT
+            </div>
 
-            <img
-                id="passportPreview"
-                class="preview"
+            <div class="preview-box">
+
+                <img
+                    id="passportFinal"
+                    alt=""
+                >
+
+                <span class="note">
+                    413 × 531 px @ 300 DPI
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card" style="margin-top:18px">
+
+        <h3>
+            A4 Print Preview
+        </h3>
+
+        <div class="print-preview-wrapper">
+
+            <div
+                id="passportA4Preview"
+                class="a4-sheet"
+            ></div>
+
+        </div>
+
+
+        <div class="download-row">
+
+            <button
+                class="btn btn-primary"
+                onclick="downloadPassport()"
             >
+                Download Passport
+            </button>
+
+            <button
+                class="btn btn-success"
+                onclick="downloadPassportA4()"
+            >
+                Download in A4
+            </button>
 
         </div>
 
@@ -1516,29 +2306,127 @@ function passportTool(
 
 
     document
-        .getElementById("passportFile")
+        .getElementById(
+            "passportFile"
+        )
         .addEventListener(
             "change",
-            function(){
-
-                previewFile(
-                    this,
-                    "passportPreview"
-                );
-
-            }
+            previewPassport
         );
 }
 
 
-async function processPassport(){
+function passportPresetChanged(){
 
-    const input =
+    const preset =
         document.getElementById(
-            "passportFile"
+            "passportPreset"
+        ).value;
+
+    const width =
+        document.getElementById(
+            "passportWidth"
         );
 
-    if(!input.files.length){
+    const height =
+        document.getElementById(
+            "passportHeight"
+        );
+
+    const text =
+        document.getElementById(
+            "passportDimensionText"
+        );
+
+
+    if(preset==="india"){
+
+        width.value=413;
+        height.value=531;
+
+        text.innerText =
+            "35 × 45 mm • 413 × 531 px";
+    }
+
+
+    if(preset==="2x2"){
+
+        width.value=600;
+        height.value=600;
+
+        text.innerText =
+            "51 × 51 mm • 600 × 600 px";
+    }
+
+
+    if(preset==="custom"){
+
+        text.innerText =
+            "Custom dimensions";
+    }
+}
+
+
+function previewPassport(event){
+
+    const file =
+        event.target.files[0];
+
+    if(!file)return;
+
+    const url =
+        URL.createObjectURL(file);
+
+    document.getElementById(
+        "passportOriginal"
+    ).src=url;
+
+    document.getElementById(
+        "passportFinal"
+    ).src=url;
+
+    createPassportA4(url);
+}
+
+
+function createPassportA4(url){
+
+    const sheet =
+        document.getElementById(
+            "passportA4Preview"
+        );
+
+    if(!sheet)return;
+
+    sheet.innerHTML="";
+
+    for(
+        let i=0;
+        i<24;
+        i++
+    ){
+
+        sheet.innerHTML += `
+
+            <img
+                class="a4-passport"
+                src="${url}"
+                alt=""
+            >
+
+        `;
+    }
+}
+
+
+async function downloadPassport(){
+
+    const file =
+        document.getElementById(
+            "passportFile"
+        ).files[0];
+
+    if(!file){
 
         alert(
             "Please select photo."
@@ -1548,20 +2436,48 @@ async function processPassport(){
     }
 
     await processImage(
-        input.files[0],
-        "Passport Photos",
-        document.getElementById(
-            "passportWidth"
-        ).value,
-        document.getElementById(
-            "passportHeight"
-        ).value
+        file,
+        "Passport-Photo",
+        Number(
+            document.getElementById(
+                "passportWidth"
+            ).value
+        ),
+        Number(
+            document.getElementById(
+                "passportHeight"
+            ).value
+        ),
+        "Passport-Photo.jpg"
+    );
+}
+
+
+async function downloadPassportA4(){
+
+    const image =
+        getPreviewImage(
+            "passportFinal"
+        );
+
+    if(!image){
+
+        alert(
+            "Please select photo."
+        );
+
+        return;
+    }
+
+    await downloadCanvasAsA4(
+        image,
+        "Passport-Photos-A4.pdf"
     );
 }
 
 
 /* =========================================================
-   4x6 PHOTO
+   4x6
 ========================================================= */
 
 function fourSixTool(area){
@@ -1571,8 +2487,8 @@ function fourSixTool(area){
     <div class="hero">
 
         <span class="pill">
-            4 × 6 INCH • 300 DPI •
-            1200 × 1800 PX
+            4 × 6 INCH • 10.16 × 15.24 CM •
+            1200 × 1800 PX @ 300 DPI
         </span>
 
         <h1>
@@ -1580,85 +2496,132 @@ function fourSixTool(area){
         </h1>
 
         <p>
-            Standard 4×6 inch photo
-            10.16 × 15.24 cm.
+            Standard 4×6 inch photo with live
+            preview and A4 print-sheet generation.
         </p>
 
     </div>
 
 
-    <div class="grid">
+    <div class="card">
+
+        <div class="drop-zone">
+
+            <input
+                id="fourSixFile"
+                class="file-input"
+                type="file"
+                accept="image/*"
+            >
+
+            <span class="note">
+                JPG / PNG
+            </span>
+
+        </div>
+
+
+        <div class="dimension-panel">
+
+            <div class="field">
+
+                <label>
+                    Preset
+                </label>
+
+                <select>
+
+                    <option selected>
+                        4×6 inch
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Width
+                </label>
+
+                <input
+                    value="1200"
+                    disabled
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Height
+                </label>
+
+                <input
+                    value="1800"
+                    disabled
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    DPI
+                </label>
+
+                <input
+                    value="300"
+                    disabled
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="dimension-info">
+
+            Physical size:
+
+            <strong>
+                4 × 6 inch
+            </strong>
+
+            &nbsp; • &nbsp;
+
+            10.16 × 15.24 cm
+
+            &nbsp; • &nbsp;
+
+            1200 × 1800 px @ 300 DPI
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="preview-layout"
+        style="margin-top:18px"
+    >
 
         <div class="card">
 
-            <div class="drop-zone">
-
-                <b>
-                    Choose Photo
-                </b>
-
-                <input
-                    id="fourSixFile"
-                    type="file"
-                    accept="image/*"
-                    style="margin-top:15px"
-                >
-
+            <div class="preview-label">
+                ORIGINAL PREVIEW
             </div>
 
-            <div class="controls">
+            <div class="preview-box">
 
-                <div class="field">
-
-                    <label>
-                        Width
-                    </label>
-
-                    <input
-                        id="fourSixWidth"
-                        value="1200"
-                        type="number"
-                    >
-
-                </div>
-
-                <div class="field">
-
-                    <label>
-                        Height
-                    </label>
-
-                    <input
-                        id="fourSixHeight"
-                        value="1800"
-                        type="number"
-                    >
-
-                </div>
-
-                <div class="field">
-
-                    <label>
-                        DPI
-                    </label>
-
-                    <input
-                        value="300"
-                        disabled
-                    >
-
-                </div>
-
-            </div>
-
-            <div class="actions">
-
-                <button
-                    class="btn btn-primary"
-                    onclick="process46()"
+                <img
+                    id="fourSixOriginal"
+                    alt=""
                 >
-                    Generate 4×6
-                </button>
 
             </div>
 
@@ -1667,14 +2630,70 @@ function fourSixTool(area){
 
         <div class="card">
 
-            <h3>
-                Preview
-            </h3>
+            <div class="preview-label">
+                FINAL 4×6 PREVIEW
+            </div>
 
-            <img
-                id="fourSixPreview"
-                class="preview"
+            <div class="preview-box">
+
+                <img
+                    id="fourSixFinal"
+                    alt=""
+                    style="
+                        width:240px;
+                        aspect-ratio:2/3;
+                        object-fit:cover;
+                    "
+                >
+
+                <span class="note">
+                    1200 × 1800 px
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card" style="margin-top:18px">
+
+        <h3>
+            A4 Print Preview
+        </h3>
+
+        <p class="note">
+            Photos are automatically arranged on
+            an A4 sheet with print-safe spacing.
+        </p>
+
+
+        <div class="print-preview-wrapper">
+
+            <div
+                id="fourSixA4"
+                class="a4-sheet photo-4x6"
+            ></div>
+
+        </div>
+
+
+        <div class="download-row">
+
+            <button
+                class="btn btn-primary"
+                onclick="download46()"
             >
+                Download 4×6 JPG
+            </button>
+
+            <button
+                class="btn btn-success"
+                onclick="download46A4()"
+            >
+                Download in A4
+            </button>
 
         </div>
 
@@ -1684,140 +2703,150 @@ function fourSixTool(area){
 
 
     document
-        .getElementById("fourSixFile")
+        .getElementById(
+            "fourSixFile"
+        )
         .addEventListener(
             "change",
-            function(){
-
-                previewFile(
-                    this,
-                    "fourSixPreview"
-                );
-
-            }
+            preview46
         );
 }
 
 
-async function process46(){
+function preview46(event){
 
-    const input =
+    const file =
+        event.target.files[0];
+
+    if(!file)return;
+
+    const url =
+        URL.createObjectURL(file);
+
+    document.getElementById(
+        "fourSixOriginal"
+    ).src=url;
+
+    document.getElementById(
+        "fourSixFinal"
+    ).src=url;
+
+    create46A4(url);
+}
+
+
+function create46A4(url){
+
+    const sheet =
         document.getElementById(
-            "fourSixFile"
+            "fourSixA4"
         );
 
-    if(!input.files.length){
+    if(!sheet)return;
+
+    sheet.innerHTML="";
+
+    /*
+       A4 portrait:
+       210 × 297 mm
+
+       4×6:
+       101.6 × 152.4 mm
+
+       Two 4×6 photos fit side-by-side
+       with sensible margins.
+    */
+
+    for(
+        let i=0;
+        i<4;
+        i++
+    ){
+
+        sheet.innerHTML += `
+
+            <img
+                class="a4-photo"
+                src="${url}"
+                alt=""
+            >
+
+        `;
+    }
+}
+
+
+async function download46(){
+
+    const file =
+        document.getElementById(
+            "fourSixFile"
+        ).files[0];
+
+    if(!file){
 
         alert(
-            "Please select photo."
+            "Please select a photo."
         );
 
         return;
     }
 
     await processImage(
-        input.files[0],
-        "4x6 Photo Print",
+        file,
+        "4x6-Photo",
         1200,
-        1800
+        1800,
+        "4x6-1200x1800.jpg"
     );
 }
 
 
-/* =========================================================
-   GENERIC IMAGE PROCESSOR
-========================================================= */
+async function download46A4(){
 
-async function processImage(
-    file,
-    tool,
-    width,
-    height
-){
-
-    const form =
-        new FormData();
-
-    form.append(
-        "file",
-        file
-    );
-
-    form.append(
-        "tool",
-        tool
-    );
-
-    form.append(
-        "width",
-        width
-    );
-
-    form.append(
-        "height",
-        height
-    );
-
-    form.append(
-        "quality",
-        "92"
-    );
-
-    try{
-
-        const response =
-            await fetch(
-                "/api/process/image",
-                {
-                    method:"POST",
-                    body:form
-                }
-            );
-
-        if(!response.ok){
-
-            const data =
-                await response.json();
-
-            throw new Error(
-                data.error ||
-                "Processing failed"
-            );
-        }
-
-        const blob =
-            await response.blob();
-
-        downloadBlob(
-            blob,
-            tool.replace(/\s+/g,"-") +
-            ".jpg"
+    const image =
+        getPreviewImage(
+            "fourSixFinal"
         );
 
-    }catch(error){
+    if(!image){
 
-        alert(error.message);
+        alert(
+            "Please select a photo."
+        );
+
+        return;
     }
+
+    await downloadCanvasAsA4(
+        image,
+        "4x6-Photos-A4.pdf"
+    );
 }
 
 
 /* =========================================================
-   IMAGE RESIZER
+   RESIZE
 ========================================================= */
 
-function imageResizeTool(area){
+function resizeTool(area){
 
     area.innerHTML = `
 
     <div class="hero">
 
         <span class="pill">
-            CUSTOM DIMENSIONS
+            GLOBAL DIMENSION PRESETS
         </span>
 
         <h1>
             Image Resizer
         </h1>
+
+        <p>
+            Choose a standard size or enter
+            custom dimensions.
+        </p>
 
     </div>
 
@@ -1828,6 +2857,7 @@ function imageResizeTool(area){
 
             <input
                 id="resizeFile"
+                class="file-input"
                 type="file"
                 accept="image/*"
             >
@@ -1835,48 +2865,96 @@ function imageResizeTool(area){
         </div>
 
 
-        <div class="controls">
+        <div class="dimension-panel">
 
             <div class="field">
 
                 <label>
-                    Width PX
+                    Standard Size
+                </label>
+
+                <select
+                    id="resizePreset"
+                    onchange="resizePreset()"
+                >
+
+                    <option value="idCard">
+                        ID Card — 1013×638
+                    </option>
+
+                    <option value="passport">
+                        Passport — 413×531
+                    </option>
+
+                    <option value="photo4x6">
+                        4×6 — 1200×1800
+                    </option>
+
+                    <option value="a4">
+                        A4 — 2480×3508
+                    </option>
+
+                    <option value="a5">
+                        A5 — 1748×2480
+                    </option>
+
+                    <option value="a3">
+                        A3 — 3508×4961
+                    </option>
+
+                    <option value="square2x2">
+                        2×2 — 600×600
+                    </option>
+
+                    <option value="custom">
+                        Custom
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Width
                 </label>
 
                 <input
                     id="resizeWidth"
-                    value="800"
+                    value="1013"
                     type="number"
                 >
 
             </div>
 
+
             <div class="field">
 
                 <label>
-                    Height PX
+                    Height
                 </label>
 
                 <input
                     id="resizeHeight"
-                    value="800"
+                    value="638"
                     type="number"
                 >
 
             </div>
 
+
             <div class="field">
 
                 <label>
-                    Quality
+                    DPI
                 </label>
 
                 <input
-                    id="resizeQuality"
-                    value="90"
+                    id="resizeDPI"
+                    value="300"
                     type="number"
-                    min="1"
-                    max="100"
                 >
 
             </div>
@@ -1888,7 +2966,7 @@ function imageResizeTool(area){
 
             <button
                 class="btn btn-primary"
-                onclick="resizeImage()"
+                onclick="downloadResize()"
             >
                 Resize & Download
             </button>
@@ -1901,7 +2979,33 @@ function imageResizeTool(area){
 }
 
 
-async function resizeImage(){
+function resizePreset(){
+
+    const key =
+        document.getElementById(
+            "resizePreset"
+        ).value;
+
+    if(key==="custom")return;
+
+    const d =
+        DIMENSIONS[key];
+
+    document.getElementById(
+        "resizeWidth"
+    ).value=d.width;
+
+    document.getElementById(
+        "resizeHeight"
+    ).value=d.height;
+
+    document.getElementById(
+        "resizeDPI"
+    ).value=d.dpi || 300;
+}
+
+
+async function downloadResize(){
 
     const file =
         document.getElementById(
@@ -1911,30 +3015,41 @@ async function resizeImage(){
     if(!file){
 
         alert(
-            "Choose an image."
+            "Please select an image."
         );
 
         return;
     }
 
+    const width =
+        Number(
+            document.getElementById(
+                "resizeWidth"
+            ).value
+        );
+
+    const height =
+        Number(
+            document.getElementById(
+                "resizeHeight"
+            ).value
+        );
+
     await processImage(
         file,
-        "Image Resizer",
-        document.getElementById(
-            "resizeWidth"
-        ).value,
-        document.getElementById(
-            "resizeHeight"
-        ).value
+        "Image-Resize",
+        width,
+        height,
+        "resized-image.jpg"
     );
 }
 
 
 /* =========================================================
-   JPG PNG TO PDF
+   IMAGE TO PDF
 ========================================================= */
 
-function imageToPDFTool(area){
+function imagePDFTool(area){
 
     area.innerHTML = `
 
@@ -1945,25 +3060,42 @@ function imageToPDFTool(area){
         </span>
 
         <h1>
-            PDF Converter
+            Image to PDF
         </h1>
-
-        <p>
-            Select multiple images.
-            They will become PDF pages.
-        </p>
 
     </div>
 
 
     <div class="card">
 
-        <input
-            id="pdfImages"
-            type="file"
-            accept="image/jpeg,image/png"
-            multiple
-        >
+        <div class="drop-zone">
+
+            <input
+                id="pdfImages"
+                class="file-input"
+                type="file"
+                accept="image/jpeg,image/png"
+                multiple
+            >
+
+            <span class="note">
+                Multiple images supported
+            </span>
+
+        </div>
+
+
+        <div class="dimension-info">
+
+            Default page:
+
+            <strong>
+                A4 • 210 × 297 mm •
+                2480 × 3508 px @ 300 DPI
+            </strong>
+
+        </div>
+
 
         <div class="actions">
 
@@ -2025,7 +3157,8 @@ async function createPDF(){
         if(!response.ok){
 
             const data =
-                await response.json();
+                await response
+                    .json();
 
             throw new Error(
                 data.error
@@ -2037,7 +3170,7 @@ async function createPDF(){
 
         downloadBlob(
             blob,
-            "converted.pdf"
+            "images-to-pdf.pdf"
         );
 
     }catch(error){
@@ -2070,14 +3203,19 @@ function pdfTool(area,title){
 
     <div class="card">
 
-        <input
-            id="pdfFile"
-            type="file"
-            accept="application/pdf"
-        >
+        <div class="drop-zone">
+
+            <input
+                id="pdfFile"
+                class="file-input"
+                type="file"
+                accept="application/pdf"
+            >
+
+        </div>
 
 
-        <div class="controls">
+        <div class="dimension-panel">
 
             <div class="field">
 
@@ -2132,7 +3270,7 @@ function pdfTool(area,title){
 
         <div
             id="pdfResult"
-            style="margin-top:20px"
+            style="margin-top:18px"
         ></div>
 
     </div>
@@ -2151,7 +3289,7 @@ async function analyzePDF(tool){
     if(!file){
 
         alert(
-            "Choose PDF."
+            "Please choose a PDF."
         );
 
         return;
@@ -2202,31 +3340,40 @@ async function analyzePDF(tool){
             "pdfResult"
         ).innerHTML = `
 
-            <div class="note">
-                Total Pages:
-                ${data.pages}
+            <div class="dimension-info">
+
+                Pages:
+
+                <strong>
+                    ${data.pages}
+                </strong>
+
             </div>
 
             ${
                 data.dimensions
-                    .map(page => `
+                    .map(
+                        p => `
 
-                    <div class="history-row">
+                        <div
+                            class="history-row"
+                        >
 
-                        <span>
-                            Page ${page.page}
-                        </span>
+                            <span>
+                                Page ${p.page}
+                            </span>
 
-                        <span>
-                            ${page.width.toFixed(1)}
-                            ×
-                            ${page.height.toFixed(1)}
-                            pt
-                        </span>
+                            <span>
+                                ${p.width.toFixed(1)}
+                                ×
+                                ${p.height.toFixed(1)}
+                                pt
+                            </span>
 
-                    </div>
+                        </div>
 
-                    `)
+                        `
+                    )
                     .join("")
             }
 
@@ -2240,7 +3387,7 @@ async function analyzePDF(tool){
 
 
 /* =========================================================
-   30 DAY HISTORY
+   HISTORY
 ========================================================= */
 
 async function historyTool(area){
@@ -2257,7 +3404,7 @@ async function historyTool(area){
         <div class="hero">
 
             <span class="pill">
-                SERVER-SIDE • 30 DAYS
+                SERVER SIDE • 30 DAYS
             </span>
 
             <h1>
@@ -2266,7 +3413,7 @@ async function historyTool(area){
 
             <p>
                 History is stored on the server,
-                not browser localStorage.
+                not browser storage.
             </p>
 
         </div>
@@ -2276,10 +3423,9 @@ async function historyTool(area){
 
             ${
                 history.length
-
                 ?
-
-                history.map(item => `
+                history.map(
+                    item => `
 
                     <div class="history-row">
 
@@ -2301,6 +3447,7 @@ async function historyTool(area){
 
                         </div>
 
+
                         <div>
 
                             ${new Date(
@@ -2319,14 +3466,13 @@ async function historyTool(area){
 
                     </div>
 
-                `).join("")
-
+                    `
+                ).join("")
                 :
-
                 `
-                <div class="note">
-                    No history available.
-                </div>
+                    <div class="note">
+                        No history available.
+                    </div>
                 `
             }
 
@@ -2340,13 +3486,7 @@ async function historyTool(area){
 
         <div class="card">
 
-            <p>
-                Unable to load history.
-            </p>
-
-            <small>
-                Backend connection required.
-            </small>
+            Unable to load history.
 
         </div>
 
@@ -2356,12 +3496,357 @@ async function historyTool(area){
 
 
 /* =========================================================
+   IMAGE PROCESS
+========================================================= */
+
+async function processImage(
+    file,
+    tool,
+    width,
+    height,
+    filename
+){
+
+    const form =
+        new FormData();
+
+    form.append(
+        "file",
+        file
+    );
+
+    form.append(
+        "tool",
+        tool
+    );
+
+    form.append(
+        "width",
+        width
+    );
+
+    form.append(
+        "height",
+        height
+    );
+
+    form.append(
+        "quality",
+        "92"
+    );
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/process/image",
+                {
+                    method:"POST",
+                    body:form
+                }
+            );
+
+        if(!response.ok){
+
+            const data =
+                await response.json();
+
+            throw new Error(
+                data.error ||
+                "Processing failed"
+            );
+        }
+
+        const blob =
+            await response.blob();
+
+        downloadBlob(
+            blob,
+            filename
+        );
+
+    }catch(error){
+
+        alert(error.message);
+    }
+}
+
+
+/* =========================================================
+   GET PREVIEW IMAGE
+========================================================= */
+
+function getPreviewImage(id){
+
+    const element =
+        document.getElementById(id);
+
+    if(!element)return null;
+
+    if(element.tagName==="IMG"){
+
+        return element.src || null;
+    }
+
+    const img =
+        element.querySelector(
+            "img"
+        );
+
+    return img
+        ? img.src
+        : null;
+}
+
+
+/* =========================================================
+   CLIENT SIDE A4 PDF
+========================================================= */
+
+async function downloadCanvasAsA4(
+    imageSrc,
+    filename
+){
+
+    /*
+       This generates a printable A4 canvas
+       in the browser.
+
+       For a true PDF file, backend should use
+       a PDF library such as PDFKit/Puppeteer.
+    */
+
+    const img =
+        new Image();
+
+    img.onload =
+        () => {
+
+            const canvas =
+                document.createElement(
+                    "canvas"
+                );
+
+            /*
+               A4 at 150 DPI for browser
+               generation to keep memory reasonable.
+            */
+
+            canvas.width=1240;
+            canvas.height=1754;
+
+            const ctx =
+                canvas.getContext(
+                    "2d"
+                );
+
+            ctx.fillStyle="white";
+
+            ctx.fillRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+
+            /*
+               Determine layout based on
+               current tool.
+            */
+
+            const area =
+                document.getElementById(
+                    "customerToolArea"
+                );
+
+            const fourSix =
+                !!area.querySelector(
+                    "#fourSixA4"
+                );
+
+            const passport =
+                !!area.querySelector(
+                    "#passportA4Preview"
+                );
+
+
+            if(fourSix){
+
+                drawRepeated(
+                    ctx,
+                    img,
+                    2,
+                    3,
+                    110,
+                    110,
+                    560,
+                    840
+                );
+
+            }else if(passport){
+
+                drawRepeated(
+                    ctx,
+                    img,
+                    4,
+                    5,
+                    130,
+                    120,
+                    245,
+                    315
+                );
+
+            }else{
+
+                drawRepeated(
+                    ctx,
+                    img,
+                    2,
+                    5,
+                    80,
+                    100,
+                    1080,
+                    400
+                );
+            }
+
+
+            /*
+               Download PNG representation.
+
+               Production backend can convert
+               this exact layout to PDF.
+            */
+
+            canvas.toBlob(
+                blob => {
+
+                    downloadBlob(
+                        blob,
+                        filename
+                            .replace(
+                                ".pdf",
+                                ".png"
+                            )
+                    );
+
+                },
+                "image/png"
+            );
+
+        };
+
+    img.src=imageSrc;
+}
+
+
+function drawRepeated(
+    ctx,
+    img,
+    cols,
+    rows,
+    startX,
+    startY,
+    cellW,
+    cellH
+){
+
+    let count=0;
+
+    for(
+        let row=0;
+        row<rows;
+        row++
+    ){
+
+        for(
+            let col=0;
+            col<cols;
+            col++
+        ){
+
+            const x =
+                startX +
+                col *
+                (cellW+20);
+
+            const y =
+                startY +
+                row *
+                (cellH+20);
+
+            if(
+                x+cellW >
+                ctx.canvas.width ||
+                y+cellH >
+                ctx.canvas.height
+            ){
+                continue;
+            }
+
+            ctx.drawImage(
+                img,
+                x,
+                y,
+                cellW,
+                cellH
+            );
+
+            count++;
+        }
+    }
+}
+
+
+/* =========================================================
+   DOWNLOAD
+========================================================= */
+
+function downloadBlob(
+    blob,
+    filename
+){
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+    const a =
+        document.createElement(
+            "a"
+        );
+
+    a.href=url;
+
+    a.download=filename;
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    a.remove();
+
+    setTimeout(
+        () =>
+            URL.revokeObjectURL(
+                url
+            ),
+        1000
+    );
+}
+
+
+/* =========================================================
    ADMIN DASHBOARD
 ========================================================= */
 
 async function showAdmin(){
 
-    document.getElementById("app").innerHTML = `
+    document.getElementById(
+        "app"
+    ).innerHTML = `
 
     <div class="admin-layout">
 
@@ -2427,7 +3912,8 @@ async function adminPage(page){
             "adminContent"
         );
 
-    if(page === "dashboard"){
+
+    if(page==="dashboard"){
 
         const customers =
             await api(
@@ -2439,15 +3925,6 @@ async function adminPage(page){
                 c => c.active
             ).length;
 
-        const pending =
-            customers.reduce(
-                (sum,c) =>
-                    sum + Number(
-                        c.pending || 0
-                    ),
-                0
-            );
-
         area.innerHTML = `
 
         <h1>
@@ -2455,7 +3932,7 @@ async function adminPage(page){
         </h1>
 
         <p class="note">
-            Customer and payment management
+            Customer account and payment management
         </p>
 
 
@@ -2494,9 +3971,14 @@ async function adminPage(page){
                 </small>
 
                 <strong>
-                    ₹${pending.toLocaleString(
-                        "en-IN"
-                    )}
+                    ₹${customers.reduce(
+                        (s,c)=>
+                            s+
+                            Number(
+                                c.pending||0
+                            ),
+                        0
+                    ).toLocaleString("en-IN")}
                 </strong>
 
             </div>
@@ -2522,7 +4004,7 @@ async function adminPage(page){
     }
 
 
-    if(page === "customers"){
+    if(page==="customers"){
 
         const customers =
             await api(
@@ -2536,6 +4018,7 @@ async function adminPage(page){
             justify-content:space-between;
             align-items:center;
             gap:15px;
+            flex-wrap:wrap;
         ">
 
             <div>
@@ -2545,10 +4028,11 @@ async function adminPage(page){
                 </h1>
 
                 <p class="note">
-                    Accounts can only be created by Admin.
+                    Only Admin can create customer accounts.
                 </p>
 
             </div>
+
 
             <button
                 class="btn btn-primary"
@@ -2601,82 +4085,91 @@ async function adminPage(page){
 
                     </thead>
 
+
                     <tbody>
 
                     ${
-                        customers.map(c => `
+                        customers.map(
+                            c => `
 
-                        <tr>
+                            <tr>
 
-                            <td>
-                                ${escapeHTML(
-                                    c.name
-                                )}
-                            </td>
+                                <td>
+                                    ${escapeHTML(
+                                        c.name
+                                    )}
+                                </td>
 
-                            <td>
-                                ${escapeHTML(
-                                    c.username
-                                )}
-                            </td>
+                                <td>
+                                    ${escapeHTML(
+                                        c.username
+                                    )}
+                                </td>
 
-                            <td>
-                                ${escapeHTML(
-                                    c.mobile
-                                )}
-                            </td>
+                                <td>
+                                    ${escapeHTML(
+                                        c.mobile
+                                    )}
+                                </td>
 
-                            <td>
+                                <td>
 
-                                <span
-                                    class="badge
-                                    ${
-                                        c.active
-                                        ? "badge-active"
-                                        : "badge-inactive"
-                                    }"
-                                >
+                                    <span
+                                        class="badge
+                                        ${
+                                            c.active
+                                            ?
+                                            "badge-green"
+                                            :
+                                            "badge-yellow"
+                                        }"
+                                    >
 
-                                    ${
-                                        c.active
-                                        ? "Active"
-                                        : "Inactive"
-                                    }
+                                        ${
+                                            c.active
+                                            ?
+                                            "Active"
+                                            :
+                                            "Inactive"
+                                        }
 
-                                </span>
+                                    </span>
 
-                            </td>
+                                </td>
 
-                            <td>
-                                ${c.daysLeft}
-                                Days
-                            </td>
+                                <td>
+                                    ${c.daysLeft}
+                                    Days
+                                </td>
 
-                            <td>
+                                <td>
 
-                                <button
-                                    class="btn"
-                                    onclick="
-                                        toggleCustomer(
-                                            ${c.id},
-                                            ${!c.active}
-                                        )
-                                    "
-                                >
+                                    <button
+                                        class="btn btn-small"
+                                        onclick="
+                                            toggleCustomer(
+                                                ${c.id},
+                                                ${!c.active}
+                                            )
+                                        "
+                                    >
 
-                                    ${
-                                        c.active
-                                        ? "Disable"
-                                        : "Enable"
-                                    }
+                                        ${
+                                            c.active
+                                            ?
+                                            "Disable"
+                                            :
+                                            "Enable"
+                                        }
 
-                                </button>
+                                    </button>
 
-                            </td>
+                                </td>
 
-                        </tr>
+                            </tr>
 
-                        `).join("")
+                            `
+                        ).join("")
                     }
 
                     </tbody>
@@ -2693,7 +4186,7 @@ async function adminPage(page){
     }
 
 
-    if(page === "payments"){
+    if(page==="payments"){
 
         const payments =
             await api(
@@ -2706,6 +4199,8 @@ async function adminPage(page){
             display:flex;
             justify-content:space-between;
             align-items:center;
+            gap:15px;
+            flex-wrap:wrap;
         ">
 
             <div>
@@ -2715,10 +4210,11 @@ async function adminPage(page){
                 </h1>
 
                 <p class="note">
-                    Customer payment management
+                    Customer payment records
                 </p>
 
             </div>
+
 
             <button
                 class="btn btn-primary"
@@ -2763,54 +4259,66 @@ async function adminPage(page){
 
                     </thead>
 
+
                     <tbody>
 
                     ${
-                        payments.map(p => `
+                        payments.map(
+                            p => `
 
-                        <tr>
+                            <tr>
 
-                            <td>
-                                ${escapeHTML(
-                                    p.name
-                                )}
-                                <br>
-                                <small>
+                                <td>
+
                                     ${escapeHTML(
-                                        p.username
+                                        p.name
                                     )}
-                                </small>
-                            </td>
 
-                            <td>
-                                ₹${Number(
-                                    p.amount
-                                ).toLocaleString(
-                                    "en-IN"
-                                )}
-                            </td>
+                                    <br>
 
-                            <td>
-                                ${escapeHTML(
-                                    p.status
-                                )}
-                            </td>
+                                    <small>
+                                        ${escapeHTML(
+                                            p.username
+                                        )}
+                                    </small>
 
-                            <td>
-                                ${
-                                    p.created_at
-                                    ?
-                                    new Date(
+                                </td>
+
+
+                                <td>
+                                    ₹${Number(
+                                        p.amount
+                                    ).toLocaleString(
+                                        "en-IN"
+                                    )}
+                                </td>
+
+
+                                <td>
+                                    ${escapeHTML(
+                                        p.status
+                                    )}
+                                </td>
+
+
+                                <td>
+
+                                    ${
                                         p.created_at
-                                    ).toLocaleString()
-                                    :
-                                    "-"
-                                }
-                            </td>
+                                        ?
+                                        new Date(
+                                            p.created_at
+                                        ).toLocaleString()
+                                        :
+                                        "-"
+                                    }
 
-                        </tr>
+                                </td>
 
-                        `).join("")
+                            </tr>
+
+                            `
+                        ).join("")
                     }
 
                     </tbody>
@@ -2863,9 +4371,9 @@ async function createCustomer(){
             "Email:"
         ) || "";
 
-    const validity =
+    const days =
         prompt(
-            "Validity in Days:",
+            "Validity Days:",
             "365"
         ) || "365";
 
@@ -2890,35 +4398,37 @@ async function createCustomer(){
                         email,
 
                         validityDays:
-                            Number(
-                                validity
-                            )
+                            Number(days)
 
                     })
                 }
             );
 
         alert(
-            "Customer account created successfully.\n\n" +
-            "Username: " +
-            result.username +
-            "\nExpiry: " +
+            "Customer created successfully.\n\n"+
+            "Username: "+
+            result.username+
+            "\nExpiry: "+
             new Date(
                 result.expiresAt
             ).toLocaleDateString()
         );
 
-        adminPage("customers");
+        adminPage(
+            "customers"
+        );
 
     }catch(error){
 
-        alert(error.message);
+        alert(
+            error.message
+        );
     }
 }
 
 
 /* =========================================================
-   CUSTOMER ACTIVE / INACTIVE
+   CUSTOMER STATUS
 ========================================================= */
 
 async function toggleCustomer(
@@ -2929,8 +4439,7 @@ async function toggleCustomer(
     try{
 
         await api(
-            "/api/admin/customers/" +
-            id,
+            "/api/admin/customers/"+id,
             {
                 method:"PATCH",
 
@@ -2940,11 +4449,15 @@ async function toggleCustomer(
             }
         );
 
-        adminPage("customers");
+        adminPage(
+            "customers"
+        );
 
     }catch(error){
 
-        alert(error.message);
+        alert(
+            error.message
+        );
     }
 }
 
@@ -2968,13 +4481,13 @@ async function recordPayment(){
             )
             .join("\n");
 
-    const customerId =
+    const id =
         prompt(
-            "Customer ID:\n\n" +
+            "Customer ID:\n\n"+
             list
         );
 
-    if(!customerId)return;
+    if(!id)return;
 
     const amount =
         prompt(
@@ -2993,16 +4506,13 @@ async function recordPayment(){
                 body:JSON.stringify({
 
                     customerId:
-                        Number(
-                            customerId
-                        ),
+                        Number(id),
 
                     amount:
-                        Number(
-                            amount
-                        ),
+                        Number(amount),
 
-                    status:"Paid"
+                    status:
+                        "Paid"
 
                 })
             }
@@ -3012,57 +4522,21 @@ async function recordPayment(){
             "Payment recorded."
         );
 
-        adminPage("payments");
+        adminPage(
+            "payments"
+        );
 
     }catch(error){
 
-        alert(error.message);
+        alert(
+            error.message
+        );
     }
 }
 
 
 /* =========================================================
-   DOWNLOAD
-========================================================= */
-
-function downloadBlob(
-    blob,
-    filename
-){
-
-    const url =
-        URL.createObjectURL(
-            blob
-        );
-
-    const a =
-        document.createElement(
-            "a"
-        );
-
-    a.href = url;
-
-    a.download =
-        filename;
-
-    document.body.appendChild(a);
-
-    a.click();
-
-    a.remove();
-
-    setTimeout(
-        () =>
-            URL.revokeObjectURL(
-                url
-            ),
-        1000
-    );
-}
-
-
-/* =========================================================
-   START APP
+   START
 ========================================================= */
 
 start();
