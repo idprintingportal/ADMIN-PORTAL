@@ -569,6 +569,19 @@
       font-weight: 600;
     }
 
+    .history-delete-btn {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    .history-delete-btn:hover { background: rgba(239, 68, 68, 0.4); }
+
     #cropModal {
       display: none;
       position: fixed;
@@ -619,7 +632,7 @@
   <input type="email" id="loginEmail" class="login-input" placeholder="ईमेल आईडी दर्ज करें" value="oneplus777000@gmail.com">
   <input type="password" id="loginPass" class="login-input" placeholder="पासवर्ड दर्ज करें">
   <button id="authBtn" class="login-btn">लॉगिन करें</button>
-  <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड!</div>
+  <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड, या एडमिन द्वारा आईडी असाइन नहीं की गई है!</div>
   
   <div>
     <span id="goToChangePwd" class="auth-link">🔑 Change Password?</span>
@@ -656,7 +669,8 @@
     <button class="tab-btn" onclick="switchTab('tab-resizer')">📐 Image Resizer</button>
     <button class="tab-btn" onclick="switchTab('tab-pdf-to-jpg')">🖼️ PDF to JPG (Manual DPI)</button>
     <button class="tab-btn" onclick="switchTab('tab-pdf-compressor')">🗜️ PDF Compressor</button>
-    <button class="tab-btn" onclick="switchTab('tab-history')" style="border-color: rgba(56, 189, 248, 0.5);">📂 30-Day History</button>
+    <button class="tab-btn" onclick="switchTab('tab-history')" style="border-color: rgba(56, 189, 248, 0.5);">📂 History</button>
+    <button id="adminTabBtn" class="tab-btn" onclick="switchTab('tab-admin')" style="display:none; border-color: #f59e0b; color:#fbbf24;">⚙️ Admin Panel</button>
   </div>
 
   <div class="container">
@@ -1092,11 +1106,11 @@
       </div>
     </div>
 
-    <!-- TAB 10: 30-DAY PRINT HISTORY -->
+    <!-- TAB 10: 30-DAY PRINT HISTORY (PERSISTENT UNLESS ADMIN CLEARS) -->
     <div id="tab-history" class="tab-content">
-      <div class="badge">Automatic 30-Day Auto-Delete Storage • All Features Supported</div>
-      <h1>30-Day Print & Download History</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">आपके द्वारा पिछले 30 दिनों में डाउनलोड की गई सभी फाइल्स यहाँ सुरक्षित हैं। 30 दिन बाद ये अपने-आप हट जाएँगी।</p>
+      <div class="badge">Persistent Storage • Retained Until Admin Clears</div>
+      <h1>Print & Download History</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">आपके द्वारा डाउनलोड की गई सभी फाइल्स का रिकॉर्ड सुरक्षित है। यह तब तक नहीं मिटेगा जब तक एडमिन इसे क्लियर नहीं करता।</p>
 
       <div style="text-align: right; margin-bottom: 10px;">
         <button onclick="clearAllHistoryDB()" class="action-btn btn-reset" style="padding: 6px 14px; font-size: 11px;">🗑️ Clear Entire History Now</button>
@@ -1114,7 +1128,54 @@
           </thead>
           <tbody id="historyTableBody">
             <tr>
-              <td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">कोई 30-दिन पुराना प्रिंट रिकॉर्ड नहीं मिला।</td>
+              <td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">कोई प्रिंट रिकॉर्ड नहीं मिला।</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 11: ADMIN PANEL -->
+    <div id="tab-admin" class="tab-content">
+      <div class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">Master Administrator Panel</div>
+      <h1 style="color: #fbbf24;">Distributor Management</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। जब तक एडमिन आईडी असाइन नहीं करता, कोई बाहर से लॉगिन नहीं कर पाएगा।</p>
+
+      <div class="control-panel" style="max-width: 500px; text-align: left; margin-bottom: 25px;">
+        <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 12px;">➕ Add New Distributor</h3>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div>
+            <label style="font-size: 11px; color: var(--text-muted); display:block; margin-bottom:4px;">Business / Name:</label>
+            <input type="text" id="newDistName" class="text-field-input" style="max-width:100%;" placeholder="e.g. Shri Ganesh Digital Seva">
+          </div>
+          <div>
+            <label style="font-size: 11px; color: var(--text-muted); display:block; margin-bottom:4px;">Distributor Email (Login ID):</label>
+            <input type="email" id="newDistEmail" class="text-field-input" style="max-width:100%;" placeholder="user@gmail.com">
+          </div>
+          <div>
+            <label style="font-size: 11px; color: var(--text-muted); display:block; margin-bottom:4px;">Assign Password:</label>
+            <input type="text" id="newDistPass" class="text-field-input" style="max-width:100%;" placeholder="SecurePass123">
+          </div>
+          <button onclick="addNewDistributor()" class="action-btn btn-add" style="margin-top: 5px;">🚀 Assign ID & Password</button>
+          <div id="distMsg" style="font-size: 12px; font-weight: 500; display:none; margin-top:5px;"></div>
+        </div>
+      </div>
+
+      <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 10px; text-align: left; max-width: 850px; margin-left: auto; margin-right: auto;">Assigned Distributors (Lifetime Access unless deleted by Admin)</h3>
+      <div class="history-table-container" style="max-width: 850px; margin-left: auto; margin-right: auto;">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Business / Name</th>
+              <th>Login Email</th>
+              <th>Password</th>
+              <th>Expiry / Validity</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="distributorTableBody">
+            <tr>
+              <td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर असाइन नहीं किया गया है।</td>
             </tr>
           </tbody>
         </table>
@@ -1144,7 +1205,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = '';
   }
 
-  const AUTH_EMAIL = "oneplus777000@gmail.com";
+  const ADMIN_EMAIL = "oneplus777000@gmail.com";
   const INITIAL_PASS = "Pass@123";
   const EXPIRED_PASS = "Harshal@6195";
   const ONE_YEAR_DAYS = 365;
@@ -1206,11 +1267,98 @@
   }
 
   // ==========================================================
-  // INDEXEDDB 30-DAY STORAGE ENGINE
+  // DISTRIBUTOR / ACCOUNT MANAGEMENT (ADMIN PANEL)
   // ==========================================================
-  const DB_NAME = 'PrintPortal30DayDB';
+  function getDistributorsList() {
+    let list = localStorage.getItem('portal_distributors_list');
+    if (!list) return [];
+    try { return JSON.parse(list); } catch(e) { return []; }
+  }
+
+  function saveDistributorsList(arr) {
+    localStorage.setItem('portal_distributors_list', JSON.stringify(arr));
+  }
+
+  function addNewDistributor() {
+    const name = document.getElementById('newDistName').value.trim();
+    const email = document.getElementById('newDistEmail').value.trim().toLowerCase();
+    const pass = document.getElementById('newDistPass').value.trim();
+    const msg = document.getElementById('distMsg');
+
+    if (!name || !email || !pass) {
+      msg.innerText = "⚠️ कृपया सभी फ़ील्ड भरें!";
+      msg.style.color = "#ef4444";
+      msg.style.display = "block";
+      return;
+    }
+
+    if (email === ADMIN_EMAIL.toLowerCase()) {
+      msg.innerText = "⚠️ यह ईमेल एडमिन ईमेल है!";
+      msg.style.color = "#ef4444";
+      msg.style.display = "block";
+      return;
+    }
+
+    let dists = getDistributorsList();
+    if (dists.some(d => d.email === email)) {
+      msg.innerText = "⚠️ यह ईमेल आईडी पहले से असाइन की जा चुकी है!";
+      msg.style.color = "#ef4444";
+      msg.style.display = "block";
+      return;
+    }
+
+    const expiryDateText = "Lifetime (Until Admin Deletes)";
+
+    dists.push({ id: Date.now(), name, email, pass, expiryDateText });
+    saveDistributorsList(dists);
+
+    msg.innerText = "✅ डिस्ट्रीब्यूटर आईडी सफलतापूर्वक असाइन कर दी गई है!";
+    msg.style.color = "#34d399";
+    msg.style.display = "block";
+
+    document.getElementById('newDistName').value = '';
+    document.getElementById('newDistEmail').value = '';
+    document.getElementById('newDistPass').value = '';
+
+    renderDistributorsTable();
+  }
+
+  function renderDistributorsTable() {
+    const tbody = document.getElementById('distributorTableBody');
+    const dists = getDistributorsList();
+    tbody.innerHTML = '';
+
+    if (!dists.length) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर असाइन नहीं किया गया है।</td></tr>`;
+      return;
+    }
+
+    dists.forEach((d) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${d.name}</strong></td>
+        <td>${d.email}</td>
+        <td><code style="background:#000; padding:3px 6px; border-radius:4px; color:#38bdf8;">${d.pass}</code></td>
+        <td style="color: #34d399; font-weight:600;">${d.expiryDateText}</td>
+        <td><button class="history-delete-btn" onclick="deleteDistributor(${d.id})">🗑️ Delete</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function deleteDistributor(id) {
+    if (!confirm('क्या आप इस डिस्ट्रीब्यूटर का एक्सेस हमेशा के लिए हटाना चाहते हैं?')) return;
+    let dists = getDistributorsList();
+    dists = dists.filter(d => d.id !== id);
+    saveDistributorsList(dists);
+    renderDistributorsTable();
+  }
+
+  // ==========================================================
+  // INDEXEDDB HISTORY STORAGE ENGINE (NO AUTO-DELETE)
+  // ==========================================================
+  const DB_NAME = 'PrintPortalPersistentDB';
   const DB_STORE = 'print_records';
-  const RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
 
   function openHistoryDB() {
     return new Promise((resolve, reject) => {
@@ -1242,37 +1390,13 @@
       };
 
       store.add(record);
-      tx.oncomplete = () => {
-        cleanupOldHistoryRecords();
-      };
     } catch(err) {
       console.error("Storage error:", err);
     }
   }
 
-  async function cleanupOldHistoryRecords() {
-    try {
-      const db = await openHistoryDB();
-      const tx = db.transaction(DB_STORE, 'readwrite');
-      const store = tx.objectStore(DB_STORE);
-      const now = Date.now();
-
-      const request = store.openCursor();
-      request.onsuccess = function(e) {
-        const cursor = e.target.result;
-        if (cursor) {
-          if (now - cursor.value.timestamp > RETENTION_MS) {
-            cursor.delete();
-          }
-          cursor.continue();
-        }
-      };
-    } catch(err) {}
-  }
-
   async function renderHistoryTable() {
     try {
-      await cleanupOldHistoryRecords();
       const db = await openHistoryDB();
       const tx = db.transaction(DB_STORE, 'readonly');
       const store = tx.objectStore(DB_STORE);
@@ -1284,7 +1408,7 @@
         tbody.innerHTML = '';
 
         if (!records.length) {
-          tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">कोई 30-दिन पुराना प्रिंट रिकॉर्ड नहीं मिला।</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">कोई प्रिंट रिकॉर्ड नहीं मिला।</td></tr>`;
           return;
         }
 
@@ -1324,7 +1448,7 @@
   }
 
   async function clearAllHistoryDB() {
-    if (!confirm('क्या आप 30-दिन के सभी रिकॉर्ड्स तुरंत मिटाना चाहते हैं?')) return;
+    if (!confirm('क्या आप सभी इतिहास रिकॉर्ड्स हमेशा के लिए मिटाना चाहते हैं?')) return;
     const db = await openHistoryDB();
     const tx = db.transaction(DB_STORE, 'readwrite');
     tx.objectStore(DB_STORE).clear();
@@ -1341,6 +1465,9 @@
     if (tabId === 'tab-history') {
       renderHistoryTable();
     }
+    if (tabId === 'tab-admin') {
+      renderDistributorsTable();
+    }
   }
 
   const loginScreen = document.getElementById('loginScreen');
@@ -1352,6 +1479,7 @@
   const authBtn = document.getElementById('authBtn');
   const errorMsg = document.getElementById('errorMsg');
   const logoutBtn = document.getElementById('logoutBtn');
+  const adminTabBtn = document.getElementById('adminTabBtn');
 
   const goToChangePwd = document.getElementById('goToChangePwd');
   const backToLogin = document.getElementById('backToLogin');
@@ -1426,9 +1554,26 @@
   function handleLogin() {
     const inputEmail = loginEmail.value.trim().toLowerCase();
     const inputPass = loginPass.value.trim();
-    const currentPass = getStoredPassword().trim();
+    const adminActivePass = getStoredPassword().trim();
 
-    if (inputEmail === AUTH_EMAIL.toLowerCase() && inputPass === currentPass) {
+    let isAuthorized = false;
+    let isAdmin = false;
+
+    // 1. Check Admin
+    if (inputEmail === ADMIN_EMAIL.toLowerCase() && inputPass === adminActivePass) {
+      isAuthorized = true;
+      isAdmin = true;
+    } else {
+      // 2. Check Assigned Distributors
+      let dists = getDistributorsList();
+      let foundUser = dists.find(d => d.email.toLowerCase() === inputEmail && d.pass === inputPass);
+      if (foundUser) {
+        isAuthorized = true;
+        isAdmin = false;
+      }
+    }
+
+    if (isAuthorized) {
       if (!localStorage.getItem('system_first_login_date')) {
         localStorage.setItem('system_first_login_date', Date.now().toString());
       }
@@ -1436,15 +1581,30 @@
       sessionStorage.setItem('isLoggedIn', 'true');
       loginScreen.style.display = 'none';
       changePwdScreen.style.display = 'none';
-      mainApp.style.display = 'block';
       errorMsg.style.display = 'none';
+      mainApp.style.display = 'block';
+      
+      const topNavReg = document.getElementById('topNavRegistrationBox');
+      if (topNavReg) topNavReg.style.display = 'none';
+
+      if (isAdmin) {
+        adminTabBtn.style.display = 'inline-block';
+      } else {
+        adminTabBtn.style.display = 'none';
+        switchTabDirect('tab-cards');
+      }
 
       updateValidityDisplay();
       initAllCanvases();
-      cleanupOldHistoryRecords();
     } else {
       errorMsg.style.display = 'block';
     }
+  }
+
+  function switchTabDirect(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
   }
 
   authBtn.addEventListener('click', handleLogin);
@@ -1456,6 +1616,9 @@
     changePwdScreen.style.display = 'none';
     loginScreen.style.display = 'block';
     loginPass.value = '';
+    if (adminTabBtn) adminTabBtn.style.display = 'none';
+    const topNavReg = document.getElementById('topNavRegistrationBox');
+    if (topNavReg) topNavReg.style.display = 'flex';
   });
 
   // ==========================================
@@ -2123,9 +2286,9 @@
     saveToHistory('4x6 Photo A4 Sheet', fileName, blob, 'application/pdf');
   });
 
-  // ==========================================================
+  // ==========================================
   // TAB 5: PDF ARRANGER ENGINE (DRAG & DROP / HOLD & MOVE)
-  // ==========================================================
+  // ==========================================
   let arrangedPdfPagesList = [];
   let draggedArrangerIdx = null;
 
