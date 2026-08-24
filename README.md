@@ -27,14 +27,14 @@
   <style>
     :root {
       --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
-      --card-bg: rgba(30, 41, 59, 0.85);
+      --card-bg: rgba(30, 41, 59, 0.9);
       --accent-blue: #38bdf8;
       --accent-purple: #818cf8;
       --btn-add: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
       --btn-download: linear-gradient(135deg, #10b981 0%, #059669 100%);
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
-      --border-color: rgba(255, 255, 255, 0.1);
+      --border-color: rgba(255, 255, 255, 0.15);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
@@ -175,14 +175,14 @@
     }
 
     .tab-btn {
-      padding: 9px 13px;
-      background: rgba(15, 23, 42, 0.8);
+      padding: 10px 16px;
+      background: rgba(15, 23, 42, 0.9);
       border: 1px solid var(--border-color);
       color: var(--text-muted);
       border-radius: 12px;
       cursor: pointer;
       font-weight: 600;
-      font-size: 12px;
+      font-size: 13px;
       transition: 0.3s;
     }
 
@@ -203,7 +203,7 @@
       background: var(--card-bg); 
       backdrop-filter: blur(16px);
       border: 1px solid var(--border-color);
-      padding: 25px 20px; 
+      padding: 30px 25px; 
       border-radius: 20px; 
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4); 
       width: 100%; 
@@ -228,9 +228,9 @@
       background: linear-gradient(to right, #38bdf8, #a855f7, #ec4899);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      font-size: 22px; 
+      font-size: 24px; 
       font-weight: 700;
-      margin-bottom: 6px; 
+      margin-bottom: 8px; 
     }
 
     .tab-content { display: none; }
@@ -240,24 +240,24 @@
       display: flex; 
       gap: 15px; 
       justify-content: center; 
-      margin: 15px 0; 
+      margin: 18px 0; 
       flex-wrap: wrap; 
     }
 
     .upload-box { 
-      border: 2px dashed rgba(56, 189, 248, 0.4); 
-      padding: 16px 14px; 
+      border: 2px dashed rgba(56, 189, 248, 0.5); 
+      padding: 22px 18px; 
       border-radius: 14px; 
       cursor: pointer; 
-      background: rgba(15, 23, 42, 0.6); 
+      background: rgba(15, 23, 42, 0.7); 
       flex: 1; 
-      min-width: 220px; 
+      min-width: 250px; 
       transition: 0.3s;
     }
 
     .upload-box:hover { 
       border-color: var(--accent-blue);
-      background: rgba(56, 189, 248, 0.08);
+      background: rgba(56, 189, 248, 0.12);
     }
 
     input[type="file"] { display: none; }
@@ -266,13 +266,13 @@
       display: flex; 
       justify-content: center; 
       gap: 20px; 
-      margin: 15px 0; 
+      margin: 18px 0; 
       flex-wrap: wrap; 
     }
 
     .preview-box { 
       border: 1px solid var(--border-color); 
-      padding: 10px; 
+      padding: 12px; 
       background: rgba(15, 23, 42, 0.8); 
       border-radius: 12px; 
     }
@@ -296,12 +296,12 @@
       display: flex; 
       gap: 10px; 
       justify-content: center; 
-      margin-top: 15px; 
+      margin-top: 18px; 
       flex-wrap: wrap; 
     }
 
     .action-btn { 
-      padding: 10px 22px; 
+      padding: 11px 24px; 
       font-size: 13px; 
       font-weight: 600; 
       border: none; 
@@ -324,7 +324,7 @@
       background: rgba(56, 189, 248, 0.15);
       border: 1px solid var(--accent-blue);
       color: var(--accent-blue);
-      padding: 4px 10px;
+      padding: 5px 12px;
       font-size: 11px;
       border-radius: 6px;
       margin-top: 8px;
@@ -347,7 +347,7 @@
       background: rgba(15, 23, 42, 0.7);
       border: 1px solid var(--border-color);
       border-radius: 14px;
-      padding: 14px 18px;
+      padding: 16px 20px;
       max-width: 600px;
       margin: 15px auto;
       text-align: center;
@@ -358,13 +358,13 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      margin-top: 8px;
+      margin-top: 10px;
       flex-wrap: wrap;
     }
 
     .qty-input {
       width: 80px;
-      padding: 6px 10px;
+      padding: 8px 10px;
       border-radius: 8px;
       background: rgba(15, 23, 42, 0.9);
       border: 1px solid var(--accent-blue);
@@ -378,7 +378,7 @@
     .text-field-input {
       width: 100%;
       max-width: 260px;
-      padding: 8px 12px;
+      padding: 9px 12px;
       border-radius: 8px;
       background: rgba(15, 23, 42, 0.9);
       border: 1px solid var(--accent-blue);
@@ -389,7 +389,7 @@
     }
 
     .quick-qty-btn {
-      padding: 5px 12px;
+      padding: 6px 12px;
       background: #334155;
       border: 1px solid rgba(255, 255, 255, 0.1);
       color: #fff;
@@ -406,7 +406,7 @@
       border-radius: 5px;
       background: #334155;
       outline: none;
-      margin: 6px 0 8px 0;
+      margin: 8px 0 10px 0;
     }
 
     .slider-range::-webkit-slider-thumb {
