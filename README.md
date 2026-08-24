@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ALL PRINTING SERVICES WORKING FINE</title>
+  <title>ID CARD PRINT & CONVERTER PORTAL</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -26,15 +26,15 @@
 
   <style>
     :root {
-      --bg-gradient: linear-gradient(135deg, #090d16 0%, #111827 50%, #090d16 100%);
-      --card-bg: rgba(17, 24, 39, 0.9);
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+      --card-bg: rgba(30, 41, 59, 0.85);
       --accent-blue: #38bdf8;
-      --accent-purple: #a855f7;
+      --accent-purple: #818cf8;
       --btn-add: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
       --btn-download: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      --text-main: #f3f4f6;
-      --text-muted: #9ca3af;
-      --border-color: rgba(56, 189, 248, 0.15);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: rgba(255, 255, 255, 0.1);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
@@ -42,7 +42,7 @@
     body { 
       background: var(--bg-gradient); 
       min-height: 100vh;
-      padding: 20px 10px; 
+      padding: 15px 10px; 
       display: flex; 
       flex-direction: column; 
       align-items: center; 
@@ -51,48 +51,70 @@
     }
 
     .portal-main-heading {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 800;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      background: linear-gradient(135deg, #38bdf8 0%, #a855f7 50%, #ec4899 100%);
+      background: linear-gradient(135deg, #38bdf8 0%, #a855f7 50%, #f43f5e 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       text-align: center;
     }
 
+    .top-reg-nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .top-reg-btn {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: var(--accent-blue);
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 20px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+    .top-reg-btn:hover { background: rgba(56, 189, 248, 0.3); }
+
     .auth-box {
       background: var(--card-bg);
-      backdrop-filter: blur(25px);
+      backdrop-filter: blur(20px);
       border: 1px solid var(--border-color);
-      padding: 40px 30px;
-      border-radius: 24px;
-      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7);
+      padding: 35px 30px;
+      border-radius: 20px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
       width: 100%;
-      max-width: 440px;
+      max-width: 400px;
       text-align: center;
     }
 
     .badge {
       display: inline-block;
-      padding: 5px 16px;
+      padding: 4px 14px;
       font-size: 11px;
       font-weight: 600;
       letter-spacing: 1px;
       text-transform: uppercase;
-      background: rgba(56, 189, 248, 0.1);
+      background: rgba(56, 189, 248, 0.15);
       color: var(--accent-blue);
       border: 1px solid rgba(56, 189, 248, 0.3);
       border-radius: 20px;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
     }
 
     .slot-counter-badge {
-      background: rgba(245, 158, 11, 0.12);
+      background: rgba(245, 158, 11, 0.15);
       color: #fbbf24;
       border: 1px solid rgba(245, 158, 11, 0.3);
-      padding: 6px 16px;
+      padding: 4px 16px;
       font-size: 12px;
       font-weight: 600;
       border-radius: 20px;
@@ -102,38 +124,32 @@
 
     .login-input {
       width: 100%;
-      padding: 14px 16px;
-      margin-bottom: 16px;
-      background: rgba(3, 7, 18, 0.8);
+      padding: 13px 16px;
+      margin-bottom: 15px;
+      background: rgba(15, 23, 42, 0.9);
       border: 1px solid rgba(56, 189, 248, 0.3);
-      border-radius: 12px;
+      border-radius: 10px;
       color: #fff;
       font-size: 14px;
       outline: none;
-      transition: 0.2s;
-    }
-    .login-input:focus {
-      border-color: var(--accent-blue);
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
     }
 
     .login-btn {
       width: 100%;
-      padding: 14px;
+      padding: 13px;
       background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
       color: #fff;
       font-weight: 600;
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
       cursor: pointer;
       font-size: 15px;
       transition: 0.3s;
     }
-    .login-btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
     .auth-link {
       display: inline-block;
-      margin-top: 16px;
+      margin-top: 15px;
       font-size: 13px;
       color: var(--accent-blue);
       cursor: pointer;
@@ -141,7 +157,7 @@
     }
 
     .error-msg {
-      color: #f87171;
+      color: #ef4444;
       font-size: 13px;
       margin-top: 12px;
       display: none;
@@ -151,14 +167,14 @@
       display: flex;
       justify-content: center;
       gap: 8px;
-      margin-bottom: 18px;
+      margin-bottom: 15px;
       flex-wrap: wrap;
     }
 
     .tab-btn {
-      padding: 10px 14px;
+      padding: 9px 13px;
       background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-color);
       color: var(--text-muted);
       border-radius: 12px;
       cursor: pointer;
@@ -166,7 +182,6 @@
       font-size: 12px;
       transition: 0.3s;
     }
-    .tab-btn:hover { color: #fff; border-color: rgba(56, 189, 248, 0.4); }
 
     .tab-btn.active {
       background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
@@ -183,28 +198,28 @@
 
     .container { 
       background: var(--card-bg); 
-      backdrop-filter: blur(20px);
+      backdrop-filter: blur(16px);
       border: 1px solid var(--border-color);
-      padding: 30px 24px; 
-      border-radius: 24px; 
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6); 
+      padding: 25px 20px; 
+      border-radius: 20px; 
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4); 
       width: 100%; 
       text-align: center; 
       position: relative; 
     }
 
     .logout-btn {
-      background: rgba(239, 68, 68, 0.15);
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(239, 68, 68, 0.2);
       border: 1px solid rgba(239, 68, 68, 0.4);
       color: #fca5a5;
-      padding: 8px 16px;
+      padding: 6px 14px;
       font-size: 12px;
-      font-weight: 600;
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: 0.2s;
     }
-    .logout-btn:hover { background: rgba(239, 68, 68, 0.3); }
 
     h1 { 
       background: linear-gradient(to right, #38bdf8, #a855f7, #ec4899);
@@ -212,7 +227,7 @@
       -webkit-text-fill-color: transparent;
       font-size: 22px; 
       font-weight: 700;
-      margin-bottom: 8px; 
+      margin-bottom: 6px; 
     }
 
     .tab-content { display: none; }
@@ -222,23 +237,24 @@
       display: flex; 
       gap: 15px; 
       justify-content: center; 
-      margin: 18px 0; 
+      margin: 15px 0; 
       flex-wrap: wrap; 
     }
 
     .upload-box { 
-      border: 2px dashed rgba(56, 189, 248, 0.3); 
-      padding: 18px 16px; 
-      border-radius: 16px; 
+      border: 2px dashed rgba(56, 189, 248, 0.4); 
+      padding: 16px 14px; 
+      border-radius: 14px; 
       cursor: pointer; 
-      background: rgba(3, 7, 18, 0.6); 
+      background: rgba(15, 23, 42, 0.6); 
       flex: 1; 
       min-width: 220px; 
-      transition: 0.3s; 
+      transition: 0.3s;
     }
+
     .upload-box:hover { 
       border-color: var(--accent-blue);
-      background: rgba(56, 189, 248, 0.06);
+      background: rgba(56, 189, 248, 0.08);
     }
 
     input[type="file"] { display: none; }
@@ -247,21 +263,21 @@
       display: flex; 
       justify-content: center; 
       gap: 20px; 
-      margin: 18px 0; 
+      margin: 15px 0; 
       flex-wrap: wrap; 
     }
 
     .preview-box { 
       border: 1px solid var(--border-color); 
-      padding: 12px; 
-      background: rgba(3, 7, 18, 0.7); 
-      border-radius: 14px; 
+      padding: 10px; 
+      background: rgba(15, 23, 42, 0.8); 
+      border-radius: 12px; 
     }
 
     .preview-box h4 { 
       font-size: 12px; 
       color: var(--text-muted); 
-      margin-bottom: 8px; 
+      margin-bottom: 6px; 
     }
     
     canvas { 
@@ -269,7 +285,7 @@
       height: auto; 
       display: block; 
       margin: 0 auto; 
-      border-radius: 6px;
+      border-radius: 4px;
       background: #fff; 
     }
 
@@ -277,12 +293,12 @@
       display: flex; 
       gap: 10px; 
       justify-content: center; 
-      margin-top: 18px; 
+      margin-top: 15px; 
       flex-wrap: wrap; 
     }
 
     .action-btn { 
-      padding: 11px 22px; 
+      padding: 10px 22px; 
       font-size: 13px; 
       font-weight: 600; 
       border: none; 
@@ -291,9 +307,10 @@
       transition: all 0.3s ease; 
       color: #fff;
     }
+
     .action-btn:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
     }
 
     .btn-add { background: var(--btn-add); }
@@ -304,30 +321,32 @@
       background: rgba(56, 189, 248, 0.15);
       border: 1px solid var(--accent-blue);
       color: var(--accent-blue);
-      padding: 5px 12px;
+      padding: 4px 10px;
       font-size: 11px;
-      border-radius: 8px;
+      border-radius: 6px;
       margin-top: 8px;
       cursor: pointer;
       font-weight: 600;
       transition: 0.2s;
     }
-    .btn-manual-crop:hover { background: var(--accent-blue); color: #0f172a; }
+    .btn-manual-crop:hover {
+      background: var(--accent-blue);
+      color: #0f172a;
+    }
 
     .action-btn:disabled { 
-      background: #1f2937; 
-      color: #4b5563; 
+      background: #334155; 
+      color: #64748b; 
       cursor: not-allowed; 
-      box-shadow: none;
     }
 
     .control-panel {
-      background: rgba(3, 7, 18, 0.6);
+      background: rgba(15, 23, 42, 0.7);
       border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 16px 20px;
+      border-radius: 14px;
+      padding: 14px 18px;
       max-width: 600px;
-      margin: 18px auto;
+      margin: 15px auto;
       text-align: center;
     }
 
@@ -336,15 +355,15 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      margin-top: 10px;
+      margin-top: 8px;
       flex-wrap: wrap;
     }
 
     .qty-input {
       width: 80px;
-      padding: 8px 10px;
-      border-radius: 10px;
-      background: rgba(3, 7, 18, 0.9);
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.9);
       border: 1px solid var(--accent-blue);
       color: #fff;
       font-size: 14px;
@@ -356,9 +375,9 @@
     .text-field-input {
       width: 100%;
       max-width: 260px;
-      padding: 9px 12px;
-      border-radius: 10px;
-      background: rgba(3, 7, 18, 0.9);
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.9);
       border: 1px solid var(--accent-blue);
       color: #fff;
       font-size: 13px;
@@ -367,27 +386,26 @@
     }
 
     .quick-qty-btn {
-      padding: 6px 12px;
-      background: #1f2937;
+      padding: 5px 12px;
+      background: #334155;
       border: 1px solid rgba(255, 255, 255, 0.1);
       color: #fff;
-      border-radius: 8px;
+      border-radius: 6px;
       font-size: 11px;
       cursor: pointer;
       font-weight: 600;
-      transition: 0.2s;
     }
-    .quick-qty-btn:hover { background: #374151; }
 
     .slider-range {
       -webkit-appearance: none;
       width: 100%;
       height: 6px;
       border-radius: 5px;
-      background: #1f2937;
+      background: #334155;
       outline: none;
-      margin: 8px 0 10px 0;
+      margin: 6px 0 8px 0;
     }
+
     .slider-range::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
@@ -402,63 +420,77 @@
     .size-badge-box {
       display: flex;
       justify-content: space-around;
-      background: rgba(3, 7, 18, 0.8);
+      background: rgba(15, 23, 42, 0.8);
       padding: 12px;
-      border-radius: 12px;
-      margin-top: 12px;
+      border-radius: 10px;
+      margin-top: 10px;
       border: 1px solid var(--border-color);
     }
 
+    /* Drag & Drop Card Styles */
     .file-gallery-list {
       display: flex;
       flex-wrap: wrap;
       gap: 14px;
       justify-content: center;
-      margin: 18px 0;
+      margin: 15px 0;
       max-height: 420px;
       overflow-y: auto;
-      padding: 16px;
-      background: rgba(3, 7, 18, 0.7);
-      border-radius: 14px;
+      padding: 14px;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 12px;
       border: 1px solid var(--border-color);
     }
 
     .draggable-card {
       position: relative;
       width: 125px;
-      background: #030712;
-      border: 2px solid rgba(56, 189, 248, 0.3);
-      border-radius: 12px;
-      padding: 8px 6px 10px 6px;
+      background: #0f172a;
+      border: 2px solid rgba(56, 189, 248, 0.35);
+      border-radius: 10px;
+      padding: 6px 4px 8px 4px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.5);
       cursor: grab;
       user-select: none;
       transition: transform 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
     }
-    .draggable-card:active { cursor: grabbing; }
-    .draggable-card.dragging { opacity: 0.4; transform: scale(0.92); border-color: #f59e0b; }
-    .draggable-card.drag-over { border: 2px dashed #38bdf8; transform: scale(1.05); background: rgba(56, 189, 248, 0.12); }
+
+    .draggable-card:active {
+      cursor: grabbing;
+    }
+
+    .draggable-card.dragging {
+      opacity: 0.4;
+      transform: scale(0.92);
+      border-color: #f59e0b;
+    }
+
+    .draggable-card.drag-over {
+      border: 2px dashed #38bdf8;
+      transform: scale(1.05);
+      background: rgba(56, 189, 248, 0.12);
+    }
 
     .draggable-card canvas, .draggable-card img {
       width: 100%;
       height: 135px;
       object-fit: contain;
       background: #ffffff;
-      border-radius: 6px;
+      border-radius: 5px;
       pointer-events: none;
     }
 
     .draggable-card .file-label {
       font-size: 11px;
-      color: #9ca3af;
+      color: #94a3b8;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       width: 100%;
-      margin: 6px 0 4px 0;
+      margin: 6px 0 2px 0;
       font-weight: 600;
       text-align: center;
       pointer-events: none;
@@ -473,10 +505,10 @@
     }
 
     .mini-tool-btn {
-      background: #1f2937;
-      color: #f3f4f6;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 6px;
+      background: #334155;
+      color: #f8fafc;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 4px;
       padding: 4px 8px;
       font-size: 11px;
       cursor: pointer;
@@ -491,7 +523,7 @@
       right: -6px;
       background: #ef4444;
       color: #ffffff;
-      border: 2px solid #030712;
+      border: 2px solid #1e293b;
       border-radius: 50%;
       width: 22px;
       height: 22px;
@@ -508,10 +540,10 @@
     .item-delete-btn:hover { background: #dc2626; transform: scale(1.15); }
 
     .history-table-container {
-      margin-top: 18px;
+      margin-top: 15px;
       overflow-x: auto;
-      background: rgba(3, 7, 18, 0.7);
-      border-radius: 14px;
+      background: rgba(15, 23, 42, 0.7);
+      border-radius: 12px;
       border: 1px solid var(--border-color);
     }
 
@@ -523,38 +555,35 @@
     }
 
     .history-table th, .history-table td {
-      padding: 12px 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .history-table th {
-      background: rgba(17, 24, 39, 0.95);
+      background: rgba(30, 41, 59, 0.9);
       color: var(--accent-blue);
       font-weight: 600;
     }
 
-    .history-table tr:hover { background: rgba(56, 189, 248, 0.04); }
+    .history-table tr:hover { background: rgba(56, 189, 248, 0.05); }
 
     .history-download-btn {
       background: #0284c7;
       color: #fff;
       border: none;
-      padding: 6px 12px;
-      border-radius: 8px;
+      padding: 5px 12px;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 11px;
       font-weight: 600;
-      margin-right: 6px;
-      transition: 0.2s;
     }
-    .history-download-btn:hover { background: #0369a1; }
 
     .history-delete-btn {
       background: rgba(239, 68, 68, 0.2);
       color: #fca5a5;
       border: 1px solid rgba(239, 68, 68, 0.4);
-      padding: 6px 12px;
-      border-radius: 8px;
+      padding: 5px 12px;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 11px;
       font-weight: 600;
@@ -562,32 +591,16 @@
     }
     .history-delete-btn:hover { background: rgba(239, 68, 68, 0.4); }
 
-    /* Modal System */
-    .generic-modal {
-      display: none !important;
+    #cropModal {
+      display: none;
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.88);
-      backdrop-filter: blur(8px);
-      z-index: 99999;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 10000;
       align-items: center;
       justify-content: center;
+      flex-direction: column;
       padding: 20px;
-    }
-
-    .generic-modal.active-modal {
-      display: flex !important;
-    }
-
-    .generic-modal-box {
-      background: var(--card-bg);
-      border: 1px solid var(--accent-blue);
-      border-radius: 20px;
-      padding: 30px 24px;
-      max-width: 440px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
     }
 
     .crop-wrapper {
@@ -609,7 +622,13 @@
 <body>
 
 <div class="portal-main-heading">
-  ALL PRINTING SERVICES WORKING FINE
+  ID CARD PRINT & CONVERTER PORTAL
+</div>
+
+<!-- Top Registration / Support Buttons -->
+<div class="top-reg-nav" id="topNavRegistrationBox">
+  <a href="mailto:idprintingportal@gmail.com" class="top-reg-btn">📧 1 - Email - idprintingportal@gmail.com</a>
+  <a href="https://wa.me/917887575671" target="_blank" class="top-reg-btn">💬 2 - Whatsapp - 7887575671</a>
 </div>
 
 <!-- 1. Login Screen -->
@@ -621,7 +640,7 @@
   <input type="email" id="loginEmail" class="login-input" placeholder="ईमेल आईडी दर्ज करें" value="oneplus777000@gmail.com">
   <input type="password" id="loginPass" class="login-input" placeholder="पासवर्ड दर्ज करें">
   <button id="authBtn" class="login-btn">लॉगिन करें</button>
-  <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड!</div>
+  <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड, या एडमिन द्वारा आईडी असाइन नहीं की गई है!</div>
   
   <div>
     <span id="goToChangePwd" class="auth-link">🔑 Change Password?</span>
@@ -658,17 +677,12 @@
     <button class="tab-btn" onclick="switchTab('tab-resizer')">📐 Image Resizer</button>
     <button class="tab-btn" onclick="switchTab('tab-pdf-to-jpg')">🖼️ PDF to JPG (Manual DPI)</button>
     <button class="tab-btn" onclick="switchTab('tab-pdf-compressor')">🗜️ PDF Compressor</button>
-    <button id="historyTabBtn" class="tab-btn" onclick="switchTab('tab-history')" style="border-color: rgba(56, 189, 248, 0.5);">📂 History (60-Day)</button>
+    <button class="tab-btn" onclick="switchTab('tab-history')" style="border-color: rgba(56, 189, 248, 0.5);">📂 30-Day History</button>
     <button id="adminTabBtn" class="tab-btn" onclick="switchTab('tab-admin')" style="display:none; border-color: #f59e0b; color:#fbbf24;">⚙️ Admin Panel</button>
   </div>
 
   <div class="container">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
-      <div id="validityCounterBadge" style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #34d399; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;">
-        ⏳ Validity: Initializing...
-      </div>
-      <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
-    </div>
+    <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
 
     <!-- TAB 1: 5 CARDS SYSTEM -->
     <div id="tab-cards" class="tab-content active">
@@ -1092,10 +1106,10 @@
       </div>
     </div>
 
-    <!-- TAB 10: DYNAMIC PRINT HISTORY -->
+    <!-- TAB 10: 30-DAY PRINT HISTORY -->
     <div id="tab-history" class="tab-content">
       <div id="historyRetentionBadge" class="badge">Automatic 60-Day Storage • All Features Supported</div>
-      <h1 id="historyHeaderTitle">60-Day Print & Download History</h1>
+      <h1>60-Day Print & Download History</h1>
       <p id="historyDescText" style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">आपके द्वारा डाउनलोड की गई सभी फाइल्स यहाँ सुरक्षित हैं।</p>
 
       <div style="text-align: right; margin-bottom: 10px;">
@@ -1121,17 +1135,17 @@
       </div>
     </div>
 
-    <!-- TAB 11: ADMIN PANEL & DISTRIBUTOR MANAGEMENT -->
+    <!-- TAB 11: ADMIN PANEL -->
     <div id="tab-admin" class="tab-content">
-      <div class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">Master Administrator Control Panel</div>
+      <div class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">Master Administrator Panel</div>
       <h1 style="color: #fbbf24;">Distributor Management</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">यहाँ से नए डिस्ट्रीब्यूटर/कस्टमर अकाउंट्स क्रिएट करें। नए यूजर्स केवल एडमिन द्वारा बनाई गई आईडी से ही लॉगिन कर सकेंगे।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। जब तक एडमिन आईडी असाइन नहीं करता, कोई बाहर से लॉगिन नहीं कर पाएगा।</p>
 
       <div class="control-panel" style="max-width: 500px; text-align: left; margin-bottom: 25px;">
         <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 12px;">➕ Add New Distributor</h3>
         <div style="display:flex; flex-direction:column; gap:10px;">
           <div>
-            <label style="font-size: 11px; color: var(--text-muted); display:block; margin-bottom:4px;">Distributor Name / Business Name:</label>
+            <label style="font-size: 11px; color: var(--text-muted); display:block; margin-bottom:4px;">Business / Name:</label>
             <input type="text" id="newDistName" class="text-field-input" style="max-width:100%;" placeholder="e.g. Shri Ganesh Digital Seva">
           </div>
           <div>
@@ -1142,25 +1156,26 @@
             <label style="font-size: 11px; color: var(--text-muted); display:block; margin-bottom:4px;">Assign Password:</label>
             <input type="text" id="newDistPass" class="text-field-input" style="max-width:100%;" placeholder="SecurePass123">
           </div>
-          <button onclick="addNewDistributor()" class="action-btn btn-add" style="margin-top: 5px;">🚀 Create Distributor Account</button>
+          <button onclick="addNewDistributor()" class="action-btn btn-add" style="margin-top: 5px;">🚀 Assign ID & Password</button>
           <div id="distMsg" style="font-size: 12px; font-weight: 500; display:none; margin-top:5px;"></div>
         </div>
       </div>
 
-      <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 10px; text-align: left; max-width: 800px; margin-left: auto; margin-right: auto;">Active Distributor Accounts List</h3>
-      <div class="history-table-container" style="max-width: 800px; margin-left: auto; margin-right: auto;">
+      <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 10px; text-align: left; max-width: 850px; margin-left: auto; margin-right: auto;">Assigned Distributors (Lifetime Access unless deleted by Admin)</h3>
+      <div class="history-table-container" style="max-width: 850px; margin-left: auto; margin-right: auto;">
         <table class="history-table">
           <thead>
             <tr>
               <th>Business / Name</th>
               <th>Login Email</th>
               <th>Password</th>
+              <th>Expiry / Validity</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody id="distributorTableBody">
             <tr>
-              <td colspan="4" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर अकाउंट नहीं मिला।</td>
+              <td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर असाइन नहीं किया गया है।</td>
             </tr>
           </tbody>
         </table>
@@ -1241,14 +1256,8 @@
   // ==========================================================
   function getDistributorsList() {
     let list = localStorage.getItem('portal_distributors_list');
-    if (!list) {
-      return [];
-    }
-    try {
-      return JSON.parse(list);
-    } catch(e) {
-      return [];
-    }
+    if (!list) return [];
+    try { return JSON.parse(list); } catch(e) { return []; }
   }
 
   function saveDistributorsList(arr) {
@@ -1277,16 +1286,20 @@
 
     let dists = getDistributorsList();
     if (dists.some(d => d.email === email)) {
-      msg.innerText = "⚠️ यह ईमेल आईडी पहले से रजिस्टर्ड है!";
+      msg.innerText = "⚠️ यह ईमेल आईडी पहले से असाइन की जा चुकी है!";
       msg.style.color = "#ef4444";
       msg.style.display = "block";
       return;
     }
 
-    dists.push({ id: Date.now(), name, email, pass });
+    // Lifetime Access calculation (e.g., 100 years or Lifetime badge)
+    const assignedDate = new Date().toLocaleDateString('en-IN');
+    const expiryDateText = "Lifetime (Until Admin Deletes)";
+
+    dists.push({ id: Date.now(), name, email, pass, assignedDate, expiryDateText });
     saveDistributorsList(dists);
 
-    msg.innerText = "✅ डिस्ट्रीब्यूटर अकाउंट सफलतापूर्वक क्रिएट हो गया!";
+    msg.innerText = "✅ डिस्ट्रीब्यूटर आईडी सफलतापूर्वक असाइन कर दी गई है!";
     msg.style.color = "#34d399";
     msg.style.display = "block";
 
@@ -1303,16 +1316,17 @@
     tbody.innerHTML = '';
 
     if (!dists.length) {
-      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर अकाउंट नहीं मिला।</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर असाइन नहीं किया गया है।</td></tr>`;
       return;
     }
 
-    dists.forEach((d, index) => {
+    dists.forEach((d) => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><strong>${d.name}</strong></td>
         <td>${d.email}</td>
-        <td><code>${d.pass}</code></td>
+        <td><code style="background:#000; padding:3px 6px; border-radius:4px; color:#38bdf8;">${d.pass}</code></td>
+        <td style="color: #34d399; font-weight:600;">${d.expiryDateText}</td>
         <td><button class="history-delete-btn" onclick="deleteDistributor(${d.id})">🗑️ Delete</button></td>
       `;
       tbody.appendChild(tr);
@@ -1320,11 +1334,18 @@
   }
 
   function deleteDistributor(id) {
-    if (!confirm('क्या आप इस डिस्ट्रीब्यूटर अकाउंट को हटाना चाहते हैं?')) return;
+    if (!confirm('क्या आप इस डिस्ट्रीब्यूटर का एक्सेस हमेशा के लिए हटाना चाहते हैं?')) return;
     let dists = getDistributorsList();
     dists = dists.filter(d => d.id !== id);
     saveDistributorsList(dists);
     renderDistributorsTable();
+  }
+
+  // Request Persistent Storage
+  if (navigator.storage && navigator.storage.persist) {
+    navigator.storage.persist().then(persistent => {
+      console.log("Persistent storage granted: " + persistent);
+    });
   }
 
   // ==========================================================
@@ -1478,6 +1499,7 @@
   const errorMsg = document.getElementById('errorMsg');
   const logoutBtn = document.getElementById('logoutBtn');
   const adminTabBtn = document.getElementById('adminTabBtn');
+  const topNavRegistrationBox = document.getElementById('topNavRegistrationBox');
 
   const goToChangePwd = document.getElementById('goToChangePwd');
   const backToLogin = document.getElementById('backToLogin');
@@ -1557,12 +1579,12 @@
     let isAuthorized = false;
     let isAdmin = false;
 
-    // Check if Admin
+    // 1. Check Admin
     if (inputEmail === ADMIN_EMAIL.toLowerCase() && inputPass === adminActivePass) {
       isAuthorized = true;
       isAdmin = true;
     } else {
-      // Check if Distributor / Assigned User
+      // 2. Check Assigned Distributors
       let dists = getDistributorsList();
       let foundUser = dists.find(d => d.email.toLowerCase() === inputEmail && d.pass === inputPass);
       if (foundUser) {
@@ -1580,6 +1602,7 @@
         changePwdScreen.style.display = 'none';
         errorMsg.style.display = 'none';
         mainApp.style.display = 'block';
+        if (topNavRegistrationBox) topNavRegistrationBox.style.display = 'none';
 
         if (isAdmin) {
           adminTabBtn.style.display = 'inline-block';
@@ -1610,6 +1633,7 @@
     loginScreen.style.display = 'block';
     loginPass.value = '';
     adminTabBtn.style.display = 'none';
+    if (topNavRegistrationBox) topNavRegistrationBox.style.display = 'flex';
   });
 
   // ==========================================
@@ -1874,1057 +1898,6 @@
     const blob = pdf.output('blob');
     pdf.save(fileName);
     saveToHistory('ID Card Print (5-Slots)', fileName, blob, 'application/pdf');
-  });
-
-  // ==========================================
-  // TAB 2: PASSPORT SIZE PHOTOS (STANDARD)
-  // ==========================================
-  const passportCanvas = document.getElementById('passportCanvas');
-  const passportCtx = passportCanvas.getContext('2d');
-  const passportSheetCanvas = document.getElementById('passportSheetCanvas');
-  const passportSheetCtx = passportSheetCanvas.getContext('2d');
-  const passportQtyInput = document.getElementById('passportQtyInput');
-  let passportLoaded = false;
-  let passportSheetFormat = '4x6';
-
-  function setPassportQty(qty) {
-    passportQtyInput.value = qty;
-  }
-
-  document.getElementById('passportInput').addEventListener('change', (e) => {
-    if (e.target.files[0]) {
-      document.getElementById('passportFileName').innerText = e.target.files[0].name;
-      openCropEngine(e.target.files[0], 'passport');
-    }
-  });
-
-  document.getElementById('make4x6CustomPassportBtn').addEventListener('click', () => {
-    if (!passportLoaded) return;
-    passportSheetFormat = '4x6';
-    const targetQty = Math.max(1, Math.min(8, parseInt(passportQtyInput.value) || 8));
-
-    passportSheetCanvas.width = 1800;
-    passportSheetCanvas.height = 1200;
-
-    passportSheetCtx.fillStyle = '#ffffff';
-    passportSheetCtx.fillRect(0, 0, 1800, 1200);
-
-    const pw = 413, ph = 531;
-    const startX = 50, startY = 50, gapX = 20, gapY = 35;
-    const maxCols = 4;
-
-    let placed = 0;
-    for (let r = 0; r < 2; r++) {
-      for (let c = 0; c < maxCols; c++) {
-        if (placed >= targetQty) break;
-        const x = startX + c * (pw + gapX);
-        const y = startY + r * (ph + gapY);
-        passportSheetCtx.drawImage(passportCanvas, x, y, pw, ph);
-        passportSheetCtx.strokeStyle = '#000000';
-        passportSheetCtx.lineWidth = 2;
-        passportSheetCtx.strokeRect(x, y, pw, ph);
-        placed++;
-      }
-    }
-
-    document.getElementById('passportSheetTitle').innerText = `Passport 4×6 Sheet (${targetQty} Photos Generated)`;
-    document.getElementById('downloadPassportPdfBtn').disabled = false;
-  });
-
-  document.getElementById('makeA4CustomPassportBtn').addEventListener('click', () => {
-    if (!passportLoaded) return;
-    passportSheetFormat = 'a4';
-    const targetQty = Math.max(1, Math.min(30, parseInt(passportQtyInput.value) || 30));
-
-    passportSheetCanvas.width = 2480;
-    passportSheetCanvas.height = 3508;
-
-    passportSheetCtx.fillStyle = '#ffffff';
-    passportSheetCtx.fillRect(0, 0, 2480, 3508);
-
-    const pw = 413, ph = 531;
-    const startX = 75, startY = 80, gapX = 30, gapY = 40;
-    const maxCols = 5;
-
-    let placed = 0;
-    for (let r = 0; r < 6; r++) {
-      for (let c = 0; c < maxCols; c++) {
-        if (placed >= targetQty) break;
-        const x = startX + c * (pw + gapX);
-        const y = startY + r * (ph + gapY);
-        passportSheetCtx.drawImage(passportCanvas, x, y, pw, ph);
-        passportSheetCtx.strokeStyle = '#000000';
-        passportSheetCtx.lineWidth = 2;
-        passportSheetCtx.strokeRect(x, y, pw, ph);
-        placed++;
-      }
-    }
-
-    document.getElementById('passportSheetTitle').innerText = `Passport A4 Sheet (${targetQty} Photos Generated)`;
-    document.getElementById('downloadPassportPdfBtn').disabled = false;
-  });
-
-  document.getElementById('downloadPassportPdfBtn').addEventListener('click', () => {
-    const { jsPDF } = window.jspdf;
-    let fileName = '';
-    let pdf;
-    if (passportSheetFormat === '4x6') {
-      pdf = new jsPDF({ orientation: 'landscape', unit: 'in', format: [4, 6] });
-      pdf.addImage(passportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 6, 4);
-      fileName = `Passport_Photos_4x6_${passportQtyInput.value}_Qty.pdf`;
-    } else {
-      pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-      pdf.addImage(passportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
-      fileName = `Passport_Photos_A4_${passportQtyInput.value}_Qty.pdf`;
-    }
-    const blob = pdf.output('blob');
-    pdf.save(fileName);
-    saveToHistory('Passport Photos', fileName, blob, 'application/pdf');
-  });
-
-  // ==========================================
-  // TAB 3: NAME & DATE PASSPORT (3 FONT SLIDERS)
-  // ==========================================
-  const namePassportCanvas = document.getElementById('namePassportCanvas');
-  const namePassportCtx = namePassportCanvas.getContext('2d');
-  const namePassportSheetCanvas = document.getElementById('namePassportSheetCanvas');
-  const namePassportSheetCtx = namePassportSheetCanvas.getContext('2d');
-  const namePassportQtyInput = document.getElementById('namePassportQtyInput');
-  let namePassportLoaded = false;
-  let namePassportSheetFormat = '4x6';
-
-  let currentNameFontSize = 24;
-  let currentDobFontSize = 20;
-  let currentDopFontSize = 20;
-
-  function setNamePassportQty(qty) {
-    namePassportQtyInput.value = qty;
-  }
-
-  function updateNameFontSize(val) {
-    currentNameFontSize = parseInt(val) || 24;
-    document.getElementById('nameFontLabel').innerText = `Size: ${currentNameFontSize}px`;
-    renderNamePassportPreview();
-  }
-
-  function updateDobFontSize(val) {
-    currentDobFontSize = parseInt(val) || 20;
-    document.getElementById('dobFontLabel').innerText = `Size: ${currentDobFontSize}px`;
-    renderNamePassportPreview();
-  }
-
-  function updateDopFontSize(val) {
-    currentDopFontSize = parseInt(val) || 20;
-    document.getElementById('dopFontLabel').innerText = `Size: ${currentDopFontSize}px`;
-    renderNamePassportPreview();
-  }
-
-  document.getElementById('namePassportInput').addEventListener('change', (e) => {
-    if (e.target.files[0]) {
-      document.getElementById('namePassportFileName').innerText = e.target.files[0].name;
-      openCropEngine(e.target.files[0], 'name_passport');
-    }
-  });
-
-  function wrapNameText(context, text, maxWidth) {
-    const words = text.split(' ');
-    const lines = [];
-    let currentLine = words[0];
-
-    for (let i = 1; i < words.length; i++) {
-      const word = words[i];
-      const width = context.measureText(currentLine + " " + word).width;
-      if (width < maxWidth) {
-        currentLine += " " + word;
-      } else {
-        lines.push(currentLine);
-        currentLine = word;
-      }
-    }
-    lines.push(currentLine);
-    return lines;
-  }
-
-  function renderNamePassportPreview() {
-    namePassportCtx.fillStyle = '#ffffff';
-    namePassportCtx.fillRect(0, 0, 413, 531);
-
-    if (rawNamePassportImg) {
-      namePassportCtx.drawImage(rawNamePassportImg, 0, 0, 413, 531);
-    }
-
-    const cName = document.getElementById('candNameInput').value.trim();
-    let rawDob = document.getElementById('candDobInput').value.trim();
-    let rawDop = document.getElementById('candDopInput').value.trim();
-
-    let formattedDob = '';
-    if (rawDob) {
-      formattedDob = rawDob.toUpperCase().startsWith('DOB:') ? rawDob : `DOB: ${rawDob}`;
-    }
-
-    let formattedDop = '';
-    if (rawDop) {
-      formattedDop = rawDop.toUpperCase().startsWith('DOP:') ? rawDop : `DOP: ${rawDop}`;
-    }
-
-    if (cName || formattedDob || formattedDop) {
-      namePassportCtx.font = `900 ${currentNameFontSize}px Poppins, Arial, sans-serif`;
-      const nameLines = cName ? wrapNameText(namePassportCtx, cName.toUpperCase(), 390) : [];
-      
-      let dateLineCount = 0;
-      if (formattedDob) dateLineCount++;
-      if (formattedDop) dateLineCount++;
-
-      const nameBlockHeight = nameLines.length * (currentNameFontSize + 8);
-      const dobBlockHeight = formattedDob ? (currentDobFontSize + 8) : 0;
-      const dopBlockHeight = formattedDop ? (currentDopFontSize + 8) : 0;
-      
-      const stripHeight = Math.max(120, nameBlockHeight + dobBlockHeight + dopBlockHeight + 16);
-      const stripY = 531 - stripHeight;
-
-      namePassportCtx.fillStyle = '#ffffff';
-      namePassportCtx.fillRect(0, stripY, 413, stripHeight);
-
-      namePassportCtx.strokeStyle = '#000000';
-      namePassportCtx.lineWidth = 3;
-      namePassportCtx.beginPath();
-      namePassportCtx.moveTo(0, stripY);
-      namePassportCtx.lineTo(413, stripY);
-      namePassportCtx.stroke();
-
-      namePassportCtx.fillStyle = '#000000';
-      namePassportCtx.textAlign = 'center';
-
-      let yPos = stripY + currentNameFontSize + 6;
-
-      namePassportCtx.font = `900 ${currentNameFontSize}px Poppins, Arial, sans-serif`;
-      nameLines.forEach(line => {
-        namePassportCtx.fillText(line, 413 / 2, yPos);
-        yPos += currentNameFontSize + 6;
-      });
-
-      if (formattedDob) {
-        yPos += 2;
-        namePassportCtx.font = `700 ${currentDobFontSize}px Poppins, Arial, sans-serif`;
-        namePassportCtx.fillText(formattedDob, 413 / 2, yPos);
-        yPos += currentDobFontSize + 6;
-      }
-
-      if (formattedDop) {
-        yPos += 2;
-        namePassportCtx.font = `700 ${currentDopFontSize}px Poppins, Arial, sans-serif`;
-        namePassportCtx.fillText(formattedDop, 413 / 2, yPos);
-      }
-    }
-  }
-
-  document.getElementById('make4x6NamePassportBtn').addEventListener('click', () => {
-    if (!namePassportLoaded) return;
-    namePassportSheetFormat = '4x6';
-    const targetQty = Math.max(1, Math.min(8, parseInt(namePassportQtyInput.value) || 8));
-
-    namePassportSheetCanvas.width = 1800;
-    namePassportSheetCanvas.height = 1200;
-
-    namePassportSheetCtx.fillStyle = '#ffffff';
-    namePassportSheetCtx.fillRect(0, 0, 1800, 1200);
-
-    const pw = 413, ph = 531;
-    const startX = 50, startY = 50, gapX = 20, gapY = 35;
-    const maxCols = 4;
-
-    let placed = 0;
-    for (let r = 0; r < 2; r++) {
-      for (let c = 0; c < maxCols; c++) {
-        if (placed >= targetQty) break;
-        const x = startX + c * (pw + gapX);
-        const y = startY + r * (ph + gapY);
-        namePassportSheetCtx.drawImage(namePassportCanvas, x, y, pw, ph);
-        namePassportSheetCtx.strokeStyle = '#000000';
-        namePassportSheetCtx.lineWidth = 2;
-        namePassportSheetCtx.strokeRect(x, y, pw, ph);
-        placed++;
-      }
-    }
-
-    document.getElementById('namePassportSheetTitle').innerText = `Name & Date 4×6 Sheet (${targetQty} Photos Generated)`;
-    document.getElementById('downloadNamePassportPdfBtn').disabled = false;
-  });
-
-  document.getElementById('makeA4NamePassportBtn').addEventListener('click', () => {
-    if (!namePassportLoaded) return;
-    namePassportSheetFormat = 'a4';
-    const targetQty = Math.max(1, Math.min(30, parseInt(namePassportQtyInput.value) || 30));
-
-    namePassportSheetCanvas.width = 2480;
-    namePassportSheetCanvas.height = 3508;
-
-    namePassportSheetCtx.fillStyle = '#ffffff';
-    namePassportSheetCtx.fillRect(0, 0, 2480, 3508);
-
-    const pw = 413, ph = 531;
-    const startX = 75, startY = 80, gapX = 30, gapY = 40;
-    const maxCols = 5;
-
-    let placed = 0;
-    for (let r = 0; r < 6; r++) {
-      for (let c = 0; c < maxCols; c++) {
-        if (placed >= targetQty) break;
-        const x = startX + c * (pw + gapX);
-        const y = startY + r * (ph + gapY);
-        namePassportSheetCtx.drawImage(namePassportCanvas, x, y, pw, ph);
-        namePassportSheetCtx.strokeStyle = '#000000';
-        namePassportSheetCtx.lineWidth = 2;
-        namePassportSheetCtx.strokeRect(x, y, pw, ph);
-        placed++;
-      }
-    }
-
-    document.getElementById('namePassportSheetTitle').innerText = `Name & Date A4 Sheet (${targetQty} Photos Generated)`;
-    document.getElementById('downloadNamePassportPdfBtn').disabled = false;
-  });
-
-  document.getElementById('downloadNamePassportPdfBtn').addEventListener('click', () => {
-    const { jsPDF } = window.jspdf;
-    let fileName = '';
-    let pdf;
-    if (namePassportSheetFormat === '4x6') {
-      pdf = new jsPDF({ orientation: 'landscape', unit: 'in', format: [4, 6] });
-      pdf.addImage(namePassportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 6, 4);
-      fileName = `Name_Date_Passport_4x6_${namePassportQtyInput.value}_Qty.pdf`;
-    } else {
-      pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-      pdf.addImage(namePassportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
-      fileName = `Name_Date_Passport_A4_${namePassportQtyInput.value}_Qty.pdf`;
-    }
-    const blob = pdf.output('blob');
-    pdf.save(fileName);
-    saveToHistory('Name & Date Passport', fileName, blob, 'application/pdf');
-  });
-
-  // ==========================================
-  // TAB 4: 4x6 PHOTO PRINT
-  // ==========================================
-  const canvas4x6 = document.getElementById('canvas4x6');
-  const ctx4x6 = canvas4x6.getContext('2d');
-  const a4_4x6_SheetCanvas = document.getElementById('a4_4x6_SheetCanvas');
-  const a4_4x6_SheetCtx = a4_4x6_SheetCanvas.getContext('2d');
-  const photo4x6QtyInput = document.getElementById('photo4x6QtyInput');
-  let photo4x6Loaded = false;
-
-  function set4x6Qty(qty) {
-    photo4x6QtyInput.value = qty;
-  }
-
-  document.getElementById('photo4x6Input').addEventListener('change', (e) => {
-    if (e.target.files[0]) {
-      document.getElementById('photo4x6FileName').innerText = e.target.files[0].name;
-      openCropEngine(e.target.files[0], 'photo4x6');
-    }
-  });
-
-  document.getElementById('downloadDirect4x6Pdf').addEventListener('click', () => {
-    if (!photo4x6Loaded) return;
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'in', format: [4, 6] });
-    pdf.addImage(canvas4x6.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 4, 6);
-    const fileName = 'Photo_4x6_Print.pdf';
-    const blob = pdf.output('blob');
-    pdf.save(fileName);
-    saveToHistory('4x6 Photo (Single)', fileName, blob, 'application/pdf');
-  });
-
-  document.getElementById('generateA4Custom4x6Btn').addEventListener('click', () => {
-    if (!photo4x6Loaded) return;
-    const qty = Math.max(1, Math.min(4, parseInt(photo4x6QtyInput.value) || 2));
-
-    a4_4x6_SheetCanvas.width = 2480;
-    a4_4x6_SheetCanvas.height = 3508;
-
-    a4_4x6_SheetCtx.fillStyle = '#ffffff';
-    a4_4x6_SheetCtx.fillRect(0, 0, 2480, 3508);
-
-    const pw = 1140, ph = 1680;
-    const gapX = 60, gapY = 60;
-    const startX = 70, startY = 40;
-
-    const positions = [
-      { x: startX, y: startY },
-      { x: startX + pw + gapX, y: startY },
-      { x: startX, y: startY + ph + gapY },
-      { x: startX + pw + gapX, y: startY + ph + gapY }
-    ];
-
-    for (let i = 0; i < qty; i++) {
-      const pos = positions[i];
-      a4_4x6_SheetCtx.drawImage(canvas4x6, pos.x, pos.y, pw, ph);
-      a4_4x6_SheetCtx.strokeStyle = '#000000';
-      a4_4x6_SheetCtx.lineWidth = 4;
-      a4_4x6_SheetCtx.strokeRect(pos.x, pos.y, pw, ph);
-    }
-
-    document.getElementById('photo4x6SheetTitle').innerText = `A4 4×6 Photo Sheet (${qty} Photos on 1 A4)`;
-    document.getElementById('downloadA4_4x6_PdfBtn').disabled = false;
-  });
-
-  document.getElementById('downloadA4_4x6_PdfBtn').addEventListener('click', () => {
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    pdf.addImage(a4_4x6_SheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
-    const fileName = `4x6_Photos_A4_Sheet_${photo4x6QtyInput.value}_Qty.pdf`;
-    const blob = pdf.output('blob');
-    pdf.save(fileName);
-    saveToHistory('4x6 Photo A4 Sheet', fileName, blob, 'application/pdf');
-  });
-
-  // ==========================================================
-  // TAB 5: PDF ARRANGER (DRAG & DROP / HOLD & MOVE)
-  // ==========================================================
-  let arrangedPdfPagesList = [];
-  let draggedArrangerIdx = null;
-
-  document.getElementById('arrangerPdfInput').addEventListener('change', async function(e) {
-    const files = Array.from(e.target.files);
-    if (!files.length) return;
-
-    for (const file of files) {
-      const arrayBuffer = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
-
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const viewport = page.getViewport({ scale: 0.35 });
-
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-
-        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-
-        arrangedPdfPagesList.push({
-          sourceBytes: arrayBuffer,
-          pageIndex: i - 1,
-          thumbDataUrl: canvas.toDataURL('image/jpeg', 0.8),
-          rotation: 0,
-          originalDocName: file.name
-        });
-      }
-    }
-
-    renderArrangerGrid();
-    this.value = '';
-  });
-
-  function renderArrangerGrid() {
-    const grid = document.getElementById('arrangerGridList');
-    const container = document.getElementById('arrangerContainerArea');
-    const countDisplay = document.getElementById('arrangerTotalPagesCount');
-
-    grid.innerHTML = '';
-    countDisplay.innerText = arrangedPdfPagesList.length;
-
-    if (arrangedPdfPagesList.length > 0) {
-      container.style.display = 'block';
-    } else {
-      container.style.display = 'none';
-      return;
-    }
-
-    arrangedPdfPagesList.forEach((item, idx) => {
-      const card = document.createElement('div');
-      card.className = 'draggable-card';
-      card.draggable = true;
-      card.dataset.index = idx;
-
-      card.addEventListener('dragstart', (e) => {
-        draggedArrangerIdx = idx;
-        card.classList.add('dragging');
-        e.dataTransfer.effectAllowed = 'move';
-      });
-
-      card.addEventListener('dragend', () => {
-        card.classList.remove('dragging');
-        document.querySelectorAll('.draggable-card').forEach(c => c.classList.remove('drag-over'));
-      });
-
-      card.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        card.classList.add('drag-over');
-      });
-
-      card.addEventListener('dragleave', () => {
-        card.classList.remove('drag-over');
-      });
-
-      card.addEventListener('drop', (e) => {
-        e.preventDefault();
-        card.classList.remove('drag-over');
-        if (draggedArrangerIdx !== null && draggedArrangerIdx !== idx) {
-          const itemToMove = arrangedPdfPagesList.splice(draggedArrangerIdx, 1)[0];
-          arrangedPdfPagesList.splice(idx, 0, itemToMove);
-          renderArrangerGrid();
-        }
-      });
-
-      const img = document.createElement('img');
-      img.src = item.thumbDataUrl;
-      img.style.transform = `rotate(${item.rotation}deg)`;
-      card.appendChild(img);
-
-      const label = document.createElement('div');
-      label.className = 'file-label';
-      label.innerText = `Page ${idx + 1}`;
-      card.appendChild(label);
-
-      const toolsBar = document.createElement('div');
-      toolsBar.className = 'card-tools-bar';
-
-      const rotateBtn = document.createElement('button');
-      rotateBtn.className = 'mini-tool-btn';
-      rotateBtn.innerHTML = '🔄 Rotate';
-      rotateBtn.title = 'Rotate 90°';
-      rotateBtn.onclick = (e) => {
-        e.stopPropagation();
-        rotateArrangerPage(idx);
-      };
-
-      const delBtn = document.createElement('button');
-      delBtn.className = 'mini-tool-btn btn-del';
-      delBtn.innerHTML = '🗑️';
-      delBtn.title = 'Delete Page';
-      delBtn.onclick = (e) => {
-        e.stopPropagation();
-        deleteArrangerPage(idx);
-      };
-
-      toolsBar.appendChild(rotateBtn);
-      toolsBar.appendChild(delBtn);
-      card.appendChild(toolsBar);
-
-      grid.appendChild(card);
-    });
-  }
-
-  function rotateArrangerPage(index) {
-    arrangedPdfPagesList[index].rotation = (arrangedPdfPagesList[index].rotation + 90) % 360;
-    renderArrangerGrid();
-  }
-
-  function deleteArrangerPage(index) {
-    arrangedPdfPagesList.splice(index, 1);
-    renderArrangerGrid();
-  }
-
-  document.getElementById('clearArrangerBtn').addEventListener('click', () => {
-    if (confirm('क्या आप सभी अरेंज किए गए पेज मिटाना चाहते हैं?')) {
-      arrangedPdfPagesList = [];
-      renderArrangerGrid();
-    }
-  });
-
-  document.getElementById('saveArrangedPdfBtn').addEventListener('click', async () => {
-    if (!arrangedPdfPagesList.length) return;
-
-    const { PDFDocument, degrees } = PDFLib;
-    const outPdf = await PDFDocument.create();
-
-    const loadedDocsMap = new Map();
-
-    for (const pageObj of arrangedPdfPagesList) {
-      let srcDoc = loadedDocsMap.get(pageObj.sourceBytes);
-      if (!srcDoc) {
-        srcDoc = await PDFDocument.load(pageObj.sourceBytes);
-        loadedDocsMap.set(pageObj.sourceBytes, srcDoc);
-      }
-
-      const [copiedPage] = await outPdf.copyPages(srcDoc, [pageObj.pageIndex]);
-      
-      if (pageObj.rotation !== 0) {
-        const currentRot = copiedPage.getRotation().angle;
-        copiedPage.setRotation(degrees(currentRot + pageObj.rotation));
-      }
-
-      outPdf.addPage(copiedPage);
-    }
-
-    const pdfBytes = await outPdf.save();
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    const fileName = `Arranged_Document_${arrangedPdfPagesList.length}_Pages.pdf`;
-
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = fileName;
-    link.click();
-    saveToHistory('PDF Arranger', fileName, blob, 'application/pdf');
-  });
-
-  // ==========================================================
-  // TAB 6: UNIVERSAL MERGE (DRAG & DROP RE-ORDER SUPPORT)
-  // ==========================================================
-  let universalFiles = [];
-  let draggedUniversalIdx = null;
-
-  document.getElementById('universalMultiInput').addEventListener('change', function(e) {
-    const files = Array.from(e.target.files);
-    if (!files.length) return;
-
-    universalFiles = universalFiles.concat(files);
-    renderUniversalGallery();
-    this.value = '';
-  });
-
-  function removeUniversalFile(index) {
-    universalFiles.splice(index, 1);
-    renderUniversalGallery();
-  }
-
-  function renderUniversalGallery() {
-    const gallery = document.getElementById('universalGalleryList');
-    const container = document.getElementById('universalGalleryContainer');
-    const countDisplay = document.getElementById('universalSelectedCount');
-
-    gallery.innerHTML = '';
-    countDisplay.innerText = universalFiles.length;
-
-    if (universalFiles.length > 0) {
-      container.style.display = 'block';
-    } else {
-      container.style.display = 'none';
-      return;
-    }
-
-    universalFiles.forEach((file, idx) => {
-      const item = document.createElement('div');
-      item.className = 'draggable-card';
-      item.draggable = true;
-
-      item.addEventListener('dragstart', (e) => {
-        draggedUniversalIdx = idx;
-        item.classList.add('dragging');
-        e.dataTransfer.effectAllowed = 'move';
-      });
-
-      item.addEventListener('dragend', () => {
-        item.classList.remove('dragging');
-        document.querySelectorAll('#universalGalleryList .draggable-card').forEach(c => c.classList.remove('drag-over'));
-      });
-
-      item.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        item.classList.add('drag-over');
-      });
-
-      item.addEventListener('dragleave', () => {
-        item.classList.remove('drag-over');
-      });
-
-      item.addEventListener('drop', (e) => {
-        e.preventDefault();
-        item.classList.remove('drag-over');
-        if (draggedUniversalIdx !== null && draggedUniversalIdx !== idx) {
-          const moved = universalFiles.splice(draggedUniversalIdx, 1)[0];
-          universalFiles.splice(idx, 0, moved);
-          renderUniversalGallery();
-        }
-      });
-
-      const delBtn = document.createElement('button');
-      delBtn.className = 'item-delete-btn';
-      delBtn.innerHTML = '✖';
-      delBtn.title = 'Remove this file';
-      delBtn.onclick = function(e) {
-        e.stopPropagation();
-        removeUniversalFile(idx);
-      };
-      item.appendChild(delBtn);
-
-      if (file.type === 'application/pdf') {
-        const icon = document.createElement('div');
-        icon.style.height = '135px';
-        icon.style.display = 'flex';
-        icon.style.alignItems = 'center';
-        icon.style.justifyContent = 'center';
-        icon.style.fontSize = '36px';
-        icon.innerText = '📄';
-        item.appendChild(icon);
-      } else {
-        const img = document.createElement('img');
-        img.src = URL.createObjectURL(file);
-        item.appendChild(img);
-      }
-
-      const label = document.createElement('div');
-      label.className = 'file-label';
-      label.innerText = file.name;
-      label.title = file.name;
-      item.appendChild(label);
-
-      gallery.appendChild(item);
-    });
-  }
-
-  document.getElementById('clearUniversalListBtn').addEventListener('click', () => {
-    universalFiles = [];
-    renderUniversalGallery();
-    document.getElementById('universalMultiInput').value = '';
-  });
-
-  document.getElementById('convertUniversalToPdfBtn').addEventListener('click', async () => {
-    if (!universalFiles.length) return;
-
-    const { PDFDocument } = PDFLib;
-    const mergedPdf = await PDFDocument.create();
-
-    for (let i = 0; i < universalFiles.length; i++) {
-      const file = universalFiles[i];
-      const fileBytes = await file.arrayBuffer();
-
-      if (file.type === 'application/pdf') {
-        const externalPdf = await PDFDocument.load(fileBytes);
-        const copiedPages = await mergedPdf.copyPages(externalPdf, externalPdf.getPageIndices());
-        copiedPages.forEach((page) => mergedPdf.addPage(page));
-      } else {
-        let embeddedImage;
-        if (file.type === 'image/png') {
-          embeddedImage = await mergedPdf.embedPng(fileBytes);
-        } else {
-          embeddedImage = await mergedPdf.embedJpg(fileBytes);
-        }
-
-        const page = mergedPdf.addPage([595.28, 841.89]);
-        const imgDims = embeddedImage.scaleToFit(555.28, 801.89);
-
-        page.drawImage(embeddedImage, {
-          x: (595.28 - imgDims.width) / 2,
-          y: (841.89 - imgDims.height) / 2,
-          width: imgDims.width,
-          height: imgDims.height
-        });
-      }
-    }
-
-    const mergedPdfBytes = await mergedPdf.save();
-    const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
-    const fileName = `Merged_Combined_Document.pdf`;
-    
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = fileName;
-    link.click();
-    saveToHistory('Universal PDF Merge', fileName, blob, 'application/pdf');
-  });
-
-  // ==========================================================
-  // TAB 7: CUSTOM IMAGE RESIZER
-  // ==========================================================
-  let originalResizerImg = null;
-  let resizerOriginalWidth = 0;
-  let resizerOriginalHeight = 0;
-  const resizerCanvas = document.getElementById('resizerPreviewCanvas');
-  const resizerCtx = resizerCanvas.getContext('2d');
-  const DPI_SCALE = 300;
-
-  document.getElementById('resizerImageInput').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    document.getElementById('resizerFileName').innerText = `✅ ${file.name}`;
-    const reader = new FileReader();
-    reader.onload = function(evt) {
-      originalResizerImg = new Image();
-      originalResizerImg.onload = function() {
-        resizerOriginalWidth = originalResizerImg.width;
-        resizerOriginalHeight = originalResizerImg.height;
-
-        document.getElementById('resizerUnitSelect').value = 'px';
-        document.getElementById('resizerWidthInput').value = resizerOriginalWidth;
-        document.getElementById('resizerHeightInput').value = resizerOriginalHeight;
-
-        document.getElementById('resizerControlsPanel').style.display = 'block';
-        updateResizerCanvas();
-      };
-      originalResizerImg.src = evt.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
-
-  function getPixelDimensions() {
-    const unit = document.getElementById('resizerUnitSelect').value;
-    const wVal = parseFloat(document.getElementById('resizerWidthInput').value) || 1;
-    const hVal = parseFloat(document.getElementById('resizerHeightInput').value) || 1;
-
-    let targetW = wVal;
-    let targetH = hVal;
-
-    if (unit === 'mm') {
-      targetW = Math.round((wVal / 25.4) * DPI_SCALE);
-      targetH = Math.round((hVal / 25.4) * DPI_SCALE);
-    } else if (unit === 'cm') {
-      targetW = Math.round((wVal / 2.54) * DPI_SCALE);
-      targetH = Math.round((hVal / 2.54) * DPI_SCALE);
-    }
-
-    return {
-      width: Math.max(1, targetW),
-      height: Math.max(1, targetH)
-    };
-  }
-
-  function updateResizerCanvas() {
-    if (!originalResizerImg) return;
-    const dims = getPixelDimensions();
-
-    resizerCanvas.width = dims.width;
-    resizerCanvas.height = dims.height;
-
-    resizerCtx.clearRect(0, 0, dims.width, dims.height);
-    resizerCtx.drawImage(originalResizerImg, 0, 0, dims.width, dims.height);
-
-    const unit = document.getElementById('resizerUnitSelect').value;
-    const wInp = document.getElementById('resizerWidthInput').value;
-    const hInp = document.getElementById('resizerHeightInput').value;
-
-    document.getElementById('resizerOutputInfo').innerText = `Target: ${wInp} x ${hInp} ${unit} (${dims.width} x ${dims.height} px)`;
-  }
-
-  function onResizerDimensionChange(changed) {
-    if (!originalResizerImg) return;
-    const isLocked = document.getElementById('resizerAspectLock').checked;
-
-    if (isLocked && resizerOriginalWidth > 0 && resizerOriginalHeight > 0) {
-      const ratio = resizerOriginalHeight / resizerOriginalWidth;
-      if (changed === 'width') {
-        const w = parseFloat(document.getElementById('resizerWidthInput').value) || 0;
-        document.getElementById('resizerHeightInput').value = (w * ratio).toFixed(1);
-      } else {
-        const h = parseFloat(document.getElementById('resizerHeightInput').value) || 0;
-        document.getElementById('resizerWidthInput').value = (h / ratio).toFixed(1);
-      }
-    }
-    updateResizerCanvas();
-  }
-
-  function onResizerUnitChange() {
-    if (!originalResizerImg) return;
-    const unit = document.getElementById('resizerUnitSelect').value;
-
-    if (unit === 'px') {
-      document.getElementById('resizerWidthInput').value = resizerOriginalWidth;
-      document.getElementById('resizerHeightInput').value = resizerOriginalHeight;
-    } else if (unit === 'mm') {
-      document.getElementById('resizerWidthInput').value = ((resizerOriginalWidth / DPI_SCALE) * 25.4).toFixed(1);
-      document.getElementById('resizerHeightInput').value = ((resizerOriginalHeight / DPI_SCALE) * 25.4).toFixed(1);
-    } else if (unit === 'cm') {
-      document.getElementById('resizerWidthInput').value = ((resizerOriginalWidth / DPI_SCALE) * 2.54).toFixed(2);
-      document.getElementById('resizerHeightInput').value = ((resizerOriginalHeight / DPI_SCALE) * 2.54).toFixed(2);
-    }
-    updateResizerCanvas();
-  }
-
-  document.getElementById('downloadResizedJpgBtn').addEventListener('click', () => {
-    if (!originalResizerImg) return;
-    const dims = getPixelDimensions();
-    const dataUrl = resizerCanvas.toDataURL('image/jpeg', 0.95);
-    const fileName = `Resized_${dims.width}x${dims.height}px.jpg`;
-    
-    const link = document.createElement('a');
-    link.href = dataUrl;
-    link.download = fileName;
-    link.click();
-    saveToHistory('Image Resizer (JPG)', fileName, dataUrl, 'image/jpeg');
-  });
-
-  document.getElementById('downloadResizedPngBtn').addEventListener('click', () => {
-    if (!originalResizerImg) return;
-    const dims = getPixelDimensions();
-    const dataUrl = resizerCanvas.toDataURL('image/png');
-    const fileName = `Resized_${dims.width}x${dims.height}px.png`;
-
-    const link = document.createElement('a');
-    link.href = dataUrl;
-    link.download = fileName;
-    link.click();
-    saveToHistory('Image Resizer (PNG)', fileName, dataUrl, 'image/png');
-  });
-
-  // ==========================================================
-  // TAB 8: PDF TO HIGH-DPI JPG CONVERTER
-  // ==========================================================
-  let pdfToJpgDoc = null;
-  let activeDpiValue = 300;
-
-  function setPdfDpi(dpi) {
-    activeDpiValue = dpi;
-    document.getElementById('manualDpiInput').value = dpi;
-    document.getElementById('currentDpiDisplay').innerText = `${dpi} DPI`;
-  }
-
-  function updateManualDpi(val) {
-    let dpi = parseInt(val) || 300;
-    if (dpi < 50) dpi = 50;
-    if (dpi > 1200) dpi = 1200;
-    activeDpiValue = dpi;
-    document.getElementById('currentDpiDisplay').innerText = `${dpi} DPI`;
-  }
-
-  document.getElementById('pdfToJpgInput').addEventListener('change', async function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    document.getElementById('pdfToJpgStatus').innerText = `✅ ${file.name}`;
-    const arrayBuffer = await file.arrayBuffer();
-
-    pdfToJpgDoc = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
-    document.getElementById('pdfToJpgControls').style.display = 'block';
-  });
-
-  document.getElementById('startPdfToJpgBtn').addEventListener('click', async () => {
-    if (!pdfToJpgDoc) return;
-
-    const progress = document.getElementById('pdfConversionProgress');
-    const scaleFactor = activeDpiValue / 72;
-    const totalPages = pdfToJpgDoc.numPages;
-
-    if (totalPages === 1) {
-      progress.innerText = `⏳ Rendering 1 page at ${activeDpiValue} DPI...`;
-      const page = await pdfToJpgDoc.getPage(1);
-      const viewport = page.getViewport({ scale: scaleFactor });
-
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-
-      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-
-      canvas.toBlob((blob) => {
-        const fileName = `Page_1_${activeDpiValue}DPI.jpg`;
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = fileName;
-        link.click();
-        progress.innerText = `✅ Download Complete (1 Page @ ${activeDpiValue} DPI)`;
-        saveToHistory('PDF to JPG (Single)', fileName, blob, 'image/jpeg');
-      }, 'image/jpeg', 0.95);
-
-    } else {
-      const zip = new JSZip();
-      for (let i = 1; i <= totalPages; i++) {
-        progress.innerText = `⏳ Processing Page ${i} / ${totalPages} at ${activeDpiValue} DPI...`;
-        const page = await pdfToJpgDoc.getPage(i);
-        const viewport = page.getViewport({ scale: scaleFactor });
-
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-
-        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-        const imgData = canvas.toDataURL('image/jpeg', 0.95).split(',')[1];
-        zip.file(`Page_${i}_${activeDpiValue}DPI.jpg`, imgData, { base64: true });
-      }
-
-      progress.innerText = '📦 Creating ZIP archive...';
-      const zipContent = await zip.generateAsync({ type: 'blob' });
-      const fileName = `PDF_to_JPG_${activeDpiValue}DPI_Bundle.zip`;
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(zipContent);
-      link.download = fileName;
-      link.click();
-      progress.innerText = `✅ Complete! ${totalPages} Pages Downloaded in ZIP.`;
-      saveToHistory('PDF to JPG (Batch ZIP)', fileName, zipContent, 'application/zip');
-    }
-  });
-
-  // ==========================================================
-  // TAB 9: INTERACTIVE PDF COMPRESSOR
-  // ==========================================================
-  let compressOriginalFile = null;
-  let compressPdfDoc = null;
-  let origFileSizeInKB = 0;
-
-  document.getElementById('pdfCompressInput').addEventListener('change', async function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    compressOriginalFile = file;
-    origFileSizeInKB = (file.size / 1024).toFixed(1);
-    
-    document.getElementById('pdfCompressStatus').innerText = `✅ ${file.name}`;
-    document.getElementById('origFileSizeDisplay').innerText = formatBytes(file.size);
-
-    const arrayBuffer = await file.arrayBuffer();
-    compressPdfDoc = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
-
-    document.getElementById('compressorControlsArea').style.display = 'block';
-    onCompressSliderChange(document.getElementById('compressQualitySlider').value);
-  });
-
-  function onCompressSliderChange(val) {
-    const quality = parseInt(val);
-    let levelText = 'Medium';
-    if (quality < 35) levelText = 'High Compression (Smallest Size)';
-    else if (quality > 75) levelText = 'Light Compression (High Quality)';
-    
-    document.getElementById('compressQualityLabel').innerText = `${quality}% (${levelText})`;
-
-    const ratio = Math.pow(quality / 100, 1.3);
-    const estBytes = compressOriginalFile.size * Math.max(0.15, ratio);
-    document.getElementById('estFileSizeDisplay').innerText = formatBytes(estBytes);
-  }
-
-  function formatBytes(bytes) {
-    if (bytes < 1024) return bytes + ' Bytes';
-    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-    else return (bytes / 1048576).toFixed(2) + ' MB';
-  }
-
-  document.getElementById('startCompressDownloadBtn').addEventListener('click', async () => {
-    if (!compressPdfDoc) return;
-
-    const progress = document.getElementById('compressProgressMsg');
-    const qualityVal = parseInt(document.getElementById('compressQualitySlider').value);
-    const jpegQuality = qualityVal / 100;
-    
-    const renderScale = Math.max(1.0, (qualityVal / 100) * 2.2); 
-    const totalPages = compressPdfDoc.numPages;
-
-    progress.innerText = `⏳ Compressing ${totalPages} pages...`;
-
-    const { jsPDF } = window.jspdf;
-    let outPdf = null;
-
-    for (let i = 1; i <= totalPages; i++) {
-      progress.innerText = `⏳ Compressing Page ${i} of ${totalPages}...`;
-      const page = await compressPdfDoc.getPage(i);
-      const viewport = page.getViewport({ scale: renderScale });
-
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-
-      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-      const imgData = canvas.toDataURL('image/jpeg', jpegQuality);
-
-      const orientation = viewport.width > viewport.height ? 'landscape' : 'portrait';
-      if (i === 1) {
-        outPdf = new jsPDF({ orientation: orientation, unit: 'pt', format: [viewport.width, viewport.height] });
-      } else {
-        outPdf.addPage([viewport.width, viewport.height], orientation);
-      }
-
-      outPdf.addImage(imgData, 'JPEG', 0, 0, viewport.width, viewport.height, undefined, 'FAST');
-    }
-
-    const fileName = `Compressed_${qualityVal}pct_${compressOriginalFile.name}`;
-    const blob = outPdf.output('blob');
-    progress.innerText = `✅ Compression Complete! Downloading...`;
-    outPdf.save(fileName);
-    saveToHistory('PDF Compressor', fileName, blob, 'application/pdf');
   });
 
   function initAllCanvases() {
