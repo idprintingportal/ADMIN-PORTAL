@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
@@ -581,6 +582,20 @@
     }
     .history-delete-btn:hover { background: rgba(239, 68, 68, 0.4); }
 
+    .history-msg-btn {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: 0.2s;
+      margin-left: 5px;
+    }
+    .history-msg-btn:hover { background: rgba(245, 158, 11, 0.4); }
+
     #cropModal {
       display: none;
       position: fixed;
@@ -606,6 +621,18 @@
       max-width: 100%;
       max-height: 70vh;
       display: block;
+    }
+
+    /* Admin Message Broadcast Modal */
+    #adminMsgModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 100000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
   </style>
 </head>
@@ -679,6 +706,11 @@
         ⏳ Validity: Initializing...
       </div>
       <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
+    </div>
+
+    <!-- Distributor Notification Banner (Appears if Admin sent a message) -->
+    <div id="distributorNoticeBanner" style="display:none; background: rgba(245, 158, 11, 0.2); border: 1px solid #fbbf24; color: #fef08a; padding: 12px 18px; border-radius: 12px; margin-bottom: 15px; font-size: 13px; text-align: left;">
+      <strong>📢 Admin Notification:</strong> <span id="distributorNoticeText"></span>
     </div>
 
     <!-- TAB 1: 5 CARDS SYSTEM -->
@@ -1199,6 +1231,20 @@
   </div>
 </div>
 
+<!-- Admin Message Modal -->
+<div id="adminMsgModal">
+  <div class="auth-box" style="max-width:400px; text-align:left;">
+    <h3 style="color: var(--accent-blue); margin-bottom: 10px; font-size: 18px;">💬 Send Message to Distributor</h3>
+    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">यह मैसेज इस डिस्ट्रीब्यूटर के पोर्टल पर लॉगिन करते ही दिखेगा।</p>
+    <input type="hidden" id="targetDistEmail">
+    <textarea id="adminTypedMsg" class="login-input" style="height: 90px; resize:none;" placeholder="यहाँ अपना मैसेज टाइप करें..."></textarea>
+    <div style="display: flex; gap: 10px;">
+      <button onclick="saveAdminMessage()" class="action-btn btn-download" style="flex:1;">📤 Send Message</button>
+      <button onclick="closeAdminMsgModal()" class="action-btn btn-reset" style="flex:1;">रद्द करें</button>
+    </div>
+  </div>
+</div>
+
 <script>
   if (typeof pdfjsLib !== 'undefined') {
     pdfjsLib.GlobalWorkerOptions.workerSrc = '';
@@ -1265,7 +1311,7 @@
   }
 
   // ==========================================================
-  // DISTRIBUTOR / ACCOUNT MANAGEMENT (ADMIN PANEL WITH TIMELINE)
+  // DISTRIBUTOR / ACCOUNT MANAGEMENT (ADMIN PANEL WITH TIMELINE & MSG)
   // ==========================================================
   function getDistributorsList() {
     let list = localStorage.getItem('portal_distributors_list');
@@ -1305,18 +1351,17 @@
       return;
     }
 
-    // Calculate Expiry Timeline for Distributor (30 Days from creation)
     const assignedTimestamp = Date.now();
     const distExpiryTime = assignedTimestamp + THIRTY_MS;
-    const expiryDateFormatted = new Date(distExpiryTime).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' });
 
     dists.push({ 
       id: Date.now(), 
       name, 
       email, 
       pass, 
-      assignedDate: new Date(assignedTimestamp).toLocaleDateString('en-IN'),
-      expiryDateText: `Active until ${expiryDateFormatted} (30 Days)` 
+      assignedTimestamp: assignedTimestamp,
+      expiryTime: distExpiryTime,
+      adminMessage: ''
     });
 
     saveDistributorsList(dists);
@@ -1334,7 +1379,7 @@
 
   function renderDistributorsTable() {
     const tbody = document.getElementById('distributorTableBody');
-    const dists = getDistributorsList();
+    let dists = getDistributorsList();
     tbody.innerHTML = '';
 
     if (!dists.length) {
@@ -1342,14 +1387,31 @@
       return;
     }
 
+    const now = Date.now();
+
     dists.forEach((d) => {
+      const remainingMs = (d.expiryTime || (d.assignedTimestamp + THIRTY_MS)) - now;
+      const daysLeft = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
+      
+      let timelineText = "";
+      let textColor = "#34d399";
+      if (daysLeft > 0) {
+        timelineText = `${daysLeft} Days Left`;
+      } else {
+        timelineText = `Expired (0 Days)`;
+        textColor = "#f87171";
+      }
+
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><strong>${d.name}</strong></td>
         <td>${d.email}</td>
         <td><code style="background:#000; padding:3px 6px; border-radius:4px; color:#38bdf8;">${d.pass}</code></td>
-        <td style="color: #34d399; font-weight:600;">${d.expiryDateText}</td>
-        <td><button class="history-delete-btn" onclick="deleteDistributor(${d.id})">🗑️ Delete</button></td>
+        <td style="color: ${textColor}; font-weight:600;">⏳ ${timelineText}</td>
+        <td>
+          <button class="history-delete-btn" onclick="deleteDistributor(${d.id})">🗑️ Delete</button>
+          <button class="history-msg-btn" onclick="openAdminMsgModal('${d.email}')">💬 Message</button>
+        </td>
       `;
       tbody.appendChild(tr);
     });
@@ -1363,8 +1425,37 @@
     renderDistributorsTable();
   }
 
+  function openAdminMsgModal(email) {
+    document.getElementById('targetDistEmail').value = email;
+    document.getElementById('adminTypedMsg').value = '';
+    document.getElementById('adminMsgModal').style.display = 'flex';
+  }
+
+  function closeAdminMsgModal() {
+    document.getElementById('adminMsgModal').style.display = 'none';
+  }
+
+  function saveAdminMessage() {
+    const email = document.getElementById('targetDistEmail').value;
+    const msgText = document.getElementById('adminTypedMsg').value.trim();
+    if (!msgText) {
+      alert('कृपया कुछ मैसेज टाइप करें!');
+      return;
+    }
+
+    let dists = getDistributorsList();
+    let dist = dists.find(d => d.email === email);
+    if (dist) {
+      dist.adminMessage = msgText;
+      saveDistributorsList(dists);
+      alert('✅ मैसेज सफलतापूर्वक सेव हो गया है!');
+      closeAdminMsgModal();
+      renderDistributorsTable();
+    }
+  }
+
   // ==========================================================
-  // INDEXEDDB HISTORY STORAGE ENGINE (WITH DELETE RECORD OPTION)
+  // INDEXEDDB HISTORY STORAGE ENGINE
   // ==========================================================
   const DB_NAME = 'PrintPortalPersistentDB';
   const DB_STORE = 'print_records';
@@ -1579,6 +1670,7 @@
 
     let isAuthorized = false;
     let isAdmin = false;
+    let loggedInDistributor = null;
 
     // 1. Check Admin
     if (inputEmail === ADMIN_EMAIL.toLowerCase() && inputPass === adminActivePass) {
@@ -1589,15 +1681,20 @@
       let dists = getDistributorsList();
       let foundUser = dists.find(d => d.email.toLowerCase() === inputEmail && d.pass === inputPass);
       if (foundUser) {
-        isAuthorized = true;
-        isAdmin = false;
+        // Check if distributor account is expired (30 days from assignment)
+        const distExpTime = foundUser.expiryTime || (foundUser.assignedTimestamp + THIRTY_MS);
+        if (Date.now() <= distExpTime) {
+          isAuthorized = true;
+          isAdmin = false;
+          loggedInDistributor = foundUser;
+        }
       }
     }
 
     if (isAuthorized) {
       const remainingDays = checkAndHandleExpiry();
 
-      if (remainingDays > 0) {
+      if (remainingDays > 0 || !isAdmin) {
         sessionStorage.setItem('isLoggedIn', 'true');
         loginScreen.style.display = 'none';
         changePwdScreen.style.display = 'none';
@@ -1609,19 +1706,30 @@
 
         if (isAdmin) {
           adminTabBtn.style.display = 'inline-block';
+          updateValidityDisplay();
         } else {
           adminTabBtn.style.display = 'none';
           switchTabDirect('tab-cards');
+          
+          // Show Admin Message in Distributor Portal if any
+          if (loggedInDistributor && loggedInDistributor.adminMessage) {
+            document.getElementById('distributorNoticeTextinnerText') = loggedInDistributor.adminMessage;
+            document.getElementById('distributorNoticeText').innerText = loggedInDistributor.adminMessage;
+            document.getElementById('distributorNoticeBanner').style.display = 'block';
+          } else {
+            document.getElementById('distributorNoticeBanner').style.display = 'none';
+          }
+          
+          document.getElementById('validityCounterBadge').innerHTML = `👤 Distributor Portal (${loggedInDistributor.name})`;
         }
 
-        updateValidityDisplay();
         initAllCanvases();
       } else {
         errorMsg.innerText = "⚠️ 30 दिनों की वैधता समाप्त हो चुकी है!";
         errorMsg.style.display = 'block';
       }
     } else {
-      errorMsg.innerText = "⚠️ गलत ईमेल आईडी या पासवर्ड, या एडमिन द्वारा आईडी असाइन नहीं की गई है!";
+      errorMsg.innerText = "⚠️ गलत ईमेल आईडी या पासवर्ड, या एडमिन द्वारा आईडी असाइन नहीं की गई है / एक्सपायर हो चुकी है!";
       errorMsg.style.display = 'block';
     }
   }
