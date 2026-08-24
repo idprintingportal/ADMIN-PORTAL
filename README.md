@@ -1238,12 +1238,12 @@
 
     if (type === 'email') {
       title.innerText = "📧 Email Registration & Support";
-      desc.innerText = "हमारे पोर्टल से जुड़ने या सहायता के लिए इस ईमेल पर संपर्क करें: idprintingportal@gmail.com";
+      desc.innerText = "हमारे पोर्टल से जुड़ने या सहायता के लिए इस ईमेल पर संपर्क करें:\n\nidprintingportal@gmail.com";
       btn.innerText = "Send Email Now";
       btn.href = "mailto:idprintingportal@gmail.com";
     } else {
       title.innerText = "💬 WhatsApp Support & Registration";
-      desc.innerText = "व्हाट्सएप पर तुरंत सहायता या रजिस्ट्रेशन के लिए संपर्क करें: 7887575671";
+      desc.innerText = "व्हाट्सएप पर तुरंत सहायता या रजिस्ट्रेशन के लिए संपर्क करें:\n\n+91 7887575671";
       btn.innerText = "Open WhatsApp Chat";
       btn.href = "https://wa.me/917887575671";
     }
@@ -1335,10 +1335,9 @@
       return;
     }
 
-    const assignedDate = new Date().toLocaleDateString('en-IN');
     const expiryDateText = "Lifetime (Until Admin Deletes)";
 
-    dists.push({ id: Date.now(), name, email, pass, assignedDate, expiryDateText });
+    dists.push({ id: Date.now(), name, email, pass, expiryDateText });
     saveDistributorsList(dists);
 
     msg.innerText = "✅ डिस्ट्रीब्यूटर आईडी सफलतापूर्वक असाइन कर दी गई है!";
