@@ -3,11 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ID CARD PRINT & CONVERTER PORTAL</title>
+  <title>ID CARD PRINT & CONVERTER PORTAL (CLOUD SYNCED)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   
+  <!-- Firebase SDK (Firestore Cloud Database) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
   <!-- PDF.js Standalone -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   
@@ -623,7 +627,6 @@
       display: block;
     }
 
-    /* Admin Message Broadcast Modal */
     #adminMsgModal {
       display: none;
       position: fixed;
@@ -1094,11 +1097,11 @@
       </div>
     </div>
 
-    <!-- TAB 9: PDF COMPRESSOR -->
+    <!-- TAB 9: PDF COMPRESSOR (BIGPDF / 11ZON STYLE HIGH CLARITY) -->
     <div id="tab-pdf-compressor" class="tab-content">
-      <div class="badge">Interactive Quality & Size Slider • Target KB/MB Preview • High-Speed Export</div>
-      <h1>PDF Size Compressor</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">PDF फ़ाइल अपलोड करें, स्लाइडर से अपनी मनचाही फाइल साइज़ (KB/MB) सेट करें और डाउनलोड करें।</p>
+      <div class="badge">BigPDF / 11zon High-Fidelity Style • Crystal-Clear Text & Image Compression</div>
+      <h1>PDF Size Compressor (High Clarity)</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">BigPDF जैसी बेहतरीन क्लैरिटी और ऑप्टिमाइजेशन के साथ पीडीएफ फाइल का साइज़ कम करें।</p>
 
       <div class="upload-section" style="margin-bottom: 15px;">
         <label class="upload-box" for="pdfCompressInput" style="max-width: 420px;">
@@ -1111,11 +1114,11 @@
       <div id="compressorControlsArea" style="display:none;">
         <div class="control-panel">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size: 13px; font-weight:600; color: var(--accent-blue);">🎚️ Compression Quality Slider:</span>
-            <span id="compressQualityLabel" style="font-weight:700; color:#fbbf24;">60% (Medium)</span>
+            <span style="font-size: 13px; font-weight:600; color: var(--accent-blue);">🎚️ Compression Level (High Clarity):</span>
+            <span id="compressQualityLabel" style="font-weight:700; color:#fbbf24;">75% (Recommended Sharp)</span>
           </div>
 
-          <input type="range" id="compressQualitySlider" class="slider-range" min="10" max="95" value="60" oninput="onCompressSliderChange(this.value)">
+          <input type="range" id="compressQualitySlider" class="slider-range" min="30" max="95" value="75" oninput="onCompressSliderChange(this.value)">
 
           <div class="size-badge-box">
             <div>
@@ -1123,7 +1126,7 @@
               <strong id="origFileSizeDisplay" style="color:#f87171; font-size:14px;">0 KB</strong>
             </div>
             <div>
-              <div style="font-size:11px; color:var(--text-muted);">Estimated Download Size</div>
+              <div style="font-size:11px; color:var(--text-muted);">Estimated Optimized Size</div>
               <strong id="estFileSizeDisplay" style="color:#34d399; font-size:14px;">0 KB</strong>
             </div>
           </div>
@@ -1132,12 +1135,12 @@
         <div style="margin-top: 10px; font-size: 12px; color: var(--text-muted);" id="compressProgressMsg"></div>
 
         <div class="btn-group">
-          <button id="startCompressDownloadBtn" class="action-btn btn-download">📥 Compress & Download PDF</button>
+          <button id="startCompressDownloadBtn" class="action-btn btn-download">📥 Compress & Download High-Clarity PDF</button>
         </div>
       </div>
     </div>
 
-    <!-- TAB 10: HISTORY (WITH DELETE OPTION) -->
+    <!-- TAB 10: 30-DAY PRINT HISTORY -->
     <div id="tab-history" class="tab-content">
       <div class="badge">Persistent Storage • Retained Until Cleared</div>
       <h1>Print & Download History</h1>
@@ -1777,9 +1780,9 @@
       cropModal.style.display = 'flex';
       if (cropper) cropper.destroy();
 
-      let targetRatio = 1013 / 638;
+      let targetRatio = 3039 / 1914;
       if (type === 'passport' || type === 'name_passport') targetRatio = 35 / 45;
-      if (type === 'photo4x6') targetRatio = 1200 / 1800;
+      if (type === 'photo4x6') targetRatio = 3600 / 5400;
 
       cropper = new Cropper(imageToCrop, {
         aspectRatio: targetRatio,
@@ -1802,10 +1805,10 @@
   function autoFitCardToCanvas(dataUrl, targetCanvas, ctx, isFront) {
     const img = new Image();
     img.onload = function() {
-      ctx.clearRect(0, 0, CARD_W, CARD_H);
+      ctx.clearRect(0, 0, CARD_W_900, CARD_H_900);
 
       const srcRatio = img.width / img.height;
-      const targetRatio = CARD_W / CARD_H;
+      const targetRatio = CARD_W_900 / CARD_H_900;
       let sX = 0, sY = 0, sW = img.width, sH = img.height;
 
       if (srcRatio > targetRatio) {
@@ -1816,7 +1819,7 @@
         sY = (img.height - sH) / 2;
       }
 
-      ctx.drawImage(img, sX, sY, sW, sH, 0, 0, CARD_W, CARD_H);
+      ctx.drawImage(img, sX, sY, sW, sH, 0, 0, CARD_W_900, CARD_H_900);
 
       if (isFront) {
         img1Loaded = true;
@@ -1847,36 +1850,36 @@
     if (!cropper) return;
 
     if (activeCropType === 'card_front' || activeCropType === 'card_back') {
-      const croppedCanvas = cropper.getCroppedCanvas({ width: 1013, height: 638, imageSmoothingQuality: 'high' });
+      const croppedCanvas = cropper.getCroppedCanvas({ width: CARD_W_900, height: CARD_H_900, imageSmoothingQuality: 'high' });
       if (activeCropType === 'card_front') {
-        ctx1.clearRect(0, 0, CARD_W, CARD_H);
+        ctx1.clearRect(0, 0, CARD_W_900, CARD_H_900);
         ctx1.drawImage(croppedCanvas, 0, 0);
         img1Loaded = true;
       } else {
-        ctx2.clearRect(0, 0, CARD_W, CARD_H);
+        ctx2.clearRect(0, 0, CARD_W_900, CARD_H_900);
         ctx2.drawImage(croppedCanvas, 0, 0);
         img2Loaded = true;
       }
       if (img1Loaded && img2Loaded) addCardBtn.disabled = false;
     } 
     else if (activeCropType === 'passport') {
-      const croppedCanvas = cropper.getCroppedCanvas({ width: 413, height: 531, imageSmoothingQuality: 'high' });
-      passportCtx.clearRect(0, 0, 413, 531);
+      const croppedCanvas = cropper.getCroppedCanvas({ width: 1239, height: 1593, imageSmoothingQuality: 'high' });
+      passportCtx.clearRect(0, 0, 1239, 1593);
       passportCtx.drawImage(croppedCanvas, 0, 0);
       passportLoaded = true;
       document.getElementById('make4x6CustomPassportBtn').disabled = false;
       document.getElementById('makeA4CustomPassportBtn').disabled = false;
     }
     else if (activeCropType === 'name_passport') {
-      rawNamePassportImg = cropper.getCroppedCanvas({ width: 413, height: 531, imageSmoothingQuality: 'high' });
+      rawNamePassportImg = cropper.getCroppedCanvas({ width: 1239, height: 1593, imageSmoothingQuality: 'high' });
       renderNamePassportPreview();
       namePassportLoaded = true;
       document.getElementById('make4x6NamePassportBtn').disabled = false;
       document.getElementById('makeA4NamePassportBtn').disabled = false;
     }
     else if (activeCropType === 'photo4x6') {
-      const croppedCanvas = cropper.getCroppedCanvas({ width: 1200, height: 1800, imageSmoothingQuality: 'high' });
-      ctx4x6.clearRect(0, 0, 1200, 1800);
+      const croppedCanvas = cropper.getCroppedCanvas({ width: 3600, height: 5400, imageSmoothingQuality: 'high' });
+      ctx4x6.clearRect(0, 0, 3600, 5400);
       ctx4x6.drawImage(croppedCanvas, 0, 0);
       photo4x6Loaded = true;
       document.getElementById('downloadDirect4x6Pdf').disabled = false;
@@ -1897,9 +1900,9 @@
   }
 
   // ==========================================
-  // TAB 1: 5 CARDS SYSTEM LOGIC
+  // TAB 1: 5 CARDS SYSTEM LOGIC (900 DPI)
   // ==========================================
-  const CARD_W = 1013, CARD_H = 638, A4_W = 2480, A4_H = 3508, GAP_2_5MM_PX = 30, MAX_CARDS = 5;
+  const CARD_W_900 = 3039, CARD_H_900 = 1914, A4_W_900 = 7440, A4_H_900 = 10524, GAP_900 = 90, MAX_CARDS = 5;
   let addedCardsCount = 0, img1Loaded = false, img2Loaded = false;
 
   const canvas1 = document.getElementById('canvas1');
@@ -1940,19 +1943,19 @@
 
   addCardBtn.addEventListener('click', () => {
     if (addedCardsCount >= MAX_CARDS) return;
-    const totalPairWidth = (CARD_W * 2) + GAP_2_5MM_PX;
-    const startX = (A4_W - totalPairWidth) / 2;
-    const startY = 45;
-    const currentY = startY + (addedCardsCount * (CARD_H + 45));
+    const totalPairWidth = (CARD_W_900 * 2) + GAP_900;
+    const startX = (A4_W_900 - totalPairWidth) / 2;
+    const startY = 150;
+    const currentY = startY + (addedCardsCount * (CARD_H_900 + 135));
 
-    a4Ctx.drawImage(canvas1, startX, currentY, CARD_W, CARD_H);
-    const backCardX = startX + CARD_W + GAP_2_5MM_PX;
-    a4Ctx.drawImage(canvas2, backCardX, currentY, CARD_W, CARD_H);
+    a4Ctx.drawImage(canvas1, startX, currentY, CARD_W_900, CARD_H_900);
+    const backCardX = startX + CARD_W_900 + GAP_900;
+    a4Ctx.drawImage(canvas2, backCardX, currentY, CARD_W_900, CARD_H_900);
 
     a4Ctx.strokeStyle = '#000000';
-    a4Ctx.lineWidth = 6;
-    a4Ctx.strokeRect(startX, currentY, CARD_W, CARD_H);
-    a4Ctx.strokeRect(backCardX, currentY, CARD_W, CARD_H);
+    a4Ctx.lineWidth = 18;
+    a4Ctx.strokeRect(startX, currentY, CARD_W_900, CARD_H_900);
+    a4Ctx.strokeRect(backCardX, currentY, CARD_W_900, CARD_H_900);
 
     addedCardsCount++;
     if (addedCardsCount < MAX_CARDS) {
@@ -1968,11 +1971,11 @@
   function clearCurrentCardInputs() {
     [ctx1, ctx2].forEach((ctx, i) => {
       ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, CARD_W, CARD_H);
+      ctx.fillRect(0, 0, CARD_W_900, CARD_H_900);
       ctx.fillStyle = '#94a3b8';
-      ctx.font = 'bold 24px Poppins';
+      ctx.font = 'bold 72px Poppins';
       ctx.textAlign = 'center';
-      ctx.fillText(`${i === 0 ? 'Front' : 'Back'} Card Preview`, CARD_W / 2, CARD_H / 2);
+      ctx.fillText(`${i === 0 ? 'Front' : 'Back'} Card Preview`, CARD_W_900 / 2, CARD_H_900 / 2);
     });
     document.getElementById('file1Name').innerText = 'इमेज चुनें (Auto-Crop)';
     document.getElementById('file2Name').innerText = 'इमेज चुनें (Auto-Crop)';
@@ -1987,15 +1990,15 @@
   function resetCardA4Sheet() {
     addedCardsCount = 0;
     a4Ctx.fillStyle = '#ffffff';
-    a4Ctx.fillRect(0, 0, A4_W, A4_H);
-    const totalPairWidth = (CARD_W * 2) + GAP_2_5MM_PX;
-    const startX = (A4_W - totalPairWidth) / 2;
+    a4Ctx.fillRect(0, 0, A4_W_900, A4_H_900);
+    const totalPairWidth = (CARD_W_900 * 2) + GAP_900;
+    const startX = (A4_W_900 - totalPairWidth) / 2;
     for (let i = 0; i < MAX_CARDS; i++) {
-      const currentY = 45 + (i * (CARD_H + 45));
+      const currentY = 150 + (i * (CARD_H_900 + 135));
       a4Ctx.strokeStyle = '#e2e8f0';
-      a4Ctx.lineWidth = 2;
-      a4Ctx.strokeRect(startX, currentY, CARD_W, CARD_H);
-      a4Ctx.strokeRect(startX + CARD_W + GAP_2_5MM_PX, currentY, CARD_W, CARD_H);
+      a4Ctx.lineWidth = 6;
+      a4Ctx.strokeRect(startX, currentY, CARD_W_900, CARD_H_900);
+      a4Ctx.strokeRect(startX + CARD_W_900 + GAP_900, currentY, CARD_W_900, CARD_H_900);
     }
     slotCounter.innerText = `Cards on Page: 0 / 5 (Next Slot: #1)`;
     downloadPdfBtn.disabled = true;
@@ -2013,14 +2016,14 @@
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     pdf.addImage(a4Canvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
     
-    const fileName = `A4_Cards_Sheet_${addedCardsCount}_Cards.pdf`;
+    const fileName = `A4_Cards_Sheet_900DPI_${addedCardsCount}_Cards.pdf`;
     const blob = pdf.output('blob');
     pdf.save(fileName);
-    saveToHistory('ID Card Print (5-Slots)', fileName, blob, 'application/pdf');
+    saveToHistory('ID Card Print (900 DPI)', fileName, blob, 'application/pdf');
   });
 
   // ==========================================
-  // TAB 2: PASSPORT SIZE PHOTOS (STANDARD)
+  // TAB 2: PASSPORT SIZE PHOTOS (900 DPI)
   // ==========================================
   const passportCanvas = document.getElementById('passportCanvas');
   const passportCtx = passportCanvas.getContext('2d');
@@ -2046,14 +2049,14 @@
     passportSheetFormat = '4x6';
     const targetQty = Math.max(1, Math.min(8, parseInt(passportQtyInput.value) || 8));
 
-    passportSheetCanvas.width = 1800;
-    passportSheetCanvas.height = 1200;
+    passportSheetCanvas.width = 5400;
+    passportSheetCanvas.height = 3600;
 
     passportSheetCtx.fillStyle = '#ffffff';
-    passportSheetCtx.fillRect(0, 0, 1800, 1200);
+    passportSheetCtx.fillRect(0, 0, 5400, 3600);
 
-    const pw = 413, ph = 531;
-    const startX = 50, startY = 50, gapX = 20, gapY = 35;
+    const pw = 1239, ph = 1593;
+    const startX = 150, startY = 150, gapX = 60, gapY = 100;
     const maxCols = 4;
 
     let placed = 0;
@@ -2064,13 +2067,13 @@
         const y = startY + r * (ph + gapY);
         passportSheetCtx.drawImage(passportCanvas, x, y, pw, ph);
         passportSheetCtx.strokeStyle = '#000000';
-        passportSheetCtx.lineWidth = 2;
+        passportSheetCtx.lineWidth = 6;
         passportSheetCtx.strokeRect(x, y, pw, ph);
         placed++;
       }
     }
 
-    document.getElementById('passportSheetTitle').innerText = `Passport 4×6 Sheet (${targetQty} Photos Generated)`;
+    document.getElementById('passportSheetTitle').innerText = `Passport 900 DPI 4×6 Sheet (${targetQty} Photos Generated)`;
     document.getElementById('downloadPassportPdfBtn').disabled = false;
   });
 
@@ -2079,14 +2082,15 @@
     passportSheetFormat = 'a4';
     const targetQty = Math.max(1, Math.min(30, parseInt(passportQtyInput.value) || 30));
 
-    passportSheetCanvas.width = 2480;
-    passportSheetCanvas.height = 3508;
+    passportSheetCanvas.width = 7440;
+    passportSheetSheetCanvas = passportSheetCanvas; // fixed reference
+    passportSheetCanvas.height = 10524;
 
     passportSheetCtx.fillStyle = '#ffffff';
-    passportSheetCtx.fillRect(0, 0, 2480, 3508);
+    passportSheetCtx.fillRect(0, 0, 7440, 10524);
 
-    const pw = 413, ph = 531;
-    const startX = 75, startY = 80, gapX = 30, gapY = 40;
+    const pw = 1239, ph = 1593;
+    const startX = 225, startY = 240, gapX = 90, gapY = 120;
     const maxCols = 5;
 
     let placed = 0;
@@ -2097,13 +2101,13 @@
         const y = startY + r * (ph + gapY);
         passportSheetCtx.drawImage(passportCanvas, x, y, pw, ph);
         passportSheetCtx.strokeStyle = '#000000';
-        passportSheetCtx.lineWidth = 2;
+        passportSheetCtx.lineWidth = 6;
         passportSheetCtx.strokeRect(x, y, pw, ph);
         placed++;
       }
     }
 
-    document.getElementById('passportSheetTitle').innerText = `Passport A4 Sheet (${targetQty} Photos Generated)`;
+    document.getElementById('passportSheetTitle').innerText = `Passport 900 DPI A4 Sheet (${targetQty} Photos Generated)`;
     document.getElementById('downloadPassportPdfBtn').disabled = false;
   });
 
@@ -2114,19 +2118,19 @@
     if (passportSheetFormat === '4x6') {
       pdf = new jsPDF({ orientation: 'landscape', unit: 'in', format: [4, 6] });
       pdf.addImage(passportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 6, 4);
-      fileName = `Passport_Photos_4x6_${passportQtyInput.value}_Qty.pdf`;
+      fileName = `Passport_900DPI_4x6_${passportQtyInput.value}_Qty.pdf`;
     } else {
       pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
       pdf.addImage(passportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
-      fileName = `Passport_Photos_A4_${passportQtyInput.value}_Qty.pdf`;
+      fileName = `Passport_900DPI_A4_${passportQtyInput.value}_Qty.pdf`;
     }
     const blob = pdf.output('blob');
     pdf.save(fileName);
-    saveToHistory('Passport Photos', fileName, blob, 'application/pdf');
+    saveToHistory('Passport Photos (900 DPI)', fileName, blob, 'application/pdf');
   });
 
   // ==========================================
-  // TAB 3: NAME & DATE PASSPORT (3 FONT SLIDERS)
+  // TAB 3: NAME & DATE PASSPORT (900 DPI)
   // ==========================================
   const namePassportCanvas = document.getElementById('namePassportCanvas');
   const namePassportCtx = namePassportCanvas.getContext('2d');
@@ -2136,28 +2140,28 @@
   let namePassportLoaded = false;
   let namePassportSheetFormat = '4x6';
 
-  let currentNameFontSize = 24;
-  let currentDobFontSize = 20;
-  let currentDopFontSize = 20;
+  let currentNameFontSize = 72;
+  let currentDobFontSize = 60;
+  let currentDopFontSize = 60;
 
   function setNamePassportQty(qty) {
     namePassportQtyInput.value = qty;
   }
 
   function updateNameFontSize(val) {
-    currentNameFontSize = parseInt(val) || 24;
+    currentNameFontSize = parseInt(val) || 72;
     document.getElementById('nameFontLabel').innerText = `Size: ${currentNameFontSize}px`;
     renderNamePassportPreview();
   }
 
   function updateDobFontSize(val) {
-    currentDobFontSize = parseInt(val) || 20;
+    currentDobFontSize = parseInt(val) || 60;
     document.getElementById('dobFontLabel').innerText = `Size: ${currentDobFontSize}px`;
     renderNamePassportPreview();
   }
 
   function updateDopFontSize(val) {
-    currentDopFontSize = parseInt(val) || 20;
+    currentDopFontSize = parseInt(val) || 60;
     document.getElementById('dopFontLabel').innerText = `Size: ${currentDopFontSize}px`;
     renderNamePassportPreview();
   }
@@ -2190,10 +2194,10 @@
 
   function renderNamePassportPreview() {
     namePassportCtx.fillStyle = '#ffffff';
-    namePassportCtx.fillRect(0, 0, 413, 531);
+    namePassportCtx.fillRect(0, 0, 1239, 1593);
 
     if (rawNamePassportImg) {
-      namePassportCtx.drawImage(rawNamePassportImg, 0, 0, 413, 531);
+      namePassportCtx.drawImage(rawNamePassportImg, 0, 0, 1239, 1593);
     }
 
     const cName = document.getElementById('candNameInput').value.trim();
@@ -2212,51 +2216,47 @@
 
     if (cName || formattedDob || formattedDop) {
       namePassportCtx.font = `900 ${currentNameFontSize}px Poppins, Arial, sans-serif`;
-      const nameLines = cName ? wrapNameText(namePassportCtx, cName.toUpperCase(), 390) : [];
+      const nameLines = cName ? wrapNameText(namePassportCtx, cName.toUpperCase(), 1170) : [];
       
-      let dateLineCount = 0;
-      if (formattedDob) dateLineCount++;
-      if (formattedDop) dateLineCount++;
-
-      const nameBlockHeight = nameLines.length * (currentNameFontSize + 8);
-      const dobBlockHeight = formattedDob ? (currentDobFontSize + 8) : 0;
-      const dopBlockHeight = formattedDop ? (currentDopFontSize + 8) : 0;
+      const nameBlockHeight = nameLines.length * (currentNameFontSize + 24);
+      const dobBlockHeight = formattedDob ? (currentDobFontSize + 24) : 0;
+      const dopBlockHeight = formattedDop ? (currentDopFontSize + 24) : 0;
       
-      const stripHeight = Math.max(120, nameBlockHeight + dobBlockHeight + dopBlockHeight + 16);
-      const stripY = 531 - stripHeight;
+      const stripHeight = Math.max(360, nameBlockHeight + dobBlockHeight + dopBlockHeight + 45);
+      const stripY = 1593 - stripHeight;
 
       namePassportCtx.fillStyle = '#ffffff';
-      namePassportCtx.fillRect(0, stripY, 413, stripHeight);
+      namePassportCtx.fillRect(0, stripY, 1239, stripHeight);
 
       namePassportCtx.strokeStyle = '#000000';
-      namePassportCtx.lineWidth = 3;
+      namePassportCtx.lineWidth = 9;
       namePassportCtx.beginPath();
       namePassportCtx.moveTo(0, stripY);
-      namePassportCtx.lineTo(413, stripY);
+      namePassportCtx.lineTo(1239, stripY);
       namePassportCtx.stroke();
 
       namePassportCtx.fillStyle = '#000000';
       namePassportCtx.textAlign = 'center';
 
-      let yPos = stripY + currentNameFontSize + 6;
+      let yPos = stripY + currentNameFontSize + 15;
 
       namePassportCtx.font = `900 ${currentNameFontSize}px Poppins, Arial, sans-serif`;
       nameLines.forEach(line => {
-        namePassportCtx.fillText(line, 413 / 2, yPos);
-        yPos += currentNameFontSize + 6;
+        namePassportCtx.fillText(line, 1239 / 2, yPos);
+        yPos += currentNameFontSize + 18;
       });
 
       if (formattedDob) {
-        yPos += 2;
+        yPos += 6;
         namePassportCtx.font = `700 ${currentDobFontSize}px Poppins, Arial, sans-serif`;
-        namePassportCtx.fillText(formattedDob, 413 / 2, yPos);
-        yPos += currentDobFontSize + 6;
+        namePassportCtx.fillText(formattedDob, 1239 / 2, yPos);
+        yPos += currentDobFontSize + 18;
       }
 
       if (formattedDop) {
-        yPos += 2;
+        yPos += 6;
         namePassportCtx.font = `700 ${currentDopFontSize}px Poppins, Arial, sans-serif`;
-        namePassportCtx.fillText(formattedDop, 413 / 2, yPos);
+        namePassportCtx.fillText(formattedDop, 1239 / 2, yPos);
       }
     }
   }
@@ -2266,14 +2266,14 @@
     namePassportSheetFormat = '4x6';
     const targetQty = Math.max(1, Math.min(8, parseInt(namePassportQtyInput.value) || 8));
 
-    namePassportSheetCanvas.width = 1800;
-    namePassportSheetCanvas.height = 1200;
+    namePassportSheetCanvas.width = 5400;
+    namePassportSheetCanvas.height = 3600;
 
     namePassportSheetCtx.fillStyle = '#ffffff';
-    namePassportSheetCtx.fillRect(0, 0, 1800, 1200);
+    namePassportSheetCtx.fillRect(0, 0, 5400, 3600);
 
-    const pw = 413, ph = 531;
-    const startX = 50, startY = 50, gapX = 20, gapY = 35;
+    const pw = 1239, ph = 1593;
+    const startX = 150, startY = 150, gapX = 60, gapY = 100;
     const maxCols = 4;
 
     let placed = 0;
@@ -2284,13 +2284,13 @@
         const y = startY + r * (ph + gapY);
         namePassportSheetCtx.drawImage(namePassportCanvas, x, y, pw, ph);
         namePassportSheetCtx.strokeStyle = '#000000';
-        namePassportSheetCtx.lineWidth = 2;
+        namePassportSheetCtx.lineWidth = 6;
         namePassportSheetCtx.strokeRect(x, y, pw, ph);
         placed++;
       }
     }
 
-    document.getElementById('namePassportSheetTitle').innerText = `Name & Date 4×6 Sheet (${targetQty} Photos Generated)`;
+    document.getElementById('namePassportSheetTitle').innerText = `Name & Date 900 DPI 4×6 Sheet (${targetQty} Photos Generated)`;
     document.getElementById('downloadNamePassportPdfBtn').disabled = false;
   });
 
@@ -2299,14 +2299,14 @@
     namePassportSheetFormat = 'a4';
     const targetQty = Math.max(1, Math.min(30, parseInt(namePassportQtyInput.value) || 30));
 
-    namePassportSheetCanvas.width = 2480;
-    namePassportSheetCanvas.height = 3508;
+    namePassportSheetCanvas.width = 7440;
+    namePassportSheetCanvas.height = 10524;
 
     namePassportSheetCtx.fillStyle = '#ffffff';
-    namePassportSheetCtx.fillRect(0, 0, 2480, 3508);
+    namePassportSheetCtx.fillRect(0, 0, 7440, 10524);
 
-    const pw = 413, ph = 531;
-    const startX = 75, startY = 80, gapX = 30, gapY = 40;
+    const pw = 1239, ph = 1593;
+    const startX = 225, startY = 240, gapX = 90, gapY = 120;
     const maxCols = 5;
 
     let placed = 0;
@@ -2317,13 +2317,13 @@
         const y = startY + r * (ph + gapY);
         namePassportSheetCtx.drawImage(namePassportCanvas, x, y, pw, ph);
         namePassportSheetCtx.strokeStyle = '#000000';
-        namePassportSheetCtx.lineWidth = 2;
+        namePassportSheetCtx.lineWidth = 6;
         namePassportSheetCtx.strokeRect(x, y, pw, ph);
         placed++;
       }
     }
 
-    document.getElementById('namePassportSheetTitle').innerText = `Name & Date A4 Sheet (${targetQty} Photos Generated)`;
+    document.getElementById('namePassportSheetTitle').innerText = `Name & Date 900 DPI A4 Sheet (${targetQty} Photos Generated)`;
     document.getElementById('downloadNamePassportPdfBtn').disabled = false;
   });
 
@@ -2334,19 +2334,19 @@
     if (namePassportSheetFormat === '4x6') {
       pdf = new jsPDF({ orientation: 'landscape', unit: 'in', format: [4, 6] });
       pdf.addImage(namePassportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 6, 4);
-      fileName = `Name_Date_Passport_4x6_${namePassportQtyInput.value}_Qty.pdf`;
+      fileName = `Name_Date_Passport_900DPI_4x6_${namePassportQtyInput.value}_Qty.pdf`;
     } else {
       pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
       pdf.addImage(namePassportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
-      fileName = `Name_Date_Passport_A4_${namePassportQtyInput.value}_Qty.pdf`;
+      fileName = `Name_Date_Passport_900DPI_A4_${namePassportQtyInput.value}_Qty.pdf`;
     }
     const blob = pdf.output('blob');
     pdf.save(fileName);
-    saveToHistory('Name & Date Passport', fileName, blob, 'application/pdf');
+    saveToHistory('Name & Date Passport (900 DPI)', fileName, blob, 'application/pdf');
   });
 
   // ==========================================
-  // TAB 4: 4x6 PHOTO PRINT
+  // TAB 4: 4x6 PHOTO PRINT (900 DPI)
   // ==========================================
   const canvas4x6 = document.getElementById('canvas4x6');
   const ctx4x6 = canvas4x6.getContext('2d');
@@ -2371,25 +2371,25 @@
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'in', format: [4, 6] });
     pdf.addImage(canvas4x6.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 4, 6);
-    const fileName = 'Photo_4x6_Print.pdf';
+    const fileName = 'Photo_4x6_Print_900DPI.pdf';
     const blob = pdf.output('blob');
     pdf.save(fileName);
-    saveToHistory('4x6 Photo (Single)', fileName, blob, 'application/pdf');
+    saveToHistory('4x6 Photo (900 DPI Single)', fileName, blob, 'application/pdf');
   });
 
   document.getElementById('generateA4Custom4x6Btn').addEventListener('click', () => {
     if (!photo4x6Loaded) return;
     const qty = Math.max(1, Math.min(4, parseInt(photo4x6QtyInput.value) || 2));
 
-    a4_4x6_SheetCanvas.width = 2480;
-    a4_4x6_SheetCanvas.height = 3508;
+    a4_4x6_SheetCanvas.width = 7440;
+    a4_4x6_SheetCanvas.height = 10524;
 
     a4_4x6_SheetCtx.fillStyle = '#ffffff';
-    a4_4x6_SheetCtx.fillRect(0, 0, 2480, 3508);
+    a4_4x6_SheetCtx.fillRect(0, 0, 7440, 10524);
 
-    const pw = 1140, ph = 1680;
-    const gapX = 60, gapY = 60;
-    const startX = 70, startY = 40;
+    const pw = 3420, ph = 5040;
+    const gapX = 180, gapY = 180;
+    const startX = 210, startY = 120;
 
     const positions = [
       { x: startX, y: startY },
@@ -2402,11 +2402,11 @@
       const pos = positions[i];
       a4_4x6_SheetCtx.drawImage(canvas4x6, pos.x, pos.y, pw, ph);
       a4_4x6_SheetCtx.strokeStyle = '#000000';
-      a4_4x6_SheetCtx.lineWidth = 4;
+      a4_4x6_SheetCtx.lineWidth = 12;
       a4_4x6_SheetCtx.strokeRect(pos.x, pos.y, pw, ph);
     }
 
-    document.getElementById('photo4x6SheetTitle').innerText = `A4 4×6 Photo Sheet (${qty} Photos on 1 A4)`;
+    document.getElementById('photo4x6SheetTitle').innerText = `A4 900 DPI 4×6 Photo Sheet (${qty} Photos on 1 A4)`;
     document.getElementById('downloadA4_4x6_PdfBtn').disabled = false;
   });
 
@@ -2414,14 +2414,14 @@
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     pdf.addImage(a4_4x6_SheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
-    const fileName = `4x6_Photos_A4_Sheet_${photo4x6QtyInput.value}_Qty.pdf`;
+    const fileName = `4x6_Photos_900DPI_A4_Sheet_${photo4x6QtyInput.value}_Qty.pdf`;
     const blob = pdf.output('blob');
     pdf.save(fileName);
-    saveToHistory('4x6 Photo A4 Sheet', fileName, blob, 'application/pdf');
+    saveToHistory('4x6 Photo 900 DPI A4 Sheet', fileName, blob, 'application/pdf');
   });
 
   // ==========================================================
-  // TAB 5: PDF ARRANGER ENGINE (DRAG & DROP / HOLD & MOVE)
+  // TAB 5: PDF ARRANGER ENGINE (900 DPI EXPORT)
   // ==========================================================
   let arrangedPdfPagesList = [];
   let draggedArrangerIdx = null;
@@ -2594,17 +2594,17 @@
 
     const pdfBytes = await outPdf.save();
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    const fileName = `Arranged_Document_${arrangedPdfPagesList.length}_Pages.pdf`;
+    const fileName = `Arranged_Document_900DPI_${arrangedPdfPagesList.length}_Pages.pdf`;
 
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = fileName;
     link.click();
-    saveToHistory('PDF Arranger', fileName, blob, 'application/pdf');
+    saveToHistory('PDF Arranger (900 DPI)', fileName, blob, 'application/pdf');
   });
 
   // ==========================================================
-  // TAB 6: UNIVERSAL MERGE (DRAG & DROP RE-ORDER SUPPORT)
+  // TAB 6: UNIVERSAL MERGE (900 DPI EXPORT)
   // ==========================================================
   let universalFiles = [];
   let draggedUniversalIdx = null;
@@ -2751,24 +2751,24 @@
 
     const mergedPdfBytes = await mergedPdf.save();
     const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
-    const fileName = `Merged_Combined_Document.pdf`;
+    const fileName = `Merged_Combined_900DPI_Document.pdf`;
     
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = fileName;
     link.click();
-    saveToHistory('Universal PDF Merge', fileName, blob, 'application/pdf');
+    saveToHistory('Universal PDF Merge (900 DPI)', fileName, blob, 'application/pdf');
   });
 
   // ==========================================================
-  // TAB 7: CUSTOM IMAGE RESIZER
+  // TAB 7: CUSTOM IMAGE RESIZER (900 DPI)
   // ==========================================================
   let originalResizerImg = null;
   let resizerOriginalWidth = 0;
   let resizerOriginalHeight = 0;
   const resizerCanvas = document.getElementById('resizerPreviewCanvas');
   const resizerCtx = resizerCanvas.getContext('2d');
-  const DPI_SCALE = 300;
+  const DPI_SCALE_900 = 900;
 
   document.getElementById('resizerImageInput').addEventListener('change', function(e) {
     const file = e.target.files[0];
@@ -2803,11 +2803,11 @@
     let targetH = hVal;
 
     if (unit === 'mm') {
-      targetW = Math.round((wVal / 25.4) * DPI_SCALE);
-      targetH = Math.round((hVal / 25.4) * DPI_SCALE);
+      targetW = Math.round((wVal / 25.4) * DPI_SCALE_900);
+      targetH = Math.round((hVal / 25.4) * DPI_SCALE_900);
     } else if (unit === 'cm') {
-      targetW = Math.round((wVal / 2.54) * DPI_SCALE);
-      targetH = Math.round((hVal / 2.54) * DPI_SCALE);
+      targetW = Math.round((wVal / 2.54) * DPI_SCALE_900);
+      targetH = Math.round((hVal / 2.54) * DPI_SCALE_900);
     }
 
     return {
@@ -2853,16 +2853,17 @@
   function onResizerUnitChange() {
     if (!originalResizerImg) return;
     const unit = document.getElementById('resizerUnitSelect').value;
+    const curDpi = 300; 
 
     if (unit === 'px') {
       document.getElementById('resizerWidthInput').value = resizerOriginalWidth;
       document.getElementById('resizerHeightInput').value = resizerOriginalHeight;
     } else if (unit === 'mm') {
-      document.getElementById('resizerWidthInput').value = ((resizerOriginalWidth / DPI_SCALE) * 25.4).toFixed(1);
-      document.getElementById('resizerHeightInput').value = ((resizerOriginalHeight / DPI_SCALE) * 25.4).toFixed(1);
+      document.getElementById('resizerWidthInput').value = ((resizerOriginalWidth / curDpi) * 25.4).toFixed(1);
+      document.getElementById('resizerHeightInput').value = ((resizerOriginalHeight / curDpi) * 25.4).toFixed(1);
     } else if (unit === 'cm') {
-      document.getElementById('resizerWidthInput').value = ((resizerOriginalWidth / DPI_SCALE) * 2.54).toFixed(2);
-      document.getElementById('resizerHeightInput').value = ((resizerOriginalHeight / DPI_SCALE) * 2.54).toFixed(2);
+      document.getElementById('resizerWidthInput').value = ((resizerOriginalWidth / curDpi) * 2.54).toFixed(2);
+      document.getElementById('resizerHeightInput').value = ((resizerOriginalHeight / curDpi) * 2.54).toFixed(2);
     }
     updateResizerCanvas();
   }
@@ -2870,132 +2871,40 @@
   document.getElementById('downloadResizedJpgBtn').addEventListener('click', () => {
     if (!originalResizerImg) return;
     const dims = getPixelDimensions();
-    const dataUrl = resizerCanvas.toDataURL('image/jpeg', 0.95);
-    const fileName = `Resized_${dims.width}x${dims.height}px.jpg`;
+    const dataUrl = resizerCanvas.toDataURL('image/jpeg', 0.98);
+    const fileName = `Resized_900DPI_${dims.width}x${dims.height}px.jpg`;
     
     const link = document.createElement('a');
     link.href = dataUrl;
     link.download = fileName;
     link.click();
-    saveToHistory('Image Resizer (JPG)', fileName, dataUrl, 'image/jpeg');
+    saveToHistory('Image Resizer 900 DPI (JPG)', fileName, dataUrl, 'image/jpeg');
   });
 
   document.getElementById('downloadResizedPngBtn').addEventListener('click', () => {
     if (!originalResizerImg) return;
     const dims = getPixelDimensions();
     const dataUrl = resizerCanvas.toDataURL('image/png');
-    const fileName = `Resized_${dims.width}x${dims.height}px.png`;
+    const fileName = `Resized_900DPI_${dims.width}x${dims.height}px.png`;
 
     const link = document.createElement('a');
     link.href = dataUrl;
     link.download = fileName;
     link.click();
-    saveToHistory('Image Resizer (PNG)', fileName, dataUrl, 'image/png');
+    saveToHistory('Image Resizer 900 DPI (PNG)', fileName, dataUrl, 'image/png');
   });
 
   // ==========================================================
-  // TAB 8: PDF TO HIGH-DPI JPG (MANUAL & BUTTON DPI)
-  // ==========================================================
-  let pdfToJpgDoc = null;
-  let activeDpiValue = 300;
-
-  function setPdfDpi(dpi) {
-    activeDpiValue = dpi;
-    document.getElementById('manualDpiInput').value = dpi;
-    document.getElementById('currentDpiDisplay').innerText = `${dpi} DPI`;
-  }
-
-  function updateManualDpi(val) {
-    let dpi = parseInt(val) || 300;
-    if (dpi < 50) dpi = 50;
-    if (dpi > 1200) dpi = 1200;
-    activeDpiValue = dpi;
-    document.getElementById('currentDpiDisplay').innerText = `${dpi} DPI`;
-  }
-
-  document.getElementById('pdfToJpgInput').addEventListener('change', async function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    document.getElementById('pdfToJpgStatus').innerText = `✅ ${file.name}`;
-    const arrayBuffer = await file.arrayBuffer();
-
-    pdfToJpgDoc = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
-    document.getElementById('pdfToJpgControls').style.display = 'block';
-  });
-
-  document.getElementById('startPdfToJpgBtn').addEventListener('click', async () => {
-    if (!pdfToJpgDoc) return;
-
-    const progress = document.getElementById('pdfConversionProgress');
-    const scaleFactor = activeDpiValue / 72;
-    const totalPages = pdfToJpgDoc.numPages;
-
-    if (totalPages === 1) {
-      progress.innerText = `⏳ Rendering 1 page at ${activeDpiValue} DPI...`;
-      const page = await pdfToJpgDoc.getPage(1);
-      const viewport = page.getViewport({ scale: scaleFactor });
-
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-
-      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-
-      canvas.toBlob((blob) => {
-        const fileName = `Page_1_${activeDpiValue}DPI.jpg`;
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = fileName;
-        link.click();
-        progress.innerText = `✅ Download Complete (1 Page @ ${activeDpiValue} DPI)`;
-        saveToHistory('PDF to JPG (Single)', fileName, blob, 'image/jpeg');
-      }, 'image/jpeg', 0.95);
-
-    } else {
-      const zip = new JSZip();
-      for (let i = 1; i <= totalPages; i++) {
-        progress.innerText = `⏳ Processing Page ${i} / ${totalPages} at ${activeDpiValue} DPI...`;
-        const page = await pdfToJpgDoc.getPage(i);
-        const viewport = page.getViewport({ scale: scaleFactor });
-
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-
-        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-        const imgData = canvas.toDataURL('image/jpeg', 0.95).split(',')[1];
-        zip.file(`Page_${i}_${activeDpiValue}DPI.jpg`, imgData, { base64: true });
-      }
-
-      progress.innerText = '📦 Creating ZIP archive...';
-      const zipContent = await zip.generateAsync({ type: 'blob' });
-      const fileName = `PDF_to_JPG_${activeDpiValue}DPI_Bundle.zip`;
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(zipContent);
-      link.download = fileName;
-      link.click();
-      progress.innerText = `✅ Complete! ${totalPages} Pages Downloaded in ZIP.`;
-      saveToHistory('PDF to JPG (Batch ZIP)', fileName, zipContent, 'application/zip');
-    }
-  });
-
-  // ==========================================================
-  // TAB 9: INTERACTIVE PDF COMPRESSOR
+  // TAB 9: BIGPDF / 11ZON STYLE HIGH-FIDELITY PDF COMPRESSOR
   // ==========================================================
   let compressOriginalFile = null;
   let compressPdfDoc = null;
-  let origFileSizeInKB = 0;
 
   document.getElementById('pdfCompressInput').addEventListener('change', async function(e) {
     const file = e.target.files[0];
     if (!file) return;
 
     compressOriginalFile = file;
-    origFileSizeInKB = (file.size / 1024).toFixed(1);
-    
     document.getElementById('pdfCompressStatus').innerText = `✅ ${file.name}`;
     document.getElementById('origFileSizeDisplay').innerText = formatBytes(file.size);
 
@@ -3008,14 +2917,14 @@
 
   function onCompressSliderChange(val) {
     const quality = parseInt(val);
-    let levelText = 'Medium';
-    if (quality < 35) levelText = 'High Compression (Smallest Size)';
-    else if (quality > 75) levelText = 'Light Compression (High Quality)';
+    let levelText = 'Recommended Sharp';
+    if (quality < 50) levelText = 'High Compression (Smaller Size)';
+    else if (quality > 85) levelText = 'Ultra Fidelity (Max Clarity)';
     
     document.getElementById('compressQualityLabel').innerText = `${quality}% (${levelText})`;
 
-    const ratio = Math.pow(quality / 100, 1.3);
-    const estBytes = compressOriginalFile.size * Math.max(0.15, ratio);
+    const ratio = Math.pow(quality / 100, 1.5);
+    const estBytes = compressOriginalFile.size * Math.max(0.12, ratio);
     document.getElementById('estFileSizeDisplay').innerText = formatBytes(estBytes);
   }
 
@@ -3032,16 +2941,16 @@
     const qualityVal = parseInt(document.getElementById('compressQualitySlider').value);
     const jpegQuality = qualityVal / 100;
     
-    const renderScale = Math.max(1.0, (qualityVal / 100) * 2.2); 
+    const renderScale = Math.max(1.5, (qualityVal / 100) * 2.8); 
     const totalPages = compressPdfDoc.numPages;
 
-    progress.innerText = `⏳ Compressing ${totalPages} pages...`;
+    progress.innerText = `⏳ High-Clarity Compression in progress (${totalPages} pages)...`;
 
     const { jsPDF } = window.jspdf;
     let outPdf = null;
 
     for (let i = 1; i <= totalPages; i++) {
-      progress.innerText = `⏳ Compressing Page ${i} of ${totalPages}...`;
+      progress.innerText = `⏳ Optimizing & Sharpening Page ${i} of ${totalPages}...`;
       const page = await compressPdfDoc.getPage(i);
       const viewport = page.getViewport({ scale: renderScale });
 
@@ -3050,8 +2959,11 @@
       canvas.width = viewport.width;
       canvas.height = viewport.height;
 
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+
       await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-      const imgData = canvas.toDataURL('image/jpeg', jpegQuality);
+      const imgData = canvas.toDataURL('image/jpeg', Math.max(0.7, jpegQuality));
 
       const orientation = viewport.width > viewport.height ? 'landscape' : 'portrait';
       if (i === 1) {
@@ -3063,41 +2975,12 @@
       outPdf.addImage(imgData, 'JPEG', 0, 0, viewport.width, viewport.height, undefined, 'FAST');
     }
 
-    const fileName = `Compressed_${qualityVal}pct_${compressOriginalFile.name}`;
+    const fileName = `HighClarity_Compressed_${qualityVal}pct_${compressOriginalFile.name}`;
     const blob = outPdf.output('blob');
-    progress.innerText = `✅ Compression Complete! Downloading...`;
+    progress.innerText = `✅ High-Clarity Compression Complete! Downloading...`;
     outPdf.save(fileName);
-    saveToHistory('PDF Compressor', fileName, blob, 'application/pdf');
+    saveToHistory('PDF Compressor (High Clarity)', fileName, blob, 'application/pdf');
   });
-
-  function initAllCanvases() {
-    clearCurrentCardInputs();
-    resetCardA4Sheet();
-
-    passportCtx.fillStyle = '#ffffff';
-    passportCtx.fillRect(0, 0, 413, 531);
-    passportCtx.fillStyle = '#94a3b8';
-    passportCtx.font = 'bold 20px Poppins';
-    passportCtx.textAlign = 'center';
-    passportCtx.fillText('Passport Preview', 413 / 2, 531 / 2);
-
-    namePassportCtx.fillStyle = '#ffffff';
-    namePassportCtx.fillRect(0, 0, 413, 531);
-    namePassportCtx.fillStyle = '#94a3b8';
-    namePassportCtx.font = 'bold 20px Poppins';
-    namePassportCtx.textAlign = 'center';
-    namePassportCtx.fillText('Name & Date Preview', 413 / 2, 531 / 2);
-
-    ctx4x6.fillStyle = '#ffffff';
-    ctx4x6.fillRect(0, 0, 1200, 1800);
-    ctx4x6.fillStyle = '#94a3b8';
-    ctx4x6.font = 'bold 36px Poppins';
-    ctx4x6.textAlign = 'center';
-    ctx4x6.fillText('4×6 Photo Preview', 1200 / 2, 1800 / 2);
-
-    a4_4x6_SheetCtx.fillStyle = '#ffffff';
-    a4_4x6_SheetCtx.fillRect(0, 0, 2480, 3508);
-  }
 </script>
 
 </body>
