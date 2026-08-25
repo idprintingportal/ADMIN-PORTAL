@@ -661,7 +661,7 @@
   <input type="email" id="loginEmail" class="login-input" placeholder="ईमेल आईडी दर्ज करें" value="oneplus777000@gmail.com">
   <input type="password" id="loginPass" class="login-input" placeholder="पासवर्ड दर्ज करें">
   <button id="authBtn" class="login-btn">लॉगिन करें</button>
-  <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड, या एडमिन द्वारा आईडी असाइन नहीं की गई है!</div>
+  <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड, या क्लाउड डेटाबेस से कनेक्ट नहीं हो पा रहा!</div>
   
   <div>
     <span id="goToChangePwd" class="auth-link">🔑 Change Password?</span>
@@ -1097,11 +1097,11 @@
       </div>
     </div>
 
-    <!-- TAB 9: PDF COMPRESSOR (BIGPDF / 11ZON STYLE HIGH CLARITY) -->
+    <!-- TAB 9: PDF COMPRESSOR -->
     <div id="tab-pdf-compressor" class="tab-content">
-      <div class="badge">BigPDF / 11zon High-Fidelity Style • Crystal-Clear Text & Image Compression</div>
-      <h1>PDF Size Compressor (High Clarity)</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">BigPDF जैसी बेहतरीन क्लैरिटी और ऑप्टिमाइजेशन के साथ पीडीएफ फाइल का साइज़ कम करें।</p>
+      <div class="badge">Interactive Quality & Size Slider • Target KB/MB Preview • High-Speed Export</div>
+      <h1>PDF Size Compressor</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">PDF फ़ाइल अपलोड करें, स्लाइडर से अपनी मनचाही फाइल साइज़ (KB/MB) सेट करें और डाउनलोड करें।</p>
 
       <div class="upload-section" style="margin-bottom: 15px;">
         <label class="upload-box" for="pdfCompressInput" style="max-width: 420px;">
@@ -1114,11 +1114,11 @@
       <div id="compressorControlsArea" style="display:none;">
         <div class="control-panel">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size: 13px; font-weight:600; color: var(--accent-blue);">🎚️ Compression Level (High Clarity):</span>
-            <span id="compressQualityLabel" style="font-weight:700; color:#fbbf24;">75% (Recommended Sharp)</span>
+            <span style="font-size: 13px; font-weight:600; color: var(--accent-blue);">🎚️ Compression Quality Slider:</span>
+            <span id="compressQualityLabel" style="font-weight:700; color:#fbbf24;">60% (Medium)</span>
           </div>
 
-          <input type="range" id="compressQualitySlider" class="slider-range" min="30" max="95" value="75" oninput="onCompressSliderChange(this.value)">
+          <input type="range" id="compressQualitySlider" class="slider-range" min="10" max="95" value="60" oninput="onCompressSliderChange(this.value)">
 
           <div class="size-badge-box">
             <div>
@@ -1126,7 +1126,7 @@
               <strong id="origFileSizeDisplay" style="color:#f87171; font-size:14px;">0 KB</strong>
             </div>
             <div>
-              <div style="font-size:11px; color:var(--text-muted);">Estimated Optimized Size</div>
+              <div style="font-size:11px; color:var(--text-muted);">Estimated Download Size</div>
               <strong id="estFileSizeDisplay" style="color:#34d399; font-size:14px;">0 KB</strong>
             </div>
           </div>
@@ -1135,12 +1135,12 @@
         <div style="margin-top: 10px; font-size: 12px; color: var(--text-muted);" id="compressProgressMsg"></div>
 
         <div class="btn-group">
-          <button id="startCompressDownloadBtn" class="action-btn btn-download">📥 Compress & Download High-Clarity PDF</button>
+          <button id="startCompressDownloadBtn" class="action-btn btn-download">📥 Compress & Download PDF</button>
         </div>
       </div>
     </div>
 
-    <!-- TAB 10: 30-DAY PRINT HISTORY -->
+    <!-- TAB 10: HISTORY (WITH DELETE OPTION) -->
     <div id="tab-history" class="tab-content">
       <div class="badge">Persistent Storage • Retained Until Cleared</div>
       <h1>Print & Download History</h1>
@@ -1172,8 +1172,8 @@
     <!-- TAB 11: ADMIN PANEL -->
     <div id="tab-admin" class="tab-content">
       <div class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">Master Administrator Panel</div>
-      <h1 style="color: #fbbf24;">Distributor Management</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। जब तक एडमिन आईडी असाइन नहीं करता, कोई बाहर से लॉगिन नहीं कर पाएगा।</p>
+      <h1 style="color: #fbbf24;">Distributor Management (Cloud Synced)</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। डेटा क्लाउड पर सुरक्षित है, इसलिए किसी भी डिवाइस से लॉगिन करने पर तुरंत दिखेगा।</p>
 
       <div class="control-panel" style="max-width: 500px; text-align: left; margin-bottom: 25px;">
         <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 12px;">➕ Add New Distributor</h3>
@@ -1190,12 +1190,12 @@
             <label style="font-size: 11px; color: var(--text-muted); display:block; margin-bottom:4px;">Assign Password:</label>
             <input type="text" id="newDistPass" class="text-field-input" style="max-width:100%;" placeholder="SecurePass123">
           </div>
-          <button onclick="addNewDistributor()" class="action-btn btn-add" style="margin-top: 5px;">🚀 Assign ID & Password</button>
+          <button onclick="addNewDistributor()" class="action-btn btn-add" style="margin-top: 5px;">🚀 Assign ID & Password (Cloud)</button>
           <div id="distMsg" style="font-size: 12px; font-weight: 500; display:none; margin-top:5px;"></div>
         </div>
       </div>
 
-      <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 10px; text-align: left; max-width: 850px; margin-left: auto; margin-right: auto;">Assigned Distributors (Lifetime Access unless deleted by Admin)</h3>
+      <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 10px; text-align: left; max-width: 850px; margin-left: auto; margin-right: auto;">Cloud Assigned Distributors</h3>
       <div class="history-table-container" style="max-width: 850px; margin-left: auto; margin-right: auto;">
         <table class="history-table">
           <thead>
@@ -1209,7 +1209,7 @@
           </thead>
           <tbody id="distributorTableBody">
             <tr>
-              <td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर असाइन नहीं किया गया है।</td>
+              <td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">क्लाउड से डिस्ट्रीब्यूटर लोड हो रहे हैं...</td>
             </tr>
           </tbody>
         </table>
@@ -1249,6 +1249,23 @@
 </div>
 
 <script>
+  // ==========================================================
+  // FIREBASE CLOUD DATABASE CONFIGURATION
+  // ==========================================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyD-PlaceholderKeyForDemo123456789",
+    authDomain: "idcard-print-portal.firebaseapp.com",
+    projectId: "idcard-print-portal",
+    storageBucket: "idcard-print-portal.appspot.com",
+    messagingSenderId: "123456789012",
+    appId: "1:123456789012:web:abcdef123456"
+  };
+
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  const db = firebase.firestore();
+
   if (typeof pdfjsLib !== 'undefined') {
     pdfjsLib.GlobalWorkerOptions.workerSrc = '';
   }
@@ -1314,19 +1331,25 @@
   }
 
   // ==========================================================
-  // DISTRIBUTOR / ACCOUNT MANAGEMENT (ADMIN PANEL WITH TIMELINE)
+  // CLOUD FIRESTORE DISTRIBUTOR MANAGEMENT
   // ==========================================================
-  function getDistributorsList() {
-    let list = localStorage.getItem('portal_distributors_list');
-    if (!list) return [];
-    try { return JSON.parse(list); } catch(e) { return []; }
+  async function getDistributorsListCloud() {
+    try {
+      const snapshot = await db.collection("distributors").get();
+      let list = [];
+      snapshot.forEach(doc => {
+        list.push({ docId: doc.id, ...doc.data() });
+      });
+      return list;
+    } catch(err) {
+      console.error("Cloud fetch error:", err);
+      // Fallback to localStorage if offline
+      let local = localStorage.getItem('portal_distributors_list');
+      return local ? JSON.parse(local) : [];
+    }
   }
 
-  function saveDistributorsList(arr) {
-    localStorage.setItem('portal_distributors_list', JSON.stringify(arr));
-  }
-
-  function addNewDistributor() {
+  async function addNewDistributor() {
     const name = document.getElementById('newDistName').value.trim();
     const email = document.getElementById('newDistEmail').value.trim().toLowerCase();
     const pass = document.getElementById('newDistPass').value.trim();
@@ -1346,47 +1369,55 @@
       return;
     }
 
-    let dists = getDistributorsList();
-    if (dists.some(d => d.email === email)) {
-      msg.innerText = "⚠️ यह ईमेल आईडी पहले से असाइन की जा चुकी है!";
+    try {
+      let currentList = await getDistributorsListCloud();
+      if (currentList.some(d => d.email === email)) {
+        msg.innerText = "⚠️ यह ईमेल आईडी पहले से क्लाउड पर मौजूद है!";
+        msg.style.color = "#ef4444";
+        msg.style.display = "block";
+        return;
+      }
+
+      const assignedTimestamp = Date.now();
+      const distExpiryTime = assignedTimestamp + THIRTY_MS;
+
+      const newDistData = {
+        id: Date.now(),
+        name,
+        email,
+        pass,
+        assignedTimestamp: assignedTimestamp,
+        expiryTime: distExpiryTime,
+        adminMessage: ''
+      };
+
+      await db.collection("distributors").add(newDistData);
+
+      msg.innerText = "✅ डिस्ट्रीब्यूटर क्लाउड पर सफलतापूर्वक जोड़ दिया गया है!";
+      msg.style.color = "#34d399";
+      msg.style.display = "block";
+
+      document.getElementById('newDistName').value = '';
+      document.getElementById('newDistEmail').value = '';
+      document.getElementById('newDistPass').value = '';
+
+      renderDistributorsTable();
+    } catch(err) {
+      msg.innerText = "⚠️ क्लाउड सेव एरर: नेटवर्क चेक करें!";
       msg.style.color = "#ef4444";
       msg.style.display = "block";
-      return;
     }
-
-    const assignedTimestamp = Date.now();
-    const distExpiryTime = assignedTimestamp + THIRTY_MS;
-
-    dists.push({ 
-      id: Date.now(), 
-      name, 
-      email, 
-      pass, 
-      assignedTimestamp: assignedTimestamp,
-      expiryTime: distExpiryTime,
-      adminMessage: ''
-    });
-
-    saveDistributorsList(dists);
-
-    msg.innerText = "✅ डिस्ट्रीब्यूटर आईडी सफलतापूर्वक असाइन कर दी गई है!";
-    msg.style.color = "#34d399";
-    msg.style.display = "block";
-
-    document.getElementById('newDistName').value = '';
-    document.getElementById('newDistEmail').value = '';
-    document.getElementById('newDistPass').value = '';
-
-    renderDistributorsTable();
   }
 
-  function renderDistributorsTable() {
+  async function renderDistributorsTable() {
     const tbody = document.getElementById('distributorTableBody');
-    let dists = getDistributorsList();
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">क्लाउड से डेटा लोड हो रहा है...</td></tr>`;
+
+    let dists = await getDistributorsListCloud();
     tbody.innerHTML = '';
 
     if (!dists.length) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर असाइन नहीं किया गया है।</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर क्लाउड पर नहीं मिला।</td></tr>`;
       return;
     }
 
@@ -1412,7 +1443,7 @@
         <td><code style="background:#000; padding:3px 6px; border-radius:4px; color:#38bdf8;">${d.pass}</code></td>
         <td style="color: ${textColor}; font-weight:600;">⏳ ${timelineText}</td>
         <td>
-          <button class="history-delete-btn" onclick="deleteDistributor(${d.id})">🗑️ Delete</button>
+          <button class="history-delete-btn" onclick="deleteDistributorCloud('${d.docId || ''}', ${d.id})">🗑️ Delete</button>
           <button class="history-msg-btn" onclick="openAdminMsgModal('${d.email}')">💬 Message</button>
         </td>
       `;
@@ -1420,12 +1451,20 @@
     });
   }
 
-  function deleteDistributor(id) {
-    if (!confirm('क्या आप इस डिस्ट्रीब्यूटर का एक्सेस हमेशा के लिए हटाना चाहते हैं?')) return;
-    let dists = getDistributorsList();
-    dists = dists.filter(d => d.id !== id);
-    saveDistributorsList(dists);
-    renderDistributorsTable();
+  async function deleteDistributorCloud(docId, fallbackId) {
+    if (!confirm('क्या आप इस डिस्ट्रीब्यूटर को क्लाउड से हटाना चाहते हैं?')) return;
+    try {
+      if (docId) {
+        await db.collection("distributors").doc(docId).delete();
+      } else {
+        // Fallback by id field query
+        const snapshot = await db.collection("distributors").where("id", "==", fallbackId).get();
+        snapshot.forEach(doc => doc.ref.delete());
+      }
+      renderDistributorsTable();
+    } catch(err) {
+      alert("डिलीट करने में समस्या आई!");
+    }
   }
 
   function openAdminMsgModal(email) {
@@ -1438,7 +1477,7 @@
     document.getElementById('adminMsgModal').style.display = 'none';
   }
 
-  function saveAdminMessage() {
+  async function saveAdminMessage() {
     const email = document.getElementById('targetDistEmail').value;
     const msgText = document.getElementById('adminTypedMsg').value.trim();
     if (!msgText) {
@@ -1446,14 +1485,20 @@
       return;
     }
 
-    let dists = getDistributorsList();
-    let dist = dists.find(d => d.email === email);
-    if (dist) {
-      dist.adminMessage = msgText;
-      saveDistributorsList(dists);
-      alert('✅ मैसेज सफलतापूर्वक सेव हो गया है!');
-      closeAdminMsgModal();
-      renderDistributorsTable();
+    try {
+      const snapshot = await db.collection("distributors").where("email", "==", email).get();
+      if (!snapshot.empty) {
+        snapshot.forEach(async (doc) => {
+          await doc.ref.update({ adminMessage: msgText });
+        });
+        alert('✅ मैसेज क्लाउड पर सफलतापूर्वक भेज दिया गया है!');
+        closeAdminMsgModal();
+        renderDistributorsTable();
+      } else {
+        alert('डिस्ट्रीब्यूटर क्लाउड पर नहीं मिला!');
+      }
+    } catch(err) {
+      alert("मैसेज भेजने में त्रुटि हुई!");
     }
   }
 
@@ -1666,7 +1711,7 @@
     }, 1200);
   });
 
-  function handleLogin() {
+  async function handleLogin() {
     const inputEmail = loginEmail.value.trim().toLowerCase();
     const inputPass = loginPass.value.trim();
     const adminActivePass = getStoredPassword().trim();
@@ -1680,8 +1725,8 @@
       isAuthorized = true;
       isAdmin = true;
     } else {
-      // 2. Check Assigned Distributors
-      let dists = getDistributorsList();
+      // 2. Check Cloud Distributors
+      let dists = await getDistributorsListCloud();
       let foundUser = dists.find(d => d.email.toLowerCase() === inputEmail && d.pass === inputPass);
       if (foundUser) {
         const distExpTime = foundUser.expiryTime || (foundUser.assignedTimestamp + THIRTY_MS);
@@ -1713,7 +1758,7 @@
           adminTabBtn.style.display = 'none';
           switchTabDirect('tab-cards');
           
-          // Display Admin Broadcast Message inside Distributor Portal
+          // Display Cloud Admin Broadcast Message inside Distributor Portal
           if (loggedInDistributor && loggedInDistributor.adminMessage) {
             document.getElementById('distributorNoticeText').innerText = loggedInDistributor.adminMessage;
             document.getElementById('distributorNoticeBanner').style.display = 'block';
@@ -1733,7 +1778,7 @@
         errorMsg.style.display = 'block';
       }
     } else {
-      errorMsg.innerText = "⚠️ गलत ईमेल आईडी या पासवर्ड, या एडमिन द्वारा आईडी असाइन नहीं की गई है / एक्सपायर हो चुकी है!";
+      errorMsg.innerText = "⚠️ गलत ईमेल आईडी या पासवर्ड, या क्लाउड पर आईडी असाइन नहीं की गई है / एक्सपायर हो चुकी है!";
       errorMsg.style.display = 'block';
     }
   }
@@ -2083,7 +2128,6 @@
     const targetQty = Math.max(1, Math.min(30, parseInt(passportQtyInput.value) || 30));
 
     passportSheetCanvas.width = 7440;
-    passportSheetSheetCanvas = passportSheetCanvas; // fixed reference
     passportSheetCanvas.height = 10524;
 
     passportSheetCtx.fillStyle = '#ffffff';
