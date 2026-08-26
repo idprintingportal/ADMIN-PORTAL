@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ID CARD PRINT & CONVERTER PORTAL (LIFETIME CLOUD)</title>
+  <title>ID CARD PRINT & CONVERTER PORTAL (GOOGLE SHEET CLOUD)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -1275,8 +1275,8 @@
     <!-- TAB 11: ADMIN PANEL -->
     <div id="tab-admin" class="tab-content">
       <div class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">Master Administrator Panel</div>
-      <h1 style="color: #fbbf24;">Distributor Management (Lifetime Cloud)</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। डेटा क्लाउड पर हमेशा के लिए सुरक्षित रहेगा जब तक आप खुद डिलीट नहीं करते।</p>
+      <h1 style="color: #fbbf24;">Google Sheet Cloud Distributor Management</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। डेटा सीधे आपकी Google Sheet पर हमेशा के लिए सुरक्षित रहेगा।</p>
 
       <div class="control-panel" style="max-width: 500px; text-align: left; margin-bottom: 25px;">
         <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 12px;">➕ Add New Distributor</h3>
@@ -1293,12 +1293,12 @@
             <label style="font-size: 11px; color: var(--text-muted); display:block; margin-bottom:4px;">Assign Password:</label>
             <input type="text" id="newDistPass" class="text-field-input" style="max-width:100%;" placeholder="SecurePass123">
           </div>
-          <button onclick="addNewDistributor()" class="action-btn btn-add" style="margin-top: 5px;">🚀 Assign ID & Password (Lifetime Cloud)</button>
+          <button onclick="addNewDistributor()" class="action-btn btn-add" style="margin-top: 5px;">🚀 Assign ID & Password (Google Sheet)</button>
           <div id="distMsg" style="font-size: 12px; font-weight: 500; display:none; margin-top:5px;"></div>
         </div>
       </div>
 
-      <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 10px; text-align: left; max-width: 850px; margin-left: auto; margin-right: auto;">Cloud Assigned Distributors</h3>
+      <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 10px; text-align: left; max-width: 850px; margin-left: auto; margin-right: auto;">Google Sheet Connected Distributors</h3>
       <div class="history-table-container" style="max-width: 850px; margin-left: auto; margin-right: auto;">
         <table class="history-table">
           <thead>
@@ -1306,13 +1306,13 @@
               <th>Business / Name</th>
               <th>Login Email</th>
               <th>Password</th>
-              <th>Expiry / Validity Timeline</th>
+              <th>Validity / Status</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody id="distributorTableBody">
             <tr>
-              <td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">क्लाउड से डेटा सिंक हो रहा है...</td>
+              <td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">गूगल शीट से डिस्ट्रीब्यूटर लोड हो रहे हैं...</td>
             </tr>
           </tbody>
         </table>
@@ -1353,38 +1353,64 @@
 
 <script>
   // ==========================================================
-  // FREE CLOUD STORAGE API (JSONBin.io - LIFETIME PERSISTENT)
+  // GOOGLE SHEET APPS SCRIPT WEB APP API URL
   // ==========================================================
-  const JSONBIN_BIN_ID = "6612803feae4c83b6b23b112"; // Public/Private Cloud Bucket
-  const JSONBIN_API_KEY = "$2a$10$DemoAccessKeyForPortalHarshalBhavsar999"; 
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxq8v2aapZbAZKh2Nvm3DkXKT6kw-0pKiYsGmeuGTXBr7KqngtzLT6yvGQisThVFzk8/exec";
 
-  async function fetchCloudData() {
+  async function getDistributorsListCloud() {
     try {
-      const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
-        headers: { "X-Master-Key": JSONBIN_API_KEY }
-      });
-      const result = await response.json();
-      return result.record || { distributors: [] };
+      const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=get`);
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
     } catch(err) {
-      console.error("Cloud fetch failed, using local backup", err);
+      console.error("Google Sheet fetch error:", err);
       let local = localStorage.getItem('fallback_distributors_list');
-      return local ? JSON.parse(local) : { distributors: [] };
+      return local ? JSON.parse(local) : [];
     }
   }
 
-  async function saveCloudData(data) {
+  async function addDistributorCloud(distData) {
     try {
-      await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Master-Key": JSONBIN_API_KEY
-        },
-        body: JSON.stringify(data)
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "add", data: distData })
       });
-      localStorage.setItem('fallback_distributors_list', JSON.stringify(data));
+      return true;
     } catch(err) {
-      console.error("Cloud save failed", err);
+      console.error("Google Sheet add error:", err);
+      return false;
+    }
+  }
+
+  async function deleteDistributorCloud(distId) {
+    try {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "delete", id: distId })
+      });
+      return true;
+    } catch(err) {
+      console.error("Google Sheet delete error:", err);
+      return false;
+    }
+  }
+
+  async function sendAdminMsgCloud(email, message) {
+    try {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "message", email: email, message: message })
+      });
+      return true;
+    } catch(err) {
+      console.error("Google Sheet message error:", err);
+      return false;
     }
   }
 
@@ -1395,7 +1421,7 @@
   const ADMIN_EMAIL = "oneplus777000@gmail.com";
   const INITIAL_PASS = "Pass@123";
   const EXPIRED_PASS = "Harshal@6195";
-  const LIFETIME_MS = 36500 * 24 * 60 * 60 * 1000; // 100 Years Lifetime Access
+  const LIFETIME_MS = 36500 * 24 * 60 * 60 * 1000;
 
   function getActivationExpiryTime() {
     let firstLoginTime = localStorage.getItem('system_first_login_date');
@@ -1426,13 +1452,8 @@
   }
 
   // ==========================================================
-  // DISTRIBUTOR MANAGEMENT (CLOUD SYNCED + LIFETIME)
+  // DISTRIBUTOR MANAGEMENT (GOOGLE SHEET SYNCED)
   // ==========================================================
-  async function getDistributorsList() {
-    let cloudData = await fetchCloudData();
-    return cloudData.distributors || [];
-  }
-
   async function addNewDistributor() {
     const name = document.getElementById('newDistName').value.trim();
     const email = document.getElementById('newDistEmail').value.trim().toLowerCase();
@@ -1453,61 +1474,63 @@
       return;
     }
 
-    let cloudData = await fetchCloudData();
-    let dists = cloudData.distributors || [];
-
-    if (dists.some(d => d.email === email)) {
-      msg.innerText = "⚠️ यह ईमेल आईडी पहले से क्लाउड पर मौजूद है!";
+    let currentList = await getDistributorsListCloud();
+    if (currentList.some(d => String(d.email).toLowerCase() === email)) {
+      msg.innerText = "⚠️ यह ईमेल आईडी पहले से Google Sheet पर मौजूद है!";
       msg.style.color = "#ef4444";
       msg.style.display = "block";
       return;
     }
 
-    dists.push({ 
-      id: Date.now(), 
-      name, 
-      email, 
-      pass, 
+    const newDistData = {
+      id: Date.now(),
+      name: name,
+      email: email,
+      pass: pass,
       assignedDate: new Date().toLocaleDateString('en-IN'),
-      validityText: "Lifetime Access (Until Admin Deletes)",
-      adminMessage: ''
-    });
+      validityText: "Lifetime Access",
+      adminMessage: ""
+    };
 
-    cloudData.distributors = dists;
-    await saveCloudData(cloudData);
+    let success = await addDistributorCloud(newDistData);
+    if (success) {
+      msg.innerText = "✅ डिस्ट्रीब्यूटर Google Sheet पर हमेशा के लिए जोड़ दिया गया है!";
+      msg.style.color = "#34d399";
+      msg.style.display = "block";
 
-    msg.innerText = "✅ डिस्ट्रीब्यूटर क्लाउड पर हमेशा के लिए जोड़ दिया गया है!";
-    msg.style.color = "#34d399";
-    msg.style.display = "block";
+      document.getElementById('newDistName').value = '';
+      document.getElementById('newDistEmail').value = '';
+      document.getElementById('newDistPass').value = '';
 
-    document.getElementById('newDistName').value = '';
-    document.getElementById('newDistEmail').value = '';
-    document.getElementById('newDistPass').value = '';
-
-    renderDistributorsTable();
+      setTimeout(() => renderDistributorsTable(), 1500);
+    } else {
+      msg.innerText = "⚠️ सेव करने में समस्या आई, कृपया पुनः प्रयास करें!";
+      msg.style.color = "#ef4444";
+      msg.style.display = "block";
+    }
   }
 
   async function renderDistributorsTable() {
     const tbody = document.getElementById('distributorTableBody');
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">क्लाउड से डेटा लोड हो रहा है...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">गूगल शीट से डेटा सिंक हो रहा है...</td></tr>`;
 
-    let dists = await getDistributorsList();
+    let dists = await getDistributorsListCloud();
     tbody.innerHTML = '';
 
     if (!dists.length) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर असाइन नहीं किया गया है।</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर गूगल शीट पर नहीं मिला।</td></tr>`;
       return;
     }
 
     dists.forEach((d) => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td><strong>${d.name}</strong></td>
-        <td>${d.email}</td>
-        <td><code style="background:#000; padding:3px 6px; border-radius:4px; color:#38bdf8;">${d.pass}</code></td>
-        <td style="color: #34d399; font-weight:600;">♾️ Lifetime (Until Admin Deletes)</td>
+        <td><strong>${d.name || ''}</strong></td>
+        <td>${d.email || ''}</td>
+        <td><code style="background:#000; padding:3px 6px; border-radius:4px; color:#38bdf8;">${d.pass || ''}</code></td>
+        <td style="color: #34d399; font-weight:600;">♾️ Lifetime (Google Sheet)</td>
         <td>
-          <button class="history-delete-btn" onclick="deleteDistributor(${d.id})">🗑️ Delete</button>
+          <button class="history-delete-btn" onclick="removeDistributor('${d.id}')">🗑️ Delete</button>
           <button class="history-msg-btn" onclick="openAdminMsgModal('${d.email}')">💬 Message</button>
         </td>
       `;
@@ -1515,13 +1538,10 @@
     });
   }
 
-  async function deleteDistributor(id) {
-    if (!confirm('क्या आप इस डिस्ट्रीब्यूटर को हमेशा के लिए हटाना चाहते हैं?')) return;
-    let cloudData = await fetchCloudData();
-    let dists = cloudData.distributors || [];
-    cloudData.distributors = dists.filter(d => d.id !== id);
-    await saveCloudData(cloudData);
-    renderDistributorsTable();
+  async function removeDistributor(id) {
+    if (!confirm('क्या आप इस डिस्ट्रीब्यूटर को गूगल शीट से हमेशा के लिए हटाना चाहते हैं?')) return;
+    await deleteDistributorCloud(id);
+    setTimeout(() => renderDistributorsTable(), 1500);
   }
 
   function openAdminMsgModal(email) {
@@ -1542,17 +1562,10 @@
       return;
     }
 
-    let cloudData = await fetchCloudData();
-    let dists = cloudData.distributors || [];
-    let dist = dists.find(d => d.email === email);
-    if (dist) {
-      dist.adminMessage = msgText;
-      cloudData.distributors = dists;
-      await saveCloudData(cloudData);
-      alert('✅ मैसेज क्लाउड पर सफलतापूर्वक सेव हो गया है!');
-      closeAdminMsgModal();
-      renderDistributorsTable();
-    }
+    await sendAdminMsgCloud(email, msgText);
+    alert('✅ मैसेज गूगल शीट पर सफलतापूर्वक अपडेट कर दिया गया है!');
+    closeAdminMsgModal();
+    setTimeout(() => renderDistributorsTable(), 1500);
   }
 
   // ==========================================================
@@ -1778,9 +1791,9 @@
       isAuthorized = true;
       isAdmin = true;
     } else {
-      // 2. Check Cloud Distributors
-      let dists = await getDistributorsList();
-      let foundUser = dists.find(d => d.email.toLowerCase() === inputEmail && d.pass === inputPass);
+      // 2. Check Google Sheet Distributors
+      let dists = await getDistributorsListCloud();
+      let foundUser = dists.find(d => String(d.email).toLowerCase() === inputEmail && String(d.pass) === inputPass);
       if (foundUser) {
         isAuthorized = true;
         isAdmin = false;
