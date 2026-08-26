@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
@@ -1242,14 +1243,14 @@
       </div>
     </div>
 
-    <!-- TAB 10: HISTORY (WITH GOOGLE SHEET CLOUD SYNC & MANUAL DELETE) -->
+    <!-- TAB 10: HISTORY (WITH 100% WORKING DOWNLOAD BUTTON) -->
     <div id="tab-history" class="tab-content">
-      <div class="badge">Google Sheet Cloud Storage • Retained Until Manually Deleted</div>
-      <h1>Print & Download History (Cloud Synced)</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">आपके द्वारा डाउनलोड की गई सभी फाइल्स का रिकॉर्ड सीधे गूगल शीट पर सुरक्षित है। आप यहाँ से कभी भी किसी रिकॉर्ड को डिलीट कर सकते हैं।</p>
+      <div class="badge">Persistent Storage • Retained Until Cleared</div>
+      <h1>Print & Download History</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">आपके द्वारा डाउनलोड की गई सभी फाइल्स का रिकॉर्ड सुरक्षित है। आप यहाँ से डाउनलोड भी कर सकते हैं और डिलीट भी कर सकते हैं।</p>
 
       <div style="text-align: right; margin-bottom: 10px;">
-        <button onclick="clearAllHistoryCloud()" class="action-btn btn-reset" style="padding: 6px 14px; font-size: 11px;">🗑️ Clear Entire History (Cloud)</button>
+        <button onclick="clearAllHistoryDB()" class="action-btn btn-reset" style="padding: 6px 14px; font-size: 11px;">🗑️ Clear Entire History Now</button>
       </div>
 
       <div class="history-table-container">
@@ -1264,7 +1265,7 @@
           </thead>
           <tbody id="historyTableBody">
             <tr>
-              <td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">गूगल शीट से हिस्ट्री लोड हो रही है...</td>
+              <td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">कोई प्रिंट रिकॉर्ड नहीं मिला।</td>
             </tr>
           </tbody>
         </table>
@@ -1352,9 +1353,9 @@
 
 <script>
   // ==========================================================
-  // GOOGLE SHEET APPS SCRIPT WEB APP API URL (UPDATED)
+  // GOOGLE SHEET APPS SCRIPT WEB APP API URL (DISTRIBUTORS CLOUD)
   // ==========================================================
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxdzUXN6-WtJLY4JdArUW5APuflhsfyuFEEguq5Sciu-GCK5bMrqZGFcIxI7yREMD2v/exec";
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxkUUV2wkFrUxaFS9UwDHre9KgIeeVrV_rGNov09I91pwrk7IYabWbcnr_ZuDm8igpL/exec";
 
   async function getDistributorsListCloud() {
     try {
@@ -1412,60 +1413,117 @@
     }
   }
 
-  async function getHistoryListCloud() {
+  // ==========================================================
+  // INDEXEDDB HISTORY STORAGE ENGINE (WITH WORKING DOWNLOAD)
+  // ==========================================================
+  const DB_NAME = 'PrintPortalPersistentDB';
+  const DB_STORE = 'print_records';
+
+  function openHistoryDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, 1);
+      request.onupgradeneeded = function(e) {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains(DB_STORE)) {
+          db.createObjectStore(DB_STORE, { keyPath: 'id', autoIncrement: true });
+        }
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  async function saveToHistory(featureName, fileName, blobOrDataUrl, fileType) {
     try {
-      const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getHistory`);
-      const data = await response.json();
-      return Array.isArray(data) ? data : [];
+      const db = await openHistoryDB();
+      const tx = db.transaction(DB_STORE, 'readwrite');
+      const store = tx.objectStore(DB_STORE);
+      
+      const record = {
+        feature: featureName,
+        fileName: fileName,
+        data: blobOrDataUrl,
+        fileType: fileType,
+        timestamp: Date.now(),
+        dateFormatted: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+      };
+
+      store.add(record);
     } catch(err) {
-      console.error("History fetch error:", err);
-      return [];
+      console.error("Storage error:", err);
     }
   }
 
-  async function addHistoryCloud(histData) {
+  async function renderHistoryTable() {
     try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "addHistory", data: histData })
-      });
-      return true;
-    } catch(err) {
-      console.error("History add error:", err);
-      return false;
-    }
+      const db = await openHistoryDB();
+      const tx = db.transaction(DB_STORE, 'readonly');
+      const store = tx.objectStore(DB_STORE);
+      const request = store.getAll();
+
+      request.onsuccess = function() {
+        const records = request.result || [];
+        const tbody = document.getElementById('historyTableBody');
+        tbody.innerHTML = '';
+
+        if (!records.length) {
+          tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">कोई प्रिंट रिकॉर्ड नहीं मिला।</td></tr>`;
+          return;
+        }
+
+        records.reverse().forEach(rec => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><strong style="color:var(--accent-blue);">${rec.feature}</strong></td>
+            <td>${rec.fileName}</td>
+            <td style="color:#94a3b8; font-size:11px;">${rec.dateFormatted}</td>
+            <td>
+              <button class="history-download-btn" onclick="reDownloadHistoryFile(${rec.id})">📥 Download</button>
+              <button class="history-delete-btn" onclick="deleteHistoryRecord(${rec.id})" style="margin-left: 5px;">🗑️ Delete</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      };
+    } catch(err) {}
   }
 
-  async function deleteHistoryCloud(histId) {
-    try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "deleteHistory", id: histId })
-      });
-      return true;
-    } catch(err) {
-      console.error("History delete error:", err);
-      return false;
-    }
+  async function reDownloadHistoryFile(recordId) {
+    const db = await openHistoryDB();
+    const tx = db.transaction(DB_STORE, 'readonly');
+    const store = tx.objectStore(DB_STORE);
+    const request = store.get(recordId);
+
+    request.onsuccess = function() {
+      const rec = request.result;
+      if (!rec) return;
+
+      const link = document.createElement('a');
+      if (typeof rec.data === 'string') {
+        link.href = rec.data;
+      } else {
+        link.href = URL.createObjectURL(rec.data);
+      }
+      link.download = rec.fileName;
+      link.click();
+    };
   }
 
-  async function clearAllHistoryCloud() {
-    if (!confirm('क्या आप गूगल शीट से सभी इतिहास रिकॉर्ड्स हमेशा के लिए मिटाना चाहते हैं?')) return;
-    try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "clearHistory" })
-      });
-      setTimeout(() => renderHistoryTable(), 1500);
-    } catch(err) {
-      alert("हिस्ट्री डिलीट करने में समस्या आई!");
-    }
+  async function deleteHistoryRecord(recordId) {
+    if (!confirm('क्या आप इस रिकॉर्ड को हटाना चाहते हैं?')) return;
+    const db = await openHistoryDB();
+    const tx = db.transaction(DB_STORE, 'readwrite');
+    const store = tx.objectStore(DB_STORE);
+    store.delete(recordId);
+    tx.oncomplete = () => renderHistoryTable();
+  }
+
+  async function clearAllHistoryDB() {
+    if (!confirm('क्या आप सभी इतिहास रिकॉर्ड्स हमेशा के लिए मिटाना चाहते हैं?')) return;
+    const db = await openHistoryDB();
+    const tx = db.transaction(DB_STORE, 'readwrite');
+    tx.objectStore(DB_STORE).clear();
+    tx.oncomplete = () => renderHistoryTable();
   }
 
   if (typeof pdfjsLib !== 'undefined') {
@@ -1623,51 +1681,6 @@
     alert('✅ मैसेज गूगल शीट पर सफलतापूर्वक अपडेट कर दिया गया है!');
     closeAdminMsgModal();
     setTimeout(() => renderDistributorsTable(), 1500);
-  }
-
-  // ==========================================================
-  // GOOGLE SHEET HISTORY STORAGE ENGINE
-  // ==========================================================
-  async function saveToHistory(featureName, fileName, blobOrDataUrl, fileType) {
-    const record = {
-      id: Date.now(),
-      feature: featureName,
-      fileName: fileName,
-      dateFormatted: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
-    };
-    await addHistoryCloud(record);
-  }
-
-  async function renderHistoryTable() {
-    const tbody = document.getElementById('historyTableBody');
-    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:15px;">गूगल शीट से हिस्ट्री लोड हो रही है...</td></tr>`;
-
-    let records = await getHistoryListCloud();
-    tbody.innerHTML = '';
-
-    if (!records.length) {
-      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">कोई प्रिंट रिकॉर्ड नहीं मिला।</td></tr>`;
-      return;
-    }
-
-    records.reverse().forEach(rec => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><strong style="color:var(--accent-blue);">${rec.feature || ''}</strong></td>
-        <td>${rec.fileName || ''}</td>
-        <td style="color:#94a3b8; font-size:11px;">${rec.dateFormatted || ''}</td>
-        <td>
-          <button class="history-delete-btn" onclick="removeHistoryRecord('${rec.id}')">🗑️ Delete</button>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-
-  async function removeHistoryRecord(id) {
-    if (!confirm('क्या आप इस रिकॉर्ड को हटाना चाहते हैं?')) return;
-    await deleteHistoryCloud(id);
-    setTimeout(() => renderHistoryTable(), 1500);
   }
 
   function switchTab(tabId) {
