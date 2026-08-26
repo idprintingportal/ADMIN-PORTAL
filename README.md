@@ -8,10 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   
-  <!-- Firebase SDK (Firestore Cloud Database) -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
   <!-- PDF.js Standalone -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   
@@ -740,7 +736,7 @@
     </div>
   </div>
 
-  <!-- Advertisement Images (Loaded from your provided attachments) -->
+  <!-- Advertisement Images -->
   <div class="ad-slider-box">
     <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=400&auto=format&fit=crop&q=60" alt="Print Service 1" class="ad-slide-img" title="Photo & Document Print">
     <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&auto=format&fit=crop&q=60" alt="Print Service 2" class="ad-slide-img" title="Passport Sheet Generator">
@@ -1280,7 +1276,7 @@
     <div id="tab-admin" class="tab-content">
       <div class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">Master Administrator Panel</div>
       <h1 style="color: #fbbf24;">Distributor Management (Cloud Synced)</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। डेटा क्लाउड पर सुरक्षित है, इसलिए किसी भी डिवाइस से लॉगिन करने पर तुरंत दिखेगा।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। डेटा क्लाउड पर हमेशा के लिए सुरक्षित है जब तक आप डिलीट नहीं करते।</p>
 
       <div class="control-panel" style="max-width: 500px; text-align: left; margin-bottom: 25px;">
         <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 12px;">➕ Add New Distributor</h3>
