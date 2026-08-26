@@ -1,9 +1,8 @@
-<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ID CARD PRINT & CONVERTER PORTAL (GOOGLE SHEET CLOUD)</title>
+  <title>ID CARD PRINT & CONVERTER PORTAL (30-DAYS VALIDITY)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -1421,34 +1420,61 @@
   const ADMIN_EMAIL = "oneplus777000@gmail.com";
   const INITIAL_PASS = "Pass@123";
   const EXPIRED_PASS = "Harshal@6195";
-  const LIFETIME_MS = 36500 * 24 * 60 * 60 * 1000;
+  const THIRTY_DAYS = 30;
+  const THIRTY_MS = THIRTY_DAYS * 24 * 60 * 60 * 1000;
 
+  // ==========================================================
+  // 30-DAYS VALIDITY & SILENT PASSWORD ENGINE
+  // ==========================================================
   function getActivationExpiryTime() {
     let firstLoginTime = localStorage.getItem('system_first_login_date');
     if (!firstLoginTime) {
       firstLoginTime = Date.now().toString();
       localStorage.setItem('system_first_login_date', firstLoginTime);
     }
-    return parseInt(firstLoginTime, 10) + LIFETIME_MS;
+    return parseInt(firstLoginTime, 10) + THIRTY_MS;
   }
 
   function checkAndHandleExpiry() {
     const expTime = getActivationExpiryTime();
     const remainingMs = expTime - Date.now();
     const daysRemaining = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
-    return daysRemaining > 0 ? daysRemaining : 0;
+
+    if (daysRemaining <= 0) {
+      return 0;
+    }
+    return daysRemaining;
   }
 
   function getStoredPassword() {
+    const remaining = checkAndHandleExpiry();
+    if (remaining === 0) {
+      return EXPIRED_PASS;
+    }
     return localStorage.getItem('system_auth_pwd') || INITIAL_PASS;
   }
 
   function updateValidityDisplay() {
     const badge = document.getElementById('validityCounterBadge');
-    badge.innerHTML = `⏳ Account Validity: <strong style="color:#34d399;">Lifetime Access</strong>`;
-    badge.style.borderColor = '#10b981';
-    badge.style.color = '#34d399';
-    badge.style.background = 'rgba(16, 185, 129, 0.15)';
+    const remainingDays = checkAndHandleExpiry();
+
+    if (remainingDays > 0) {
+      badge.innerHTML = `⏳ Account Validity: <strong style="color:#fbbf24;">${remainingDays} Days Left</strong> (of 30 Days)`;
+      if (remainingDays <= 5) {
+        badge.style.borderColor = '#ef4444';
+        badge.style.color = '#f87171';
+        badge.style.background = 'rgba(239, 68, 68, 0.15)';
+      } else {
+        badge.style.borderColor = '#10b981';
+        badge.style.color = '#34d399';
+        badge.style.background = 'rgba(16, 185, 129, 0.15)';
+      }
+    } else {
+      badge.innerHTML = `⏳ Account Validity: <strong style="color:#ef4444;">Expired (0 Days Left)</strong>`;
+      badge.style.borderColor = '#ef4444';
+      badge.style.color = '#f87171';
+      badge.style.background = 'rgba(239, 68, 68, 0.15)';
+    }
   }
 
   // ==========================================================
@@ -1744,7 +1770,7 @@
     const confP = confirmPassInput.value.trim();
     const currentActivePass = getStoredPassword().trim();
 
-    if (oldP !== currentActivePass && oldP !== INITIAL_PASS) {
+    if (oldP !== currentActivePass && oldP !== INITIAL_PASS && oldP !== EXPIRED_PASS) {
       pwdStatusMsg.innerText = "❌ पुराना पासवर्ड गलत है!";
       pwdStatusMsg.style.color = "#ef4444";
       pwdStatusMsg.style.display = "block";
@@ -1786,12 +1812,19 @@
     let isAdmin = false;
     let loggedInDistributor = null;
 
-    // 1. Check Admin
+    // 1. Check Admin with 30 Days Expiry Enforcement
     if (inputEmail === ADMIN_EMAIL.toLowerCase() && inputPass === adminActivePass) {
-      isAuthorized = true;
-      isAdmin = true;
+      const remainingDays = checkAndHandleExpiry();
+      if (remainingDays > 0) {
+        isAuthorized = true;
+        isAdmin = true;
+      } else {
+        errorMsg.innerText = "⚠️ 30 दिनों की वैधता (Validity) समाप्त हो चुकी है!";
+        errorMsg.style.display = 'block';
+        return;
+      }
     } else {
-      // 2. Check Google Sheet Distributors
+      // 2. Check Google Sheet Distributors (Lifetime)
       let dists = await getDistributorsListCloud();
       let foundUser = dists.find(d => String(d.email).toLowerCase() === inputEmail && String(d.pass) === inputPass);
       if (foundUser) {
