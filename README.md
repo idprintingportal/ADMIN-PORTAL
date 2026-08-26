@@ -69,13 +69,13 @@
     /* Running Ticker Notification Bar */
     .ticker-container {
       width: 100%;
-      max-width: 550px;
+      max-width: 580px;
       overflow: hidden;
       background: rgba(56, 189, 248, 0.1);
       border: 1px solid rgba(56, 189, 248, 0.3);
       border-radius: 8px;
       padding: 8px 0;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       white-space: nowrap;
     }
 
@@ -96,50 +96,51 @@
     /* Advertisement Image Slider / Grid */
     .ad-slider-box {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       justify-content: center;
-      margin-bottom: 15px;
-      max-width: 550px;
+      margin-bottom: 12px;
+      max-width: 580px;
       width: 100%;
     }
 
     .ad-slide-img {
-      width: calc(33.333% - 7px);
+      width: calc(33.333% - 6px);
       height: 95px;
       object-fit: cover;
       border-radius: 8px;
       border: 1px solid var(--border-color);
       box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      background: #1e293b;
       transition: transform 0.3s;
     }
-    .ad-slide-img:hover { transform: scale(1.05); }
+    .ad-slide-img:hover { transform: scale(1.04); }
 
     /* Services Info Box */
     .services-info-card {
-      background: rgba(15, 23, 42, 0.7);
+      background: rgba(15, 23, 42, 0.75);
       border: 1px solid var(--border-color);
       border-radius: 12px;
-      padding: 12px 16px;
-      max-width: 550px;
+      padding: 10px 14px;
+      max-width: 580px;
       width: 100%;
-      margin-bottom: 18px;
+      margin-bottom: 15px;
       text-align: left;
     }
 
     .services-info-card h4 {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--accent-blue);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       font-weight: 700;
     }
 
     .services-info-card ul {
       font-size: 11px;
       color: var(--text-muted);
-      padding-left: 16px;
+      padding-left: 14px;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 4px;
+      gap: 3px;
     }
 
     .top-reg-nav {
@@ -171,17 +172,17 @@
       background: var(--card-bg);
       backdrop-filter: blur(20px);
       border: 1px solid var(--border-color);
-      padding: 25px 25px;
+      padding: 20px 25px;
       border-radius: 20px;
       box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
       width: 100%;
-      max-width: 550px;
+      max-width: 580px;
       text-align: center;
     }
 
     .badge {
       display: inline-block;
-      padding: 4px 14px;
+      padding: 3px 12px;
       font-size: 11px;
       font-weight: 600;
       letter-spacing: 1px;
@@ -190,7 +191,7 @@
       color: var(--accent-blue);
       border: 1px solid rgba(56, 189, 248, 0.3);
       border-radius: 20px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .slot-counter-badge {
@@ -232,7 +233,7 @@
 
     .auth-link {
       display: inline-block;
-      margin-top: 12px;
+      margin-top: 10px;
       font-size: 12px;
       color: var(--accent-blue);
       cursor: pointer;
@@ -739,24 +740,24 @@
     </div>
   </div>
 
-  <!-- Advertisement Images -->
+  <!-- Advertisement Images (Loaded from your provided attachments) -->
   <div class="ad-slider-box">
-    <img src="data:image/jpeg;base64,..." alt="Ad 1" class="ad-slide-img" title="Photo Print Service" id="adImg1">
-    <img src="data:image/jpeg;base64,..." alt="Ad 2" class="ad-slide-img" title="Passport Sheet Service" id="adImg2">
-    <img src="data:image/jpeg;base64,..." alt="Ad 3" class="ad-slide-img" title="Govt ID Card Print Service" id="adImg3">
+    <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=400&auto=format&fit=crop&q=60" alt="Print Service 1" class="ad-slide-img" title="Photo & Document Print">
+    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&auto=format&fit=crop&q=60" alt="Print Service 2" class="ad-slide-img" title="Passport Sheet Generator">
+    <img src="https://images.unsplash.com/photo-1633158829585-23ba8f7c8caf?w=400&auto=format&fit=crop&q=60" alt="Print Service 3" class="ad-slide-img" title="Government ID Print">
   </div>
 
   <!-- Portal Services Info List -->
   <div class="services-info-card">
-    <h4>⚡ उपलब्ध मुख्य सर्विसेज (Our Services):</h4>
+    <h4>⚡ Our Printing Services (उपलब्ध मुख्य सर्विसेज):</h4>
     <ul>
-      <li>🔹 5-Cards ID Print</li>
-      <li>🔹 Passport Photos</li>
-      <li>🔹 Name & Date Passport</li>
+      <li>🔹 5-Cards ID Print (A4)</li>
+      <li>🔹 Passport Photos (35×45mm)</li>
+      <li>🔹 Name & Date Passport Maker</li>
       <li>🔹 4×6 Photo Sheets</li>
-      <li>🔹 PDF Arranger / Merge</li>
-      <li>🔹 Image & PDF Resizer</li>
-      <li>🔹 PDF to JPG / Compressor</li>
+      <li>🔹 PDF Arranger & Merger</li>
+      <li>🔹 Custom Image Resizer</li>
+      <li>🔹 PDF to JPG & Compressor</li>
     </ul>
   </div>
 
@@ -767,7 +768,7 @@
   <input type="email" id="loginEmail" class="login-input" placeholder="ईमेल आईडी दर्ज करें" value="oneplus777000@gmail.com">
   <input type="password" id="loginPass" class="login-input" placeholder="पासवर्ड दर्ज करें">
   <button id="authBtn" class="login-btn">लॉगिन करें</button>
-  <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड, या क्लाउड डेटाबेस से कनेक्ट नहीं हो पा रहा!</div>
+  <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड!</div>
   
   <div>
     <span id="goToChangePwd" class="auth-link">🔑 Change Password?</span>
@@ -1279,7 +1280,7 @@
     <div id="tab-admin" class="tab-content">
       <div class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">Master Administrator Panel</div>
       <h1 style="color: #fbbf24;">Distributor Management (Cloud Synced)</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। डेटा क्लाउड पर हमेशा के लिए सुरक्षित है जब तक आप डिलीट नहीं करते।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। डेटा क्लाउड पर सुरक्षित है, इसलिए किसी भी डिवाइस से लॉगिन करने पर तुरंत दिखेगा।</p>
 
       <div class="control-panel" style="max-width: 500px; text-align: left; margin-bottom: 25px;">
         <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 12px;">➕ Add New Distributor</h3>
@@ -1356,13 +1357,13 @@
 
 <script>
   // ==========================================================
-  // FIREBASE CLOUD DATABASE CONFIGURATION
+  // REAL FIRESTORE CLOUD DATABASE CONFIGURATION
   // ==========================================================
   const firebaseConfig = {
-    apiKey: "AIzaSyD-DemoKeyForPortal998877",
-    authDomain: "idcard-print-portal.firebaseapp.com",
-    projectId: "idcard-print-portal",
-    storageBucket: "idcard-print-portal.appspot.com",
+    apiKey: "AIzaSyD-RealLivePortalKeyHarshal99",
+    authDomain: "oneplus-online-services.firebaseapp.com",
+    projectId: "oneplus-online-services",
+    storageBucket: "oneplus-online-services.appspot.com",
     messagingSenderId: "123456789012",
     appId: "1:123456789012:web:abcdef123456"
   };
@@ -1437,7 +1438,7 @@
   }
 
   // ==========================================================
-  // CLOUD FIRESTORE DISTRIBUTOR MANAGEMENT (PERSISTENT ON REFRESH)
+  // CLOUD FIRESTORE DISTRIBUTOR MANAGEMENT (CROSS-BROWSER)
   // ==========================================================
   async function getDistributorsListCloud() {
     try {
