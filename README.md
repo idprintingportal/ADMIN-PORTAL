@@ -1243,11 +1243,17 @@
       </div>
     </div>
 
-    <!-- TAB 10: HISTORY (WITH 100% WORKING DOWNLOAD BUTTON) -->
+    <!-- TAB 10: HISTORY (WITH WORKING DOWNLOAD & ALERT WARNING) -->
     <div id="tab-history" class="tab-content">
-      <div class="badge">Persistent Storage • Retained Until Cleared</div>
+      <div class="badge">Persistent Storage • Download Ready</div>
       <h1>Print & Download History</h1>
       <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">आपके द्वारा डाउनलोड की गई सभी फाइल्स का रिकॉर्ड सुरक्षित है। आप यहाँ से डाउनलोड भी कर सकते हैं और डिलीट भी कर सकते हैं।</p>
+
+      <!-- Warning Alert Box for Browser History Clear -->
+      <div style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.5); color: #fde68a; padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; font-size: 12px; text-align: left; display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 16px;">⚠️</span>
+        <span><strong>महत्वपूर्ण चेतावनी:</strong> यदि आप अपने ब्राउज़र का डेटा (Browser Data/History) क्लियर करते हैं, तो यह डाउनलोड हिस्ट्री हमेशा के लिए डिलीट हो जाएगी। कृपया समय पर इसका बैकअप रखें।</span>
+      </div>
 
       <div style="text-align: right; margin-bottom: 10px;">
         <button onclick="clearAllHistoryDB()" class="action-btn btn-reset" style="padding: 6px 14px; font-size: 11px;">🗑️ Clear Entire History Now</button>
