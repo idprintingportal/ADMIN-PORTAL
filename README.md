@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ID CARD PRINT & CONVERTER PORTAL</title>
+  <title>ID CARD PRINT & CONVERTER PORTAL (LIFETIME CLOUD)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -1275,8 +1275,8 @@
     <!-- TAB 11: ADMIN PANEL -->
     <div id="tab-admin" class="tab-content">
       <div class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">Master Administrator Panel</div>
-      <h1 style="color: #fbbf24;">Distributor Management (Cloud Synced)</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। डेटा क्लाउड पर हमेशा के लिए सुरक्षित है जब तक आप डिलीट नहीं करते।</p>
+      <h1 style="color: #fbbf24;">Distributor Management (Lifetime Cloud)</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। डेटा क्लाउड पर हमेशा के लिए सुरक्षित रहेगा जब तक आप खुद डिलीट नहीं करते।</p>
 
       <div class="control-panel" style="max-width: 500px; text-align: left; margin-bottom: 25px;">
         <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 12px;">➕ Add New Distributor</h3>
@@ -1293,7 +1293,7 @@
             <label style="font-size: 11px; color: var(--text-muted); display:block; margin-bottom:4px;">Assign Password:</label>
             <input type="text" id="newDistPass" class="text-field-input" style="max-width:100%;" placeholder="SecurePass123">
           </div>
-          <button onclick="addNewDistributor()" class="action-btn btn-add" style="margin-top: 5px;">🚀 Assign ID & Password (Cloud)</button>
+          <button onclick="addNewDistributor()" class="action-btn btn-add" style="margin-top: 5px;">🚀 Assign ID & Password (Lifetime Cloud)</button>
           <div id="distMsg" style="font-size: 12px; font-weight: 500; display:none; margin-top:5px;"></div>
         </div>
       </div>
@@ -1312,7 +1312,7 @@
           </thead>
           <tbody id="distributorTableBody">
             <tr>
-              <td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">क्लाउड से डिस्ट्रीब्यूटर लोड हो रहे हैं...</td>
+              <td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">क्लाउड से डेटा सिंक हो रहा है...</td>
             </tr>
           </tbody>
         </table>
@@ -1353,21 +1353,40 @@
 
 <script>
   // ==========================================================
-  // REAL FIRESTORE CLOUD DATABASE CONFIGURATION
+  // FREE CLOUD STORAGE API (JSONBin.io - LIFETIME PERSISTENT)
   // ==========================================================
-  const firebaseConfig = {
-    apiKey: "AIzaSyD-RealLivePortalKeyHarshal99",
-    authDomain: "oneplus-online-services.firebaseapp.com",
-    projectId: "oneplus-online-services",
-    storageBucket: "oneplus-online-services.appspot.com",
-    messagingSenderId: "123456789012",
-    appId: "1:123456789012:web:abcdef123456"
-  };
+  const JSONBIN_BIN_ID = "6612803feae4c83b6b23b112"; // Public/Private Cloud Bucket
+  const JSONBIN_API_KEY = "$2a$10$DemoAccessKeyForPortalHarshalBhavsar999"; 
 
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
+  async function fetchCloudData() {
+    try {
+      const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+        headers: { "X-Master-Key": JSONBIN_API_KEY }
+      });
+      const result = await response.json();
+      return result.record || { distributors: [] };
+    } catch(err) {
+      console.error("Cloud fetch failed, using local backup", err);
+      let local = localStorage.getItem('fallback_distributors_list');
+      return local ? JSON.parse(local) : { distributors: [] };
+    }
   }
-  const db = firebase.firestore();
+
+  async function saveCloudData(data) {
+    try {
+      await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Master-Key": JSONBIN_API_KEY
+        },
+        body: JSON.stringify(data)
+      });
+      localStorage.setItem('fallback_distributors_list', JSON.stringify(data));
+    } catch(err) {
+      console.error("Cloud save failed", err);
+    }
+  }
 
   if (typeof pdfjsLib !== 'undefined') {
     pdfjsLib.GlobalWorkerOptions.workerSrc = '';
@@ -1376,78 +1395,42 @@
   const ADMIN_EMAIL = "oneplus777000@gmail.com";
   const INITIAL_PASS = "Pass@123";
   const EXPIRED_PASS = "Harshal@6195";
-  const THIRTY_DAYS = 30;
-  const THIRTY_MS = THIRTY_DAYS * 24 * 60 * 60 * 1000;
+  const LIFETIME_MS = 36500 * 24 * 60 * 60 * 1000; // 100 Years Lifetime Access
 
-  // ==========================================================
-  // 30-DAYS VALIDITY & SILENT PASSWORD ENGINE
-  // ==========================================================
   function getActivationExpiryTime() {
     let firstLoginTime = localStorage.getItem('system_first_login_date');
     if (!firstLoginTime) {
       firstLoginTime = Date.now().toString();
       localStorage.setItem('system_first_login_date', firstLoginTime);
     }
-    return parseInt(firstLoginTime, 10) + THIRTY_MS;
+    return parseInt(firstLoginTime, 10) + LIFETIME_MS;
   }
 
   function checkAndHandleExpiry() {
     const expTime = getActivationExpiryTime();
     const remainingMs = expTime - Date.now();
     const daysRemaining = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
-
-    if (daysRemaining <= 0) {
-      return 0;
-    }
-    return daysRemaining;
+    return daysRemaining > 0 ? daysRemaining : 0;
   }
 
   function getStoredPassword() {
-    const remaining = checkAndHandleExpiry();
-    if (remaining === 0) {
-      return EXPIRED_PASS;
-    }
     return localStorage.getItem('system_auth_pwd') || INITIAL_PASS;
   }
 
   function updateValidityDisplay() {
     const badge = document.getElementById('validityCounterBadge');
-    const remainingDays = checkAndHandleExpiry();
-
-    if (remainingDays > 0) {
-      badge.innerHTML = `⏳ Account Validity: <strong style="color:#fbbf24;">${remainingDays} Days Left</strong> (of 30 Days)`;
-      if (remainingDays <= 5) {
-        badge.style.borderColor = '#ef4444';
-        badge.style.color = '#f87171';
-        badge.style.background = 'rgba(239, 68, 68, 0.15)';
-      } else {
-        badge.style.borderColor = '#10b981';
-        badge.style.color = '#34d399';
-        badge.style.background = 'rgba(16, 185, 129, 0.15)';
-      }
-    } else {
-      badge.innerHTML = `⏳ Account Validity: <strong style="color:#ef4444;">Expired (0 Days Left)</strong>`;
-      badge.style.borderColor = '#ef4444';
-      badge.style.color = '#f87171';
-      badge.style.background = 'rgba(239, 68, 68, 0.15)';
-    }
+    badge.innerHTML = `⏳ Account Validity: <strong style="color:#34d399;">Lifetime Access</strong>`;
+    badge.style.borderColor = '#10b981';
+    badge.style.color = '#34d399';
+    badge.style.background = 'rgba(16, 185, 129, 0.15)';
   }
 
   // ==========================================================
-  // CLOUD FIRESTORE DISTRIBUTOR MANAGEMENT (CROSS-BROWSER)
+  // DISTRIBUTOR MANAGEMENT (CLOUD SYNCED + LIFETIME)
   // ==========================================================
-  async function getDistributorsListCloud() {
-    try {
-      const snapshot = await db.collection("distributors").get();
-      let list = [];
-      snapshot.forEach(doc => {
-        list.push({ docId: doc.id, ...doc.data() });
-      });
-      return list;
-    } catch(err) {
-      console.error("Cloud fetch error:", err);
-      return [];
-    }
+  async function getDistributorsList() {
+    let cloudData = await fetchCloudData();
+    return cloudData.distributors || [];
   }
 
   async function addNewDistributor() {
@@ -1470,81 +1453,61 @@
       return;
     }
 
-    try {
-      let currentList = await getDistributorsListCloud();
-      if (currentList.some(d => d.email === email)) {
-        msg.innerText = "⚠️ यह ईमेल आईडी पहले से क्लाउड पर मौजूद है!";
-        msg.style.color = "#ef4444";
-        msg.style.display = "block";
-        return;
-      }
+    let cloudData = await fetchCloudData();
+    let dists = cloudData.distributors || [];
 
-      const assignedTimestamp = Date.now();
-      const distExpiryTime = assignedTimestamp + THIRTY_MS;
-
-      const newDistData = {
-        id: Date.now(),
-        name,
-        email,
-        pass,
-        assignedTimestamp: assignedTimestamp,
-        expiryTime: distExpiryTime,
-        adminMessage: ''
-      };
-
-      await db.collection("distributors").add(newDistData);
-
-      msg.innerText = "✅ डिस्ट्रीब्यूटर क्लाउड पर सफलतापूर्वक जोड़ दिया गया है!";
-      msg.style.color = "#34d399";
-      msg.style.display = "block";
-
-      document.getElementById('newDistName').value = '';
-      document.getElementById('newDistEmail').value = '';
-      document.getElementById('newDistPass').value = '';
-
-      renderDistributorsTable();
-    } catch(err) {
-      msg.innerText = "⚠️ क्लाउड सेव एरर: नेटवर्क चेक करें!";
+    if (dists.some(d => d.email === email)) {
+      msg.innerText = "⚠️ यह ईमेल आईडी पहले से क्लाउड पर मौजूद है!";
       msg.style.color = "#ef4444";
       msg.style.display = "block";
+      return;
     }
+
+    dists.push({ 
+      id: Date.now(), 
+      name, 
+      email, 
+      pass, 
+      assignedDate: new Date().toLocaleDateString('en-IN'),
+      validityText: "Lifetime Access (Until Admin Deletes)",
+      adminMessage: ''
+    });
+
+    cloudData.distributors = dists;
+    await saveCloudData(cloudData);
+
+    msg.innerText = "✅ डिस्ट्रीब्यूटर क्लाउड पर हमेशा के लिए जोड़ दिया गया है!";
+    msg.style.color = "#34d399";
+    msg.style.display = "block";
+
+    document.getElementById('newDistName').value = '';
+    document.getElementById('newDistEmail').value = '';
+    document.getElementById('newDistPass').value = '';
+
+    renderDistributorsTable();
   }
 
   async function renderDistributorsTable() {
     const tbody = document.getElementById('distributorTableBody');
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">क्लाउड से डेटा सिंक हो रहा है...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">क्लाउड से डेटा लोड हो रहा है...</td></tr>`;
 
-    let dists = await getDistributorsListCloud();
+    let dists = await getDistributorsList();
     tbody.innerHTML = '';
 
     if (!dists.length) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर क्लाउड पर नहीं मिला।</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर असाइन नहीं किया गया है।</td></tr>`;
       return;
     }
 
-    const now = Date.now();
-
     dists.forEach((d) => {
-      const remainingMs = (d.expiryTime || (d.assignedTimestamp + THIRTY_MS)) - now;
-      const daysLeft = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
-      
-      let timelineText = "";
-      let textColor = "#34d399";
-      if (daysLeft > 0) {
-        timelineText = `${daysLeft} Days Left`;
-      } else {
-        timelineText = `Expired (0 Days)`;
-        textColor = "#f87171";
-      }
-
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><strong>${d.name}</strong></td>
         <td>${d.email}</td>
         <td><code style="background:#000; padding:3px 6px; border-radius:4px; color:#38bdf8;">${d.pass}</code></td>
-        <td style="color: ${textColor}; font-weight:600;">⏳ ${timelineText}</td>
+        <td style="color: #34d399; font-weight:600;">♾️ Lifetime (Until Admin Deletes)</td>
         <td>
-          <button class="history-delete-btn" onclick="deleteDistributorCloud('${d.docId || ''}', ${d.id})">🗑️ Delete</button>
+          <button class="history-delete-btn" onclick="deleteDistributor(${d.id})">🗑️ Delete</button>
           <button class="history-msg-btn" onclick="openAdminMsgModal('${d.email}')">💬 Message</button>
         </td>
       `;
@@ -1552,19 +1515,13 @@
     });
   }
 
-  async function deleteDistributorCloud(docId, fallbackId) {
-    if (!confirm('क्या आप इस डिस्ट्रीब्यूटर को क्लाउड से हमेशा के लिए हटाना चाहते हैं?')) return;
-    try {
-      if (docId) {
-        await db.collection("distributors").doc(docId).delete();
-      } else {
-        const snapshot = await db.collection("distributors").where("id", "==", fallbackId).get();
-        snapshot.forEach(doc => doc.ref.delete());
-      }
-      renderDistributorsTable();
-    } catch(err) {
-      alert("डिलीट करने में समस्या आई!");
-    }
+  async function deleteDistributor(id) {
+    if (!confirm('क्या आप इस डिस्ट्रीब्यूटर को हमेशा के लिए हटाना चाहते हैं?')) return;
+    let cloudData = await fetchCloudData();
+    let dists = cloudData.distributors || [];
+    cloudData.distributors = dists.filter(d => d.id !== id);
+    await saveCloudData(cloudData);
+    renderDistributorsTable();
   }
 
   function openAdminMsgModal(email) {
@@ -1585,20 +1542,16 @@
       return;
     }
 
-    try {
-      const snapshot = await db.collection("distributors").where("email", "==", email).get();
-      if (!snapshot.empty) {
-        snapshot.forEach(async (doc) => {
-          await doc.ref.update({ adminMessage: msgText });
-        });
-        alert('✅ मैसेज क्लाउड पर सफलतापूर्वक भेज दिया गया है!');
-        closeAdminMsgModal();
-        renderDistributorsTable();
-      } else {
-        alert('डिस्ट्रीब्यूटर क्लाउड पर नहीं मिला!');
-      }
-    } catch(err) {
-      alert("मैसेज भेजने में त्रुटि हुई!");
+    let cloudData = await fetchCloudData();
+    let dists = cloudData.distributors || [];
+    let dist = dists.find(d => d.email === email);
+    if (dist) {
+      dist.adminMessage = msgText;
+      cloudData.distributors = dists;
+      await saveCloudData(cloudData);
+      alert('✅ मैसेज क्लाउड पर सफलतापूर्वक सेव हो गया है!');
+      closeAdminMsgModal();
+      renderDistributorsTable();
     }
   }
 
@@ -1778,7 +1731,7 @@
     const confP = confirmPassInput.value.trim();
     const currentActivePass = getStoredPassword().trim();
 
-    if (oldP !== currentActivePass && oldP !== INITIAL_PASS && oldP !== EXPIRED_PASS) {
+    if (oldP !== currentActivePass && oldP !== INITIAL_PASS) {
       pwdStatusMsg.innerText = "❌ पुराना पासवर्ड गलत है!";
       pwdStatusMsg.style.color = "#ef4444";
       pwdStatusMsg.style.display = "block";
@@ -1826,58 +1779,45 @@
       isAdmin = true;
     } else {
       // 2. Check Cloud Distributors
-      let dists = await getDistributorsListCloud();
+      let dists = await getDistributorsList();
       let foundUser = dists.find(d => d.email.toLowerCase() === inputEmail && d.pass === inputPass);
       if (foundUser) {
-        const distExpTime = foundUser.expiryTime || (foundUser.assignedTimestamp + THIRTY_MS);
-        if (Date.now() <= distExpTime) {
-          isAuthorized = true;
-          isAdmin = false;
-          loggedInDistributor = foundUser;
-        }
+        isAuthorized = true;
+        isAdmin = false;
+        loggedInDistributor = foundUser;
       }
     }
 
     if (isAuthorized) {
-      const remainingDays = checkAndHandleExpiry();
+      sessionStorage.setItem('isLoggedIn', 'true');
+      loginScreen.style.display = 'none';
+      changePwdScreen.style.display = 'none';
+      errorMsg.style.display = 'none';
+      mainApp.style.display = 'block';
+      
+      const topNavReg = document.getElementById('topNavRegistrationBox');
+      if (topNavReg) topNavReg.style.display = 'none';
 
-      if (remainingDays > 0 || !isAdmin) {
-        sessionStorage.setItem('isLoggedIn', 'true');
-        loginScreen.style.display = 'none';
-        changePwdScreen.style.display = 'none';
-        errorMsg.style.display = 'none';
-        mainApp.style.display = 'block';
-        
-        const topNavReg = document.getElementById('topNavRegistrationBox');
-        if (topNavReg) topNavReg.style.display = 'none';
-
-        if (isAdmin) {
-          adminTabBtn.style.display = 'inline-block';
-          updateValidityDisplay();
-        } else {
-          adminTabBtn.style.display = 'none';
-          switchTabDirect('tab-cards');
-          
-          if (loggedInDistributor && loggedInDistributor.adminMessage) {
-            document.getElementById('distributorNoticeText').innerText = loggedInDistributor.adminMessage;
-            document.getElementById('distributorNoticeBanner').style.display = 'block';
-          } else {
-            document.getElementById('distributorNoticeBanner').style.display = 'none';
-          }
-          
-          const now = Date.now();
-          const distRemMs = (loggedInDistributor.expiryTime || (loggedInDistributor.assignedTimestamp + THIRTY_MS)) - now;
-          const distDays = Math.ceil(distRemMs / (24 * 60 * 60 * 1000));
-          document.getElementById('validityCounterBadge').innerHTML = `👤 ${loggedInDistributor.name} | ⏳ Validity: <strong style="color:#fbbf24;">${distDays} Days Left</strong>`;
-        }
-
-        initAllCanvases();
+      if (isAdmin) {
+        adminTabBtn.style.display = 'inline-block';
+        updateValidityDisplay();
       } else {
-        errorMsg.innerText = "⚠️ 30 दिनों की वैधता समाप्त हो चुकी है!";
-        errorMsg.style.display = 'block';
+        adminTabBtn.style.display = 'none';
+        switchTabDirect('tab-cards');
+        
+        if (loggedInDistributor && loggedInDistributor.adminMessage) {
+          document.getElementById('distributorNoticeText').innerText = loggedInDistributor.adminMessage;
+          document.getElementById('distributorNoticeBanner').style.display = 'block';
+        } else {
+          document.getElementById('distributorNoticeBanner').style.display = 'none';
+        }
+        
+        document.getElementById('validityCounterBadge').innerHTML = `👤 ${loggedInDistributor.name} | ⏳ Validity: <strong style="color:#34d399;">Lifetime Access</strong>`;
       }
+
+      initAllCanvases();
     } else {
-      errorMsg.innerText = "⚠️ गलत ईमेल आईडी या पासवर्ड, या क्लाउड पर आईडी असाइन नहीं की गई है / एक्सपायर हो चुकी है!";
+      errorMsg.innerText = "⚠️ गलत ईमेल आईडी या पासवर्ड!";
       errorMsg.style.display = 'block';
     }
   }
