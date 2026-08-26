@@ -1,8 +1,9 @@
+<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ID CARD PRINT & CONVERTER PORTAL (30-DAYS VALIDITY)</title>
+  <title>ID CARD PRINT & CONVERTER PORTAL</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -1275,7 +1276,7 @@
     <div id="tab-admin" class="tab-content">
       <div class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">Master Administrator Panel</div>
       <h1 style="color: #fbbf24;">Google Sheet Cloud Distributor Management</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। डेटा सीधे आपकी Google Sheet पर हमेशा के लिए सुरक्षित रहेगा।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। डिस्ट्रीब्यूटर की वैलिडिटी 30 दिनों की होगी और डेटा गूगल शीट पर सुरक्षित रहेगा।</p>
 
       <div class="control-panel" style="max-width: 500px; text-align: left; margin-bottom: 25px;">
         <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 12px;">➕ Add New Distributor</h3>
@@ -1297,7 +1298,7 @@
         </div>
       </div>
 
-      <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 10px; text-align: left; max-width: 850px; margin-left: auto; margin-right: auto;">Google Sheet Connected Distributors</h3>
+      <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 10px; text-align: left; max-width: 850px; margin-left: auto; margin-right: auto;">Google Sheet Connected Distributors (30 Days Validity)</h3>
       <div class="history-table-container" style="max-width: 850px; margin-left: auto; margin-right: auto;">
         <table class="history-table">
           <thead>
@@ -1305,7 +1306,7 @@
               <th>Business / Name</th>
               <th>Login Email</th>
               <th>Password</th>
-              <th>Validity / Status</th>
+              <th>Validity / Timeline</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -1424,7 +1425,7 @@
   const THIRTY_MS = THIRTY_DAYS * 24 * 60 * 60 * 1000;
 
   // ==========================================================
-  // 30-DAYS VALIDITY & SILENT PASSWORD ENGINE
+  // 30-DAYS VALIDITY ENGINE (ADMIN HAS LIFETIME ACCESS)
   // ==========================================================
   function getActivationExpiryTime() {
     let firstLoginTime = localStorage.getItem('system_first_login_date');
@@ -1439,46 +1440,23 @@
     const expTime = getActivationExpiryTime();
     const remainingMs = expTime - Date.now();
     const daysRemaining = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
-
-    if (daysRemaining <= 0) {
-      return 0;
-    }
-    return daysRemaining;
+    return daysRemaining > 0 ? daysRemaining : 0;
   }
 
   function getStoredPassword() {
-    const remaining = checkAndHandleExpiry();
-    if (remaining === 0) {
-      return EXPIRED_PASS;
-    }
     return localStorage.getItem('system_auth_pwd') || INITIAL_PASS;
   }
 
   function updateValidityDisplay() {
     const badge = document.getElementById('validityCounterBadge');
-    const remainingDays = checkAndHandleExpiry();
-
-    if (remainingDays > 0) {
-      badge.innerHTML = `⏳ Account Validity: <strong style="color:#fbbf24;">${remainingDays} Days Left</strong> (of 30 Days)`;
-      if (remainingDays <= 5) {
-        badge.style.borderColor = '#ef4444';
-        badge.style.color = '#f87171';
-        badge.style.background = 'rgba(239, 68, 68, 0.15)';
-      } else {
-        badge.style.borderColor = '#10b981';
-        badge.style.color = '#34d399';
-        badge.style.background = 'rgba(16, 185, 129, 0.15)';
-      }
-    } else {
-      badge.innerHTML = `⏳ Account Validity: <strong style="color:#ef4444;">Expired (0 Days Left)</strong>`;
-      badge.style.borderColor = '#ef4444';
-      badge.style.color = '#f87171';
-      badge.style.background = 'rgba(239, 68, 68, 0.15)';
-    }
+    badge.innerHTML = `⏳ Admin Account: <strong style="color:#34d399;">Lifetime Access (No Expiry)</strong>`;
+    badge.style.borderColor = '#10b981';
+    badge.style.color = '#34d399';
+    badge.style.background = 'rgba(16, 185, 129, 0.15)';
   }
 
   // ==========================================================
-  // DISTRIBUTOR MANAGEMENT (GOOGLE SHEET SYNCED)
+  // DISTRIBUTOR MANAGEMENT (GOOGLE SHEET SYNCED WITH 30 DAYS TIMELINE)
   // ==========================================================
   async function addNewDistributor() {
     const name = document.getElementById('newDistName').value.trim();
@@ -1508,19 +1486,22 @@
       return;
     }
 
+    const assignedTimestamp = Date.now();
+    const distExpiryTime = assignedTimestamp + THIRTY_MS;
+
     const newDistData = {
       id: Date.now(),
       name: name,
       email: email,
       pass: pass,
-      assignedDate: new Date().toLocaleDateString('en-IN'),
-      validityText: "Lifetime Access",
+      assignedTimestamp: assignedTimestamp,
+      expiryTime: distExpiryTime,
       adminMessage: ""
     };
 
     let success = await addDistributorCloud(newDistData);
     if (success) {
-      msg.innerText = "✅ डिस्ट्रीब्यूटर Google Sheet पर हमेशा के लिए जोड़ दिया गया है!";
+      msg.innerText = "✅ डिस्ट्रीब्यूटर Google Sheet पर 30 दिन की वैधता के साथ जोड़ दिया गया है!";
       msg.style.color = "#34d399";
       msg.style.display = "block";
 
@@ -1548,13 +1529,28 @@
       return;
     }
 
+    const now = Date.now();
+
     dists.forEach((d) => {
+      const expiry = d.expiryTime || (Number(d.assignedTimestamp || now) + THIRTY_MS);
+      const remainingMs = expiry - now;
+      const daysLeft = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
+      
+      let timelineText = "";
+      let textColor = "#34d399";
+      if (daysLeft > 0) {
+        timelineText = `${daysLeft} Days Left`;
+      } else {
+        timelineText = `Expired (0 Days)`;
+        textColor = "#f87171";
+      }
+
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><strong>${d.name || ''}</strong></td>
         <td>${d.email || ''}</td>
         <td><code style="background:#000; padding:3px 6px; border-radius:4px; color:#38bdf8;">${d.pass || ''}</code></td>
-        <td style="color: #34d399; font-weight:600;">♾️ Lifetime (Google Sheet)</td>
+        <td style="color: ${textColor}; font-weight:600;">⏳ ${timelineText}</td>
         <td>
           <button class="history-delete-btn" onclick="removeDistributor('${d.id}')">🗑️ Delete</button>
           <button class="history-msg-btn" onclick="openAdminMsgModal('${d.email}')">💬 Message</button>
@@ -1770,7 +1766,7 @@
     const confP = confirmPassInput.value.trim();
     const currentActivePass = getStoredPassword().trim();
 
-    if (oldP !== currentActivePass && oldP !== INITIAL_PASS && oldP !== EXPIRED_PASS) {
+    if (oldP !== currentActivePass && oldP !== INITIAL_PASS) {
       pwdStatusMsg.innerText = "❌ पुराना पासवर्ड गलत है!";
       pwdStatusMsg.style.color = "#ef4444";
       pwdStatusMsg.style.display = "block";
@@ -1812,25 +1808,25 @@
     let isAdmin = false;
     let loggedInDistributor = null;
 
-    // 1. Check Admin with 30 Days Expiry Enforcement
+    // 1. Check Admin (Lifetime Access)
     if (inputEmail === ADMIN_EMAIL.toLowerCase() && inputPass === adminActivePass) {
-      const remainingDays = checkAndHandleExpiry();
-      if (remainingDays > 0) {
-        isAuthorized = true;
-        isAdmin = true;
-      } else {
-        errorMsg.innerText = "⚠️ 30 दिनों की वैधता (Validity) समाप्त हो चुकी है!";
-        errorMsg.style.display = 'block';
-        return;
-      }
+      isAuthorized = true;
+      isAdmin = true;
     } else {
-      // 2. Check Google Sheet Distributors (Lifetime)
+      // 2. Check Google Sheet Distributors with 30 Days Expiry Enforcement
       let dists = await getDistributorsListCloud();
       let foundUser = dists.find(d => String(d.email).toLowerCase() === inputEmail && String(d.pass) === inputPass);
       if (foundUser) {
-        isAuthorized = true;
-        isAdmin = false;
-        loggedInDistributor = foundUser;
+        const distExpiry = foundUser.expiryTime || (Number(foundUser.assignedTimestamp || Date.now()) + THIRTY_MS);
+        if (Date.now() <= distExpiry) {
+          isAuthorized = true;
+          isAdmin = false;
+          loggedInDistributor = foundUser;
+        } else {
+          errorMsg.innerText = "⚠️ इस डिस्ट्रीब्यूटर की 30 दिनों की वैधता समाप्त हो चुकी है!";
+          errorMsg.style.display = 'block';
+          return;
+        }
       }
     }
 
@@ -1858,7 +1854,10 @@
           document.getElementById('distributorNoticeBanner').style.display = 'none';
         }
         
-        document.getElementById('validityCounterBadge').innerHTML = `👤 ${loggedInDistributor.name} | ⏳ Validity: <strong style="color:#34d399;">Lifetime Access</strong>`;
+        const now = Date.now();
+        const distExpiry = loggedInDistributor.expiryTime || (Number(loggedInDistributor.assignedTimestamp || now) + THIRTY_MS);
+        const distDays = Math.ceil((distExpiry - now) / (24 * 60 * 60 * 1000));
+        document.getElementById('validityCounterBadge').innerHTML = `👤 ${loggedInDistributor.name} | ⏳ Validity: <strong style="color:#fbbf24;">${distDays} Days Left</strong>`;
       }
 
       initAllCanvases();
