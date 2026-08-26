@@ -1,9 +1,8 @@
-<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ID CARD PRINT & CONVERTER PORTAL</title>
+  <title>ID CARD PRINT & CONVERTER PORTAL (LIFETIME CLOUD SYNC)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -1243,14 +1242,14 @@
       </div>
     </div>
 
-    <!-- TAB 10: HISTORY (WITH DELETE OPTION) -->
+    <!-- TAB 10: HISTORY (WITH GOOGLE SHEET CLOUD SYNC & MANUAL DELETE) -->
     <div id="tab-history" class="tab-content">
-      <div class="badge">Persistent Storage • Retained Until Cleared</div>
-      <h1>Print & Download History</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">आपके द्वारा डाउनलोड की गई सभी फाइल्स का रिकॉर्ड सुरक्षित है। आप यहाँ से किसी भी रिकॉर्ड को डिलीट भी कर सकते हैं।</p>
+      <div class="badge">Google Sheet Cloud Storage • Retained Until Manually Deleted</div>
+      <h1>Print & Download History (Cloud Synced)</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">आपके द्वारा डाउनलोड की गई सभी फाइल्स का रिकॉर्ड सीधे गूगल शीट पर सुरक्षित है। आप यहाँ से कभी भी किसी रिकॉर्ड को डिलीट कर सकते हैं।</p>
 
       <div style="text-align: right; margin-bottom: 10px;">
-        <button onclick="clearAllHistoryDB()" class="action-btn btn-reset" style="padding: 6px 14px; font-size: 11px;">🗑️ Clear Entire History Now</button>
+        <button onclick="clearAllHistoryCloud()" class="action-btn btn-reset" style="padding: 6px 14px; font-size: 11px;">🗑️ Clear Entire History (Cloud)</button>
       </div>
 
       <div class="history-table-container">
@@ -1265,7 +1264,7 @@
           </thead>
           <tbody id="historyTableBody">
             <tr>
-              <td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">कोई प्रिंट रिकॉर्ड नहीं मिला।</td>
+              <td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">गूगल शीट से हिस्ट्री लोड हो रही है...</td>
             </tr>
           </tbody>
         </table>
@@ -1359,13 +1358,12 @@
 
   async function getDistributorsListCloud() {
     try {
-      const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=get`);
+      const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getDistributors`);
       const data = await response.json();
       return Array.isArray(data) ? data : [];
     } catch(err) {
       console.error("Google Sheet fetch error:", err);
-      let local = localStorage.getItem('fallback_distributors_list');
-      return local ? JSON.parse(local) : [];
+      return [];
     }
   }
 
@@ -1375,7 +1373,7 @@
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "add", data: distData })
+        body: JSON.stringify({ action: "addDistributor", data: distData })
       });
       return true;
     } catch(err) {
@@ -1390,7 +1388,7 @@
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "delete", id: distId })
+        body: JSON.stringify({ action: "deleteDistributor", id: distId })
       });
       return true;
     } catch(err) {
@@ -1405,12 +1403,68 @@
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "message", email: email, message: message })
+        body: JSON.stringify({ action: "messageDistributor", email: email, message: message })
       });
       return true;
     } catch(err) {
       console.error("Google Sheet message error:", err);
       return false;
+    }
+  }
+
+  async function getHistoryListCloud() {
+    try {
+      const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getHistory`);
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
+    } catch(err) {
+      console.error("History fetch error:", err);
+      return [];
+    }
+  }
+
+  async function addHistoryCloud(histData) {
+    try {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "addHistory", data: histData })
+      });
+      return true;
+    } catch(err) {
+      console.error("History add error:", err);
+      return false;
+    }
+  }
+
+  async function deleteHistoryCloud(histId) {
+    try {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "deleteHistory", id: histId })
+      });
+      return true;
+    } catch(err) {
+      console.error("History delete error:", err);
+      return false;
+    }
+  }
+
+  async function clearAllHistoryCloud() {
+    if (!confirm('क्या आप गूगल शीट से सभी इतिहास रिकॉर्ड्स हमेशा के लिए मिटाना चाहते हैं?')) return;
+    try {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "clearHistory" })
+      });
+      setTimeout(() => renderHistoryTable(), 1500);
+    } catch(err) {
+      alert("हिस्ट्री डिलीट करने में समस्या आई!");
     }
   }
 
@@ -1423,25 +1477,6 @@
   const EXPIRED_PASS = "Harshal@6195";
   const THIRTY_DAYS = 30;
   const THIRTY_MS = THIRTY_DAYS * 24 * 60 * 60 * 1000;
-
-  // ==========================================================
-  // 30-DAYS VALIDITY ENGINE (ADMIN HAS LIFETIME ACCESS)
-  // ==========================================================
-  function getActivationExpiryTime() {
-    let firstLoginTime = localStorage.getItem('system_first_login_date');
-    if (!firstLoginTime) {
-      firstLoginTime = Date.now().toString();
-      localStorage.setItem('system_first_login_date', firstLoginTime);
-    }
-    return parseInt(firstLoginTime, 10) + THIRTY_MS;
-  }
-
-  function checkAndHandleExpiry() {
-    const expTime = getActivationExpiryTime();
-    const remainingMs = expTime - Date.now();
-    const daysRemaining = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
-    return daysRemaining > 0 ? daysRemaining : 0;
-  }
 
   function getStoredPassword() {
     return localStorage.getItem('system_auth_pwd') || INITIAL_PASS;
@@ -1456,7 +1491,7 @@
   }
 
   // ==========================================================
-  // DISTRIBUTOR MANAGEMENT (GOOGLE SHEET SYNCED WITH 30 DAYS TIMELINE)
+  // DISTRIBUTOR MANAGEMENT (GOOGLE SHEET SYNCED)
   // ==========================================================
   async function addNewDistributor() {
     const name = document.getElementById('newDistName').value.trim();
@@ -1532,7 +1567,7 @@
     const now = Date.now();
 
     dists.forEach((d) => {
-      const expiry = d.expiryTime || (Number(d.assignedTimestamp || now) + THIRTY_MS);
+      const expiry = Number(d.expiryTime || (Number(d.assignedTimestamp || now) + THIRTY_MS));
       const remainingMs = expiry - now;
       const daysLeft = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
       
@@ -1591,116 +1626,48 @@
   }
 
   // ==========================================================
-  // INDEXEDDB HISTORY STORAGE ENGINE
+  // GOOGLE SHEET HISTORY STORAGE ENGINE
   // ==========================================================
-  const DB_NAME = 'PrintPortalPersistentDB';
-  const DB_STORE = 'print_records';
-
-  function openHistoryDB() {
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.open(DB_NAME, 1);
-      request.onupgradeneeded = function(e) {
-        const db = e.target.result;
-        if (!db.objectStoreNames.contains(DB_STORE)) {
-          db.createObjectStore(DB_STORE, { keyPath: 'id', autoIncrement: true });
-        }
-      };
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-  }
-
   async function saveToHistory(featureName, fileName, blobOrDataUrl, fileType) {
-    try {
-      const db = await openHistoryDB();
-      const tx = db.transaction(DB_STORE, 'readwrite');
-      const store = tx.objectStore(DB_STORE);
-      
-      const record = {
-        feature: featureName,
-        fileName: fileName,
-        data: blobOrDataUrl,
-        fileType: fileType,
-        timestamp: Date.now(),
-        dateFormatted: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
-      };
-
-      store.add(record);
-    } catch(err) {
-      console.error("Storage error:", err);
-    }
+    const record = {
+      id: Date.now(),
+      feature: featureName,
+      fileName: fileName,
+      dateFormatted: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+    };
+    await addHistoryCloud(record);
   }
 
   async function renderHistoryTable() {
-    try {
-      const db = await openHistoryDB();
-      const tx = db.transaction(DB_STORE, 'readonly');
-      const store = tx.objectStore(DB_STORE);
-      const request = store.getAll();
+    const tbody = document.getElementById('historyTableBody');
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:15px;">गूगल शीट से हिस्ट्री लोड हो रही है...</td></tr>`;
 
-      request.onsuccess = function() {
-        const records = request.result || [];
-        const tbody = document.getElementById('historyTableBody');
-        tbody.innerHTML = '';
+    let records = await getHistoryListCloud();
+    tbody.innerHTML = '';
 
-        if (!records.length) {
-          tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">कोई प्रिंट रिकॉर्ड नहीं मिला।</td></tr>`;
-          return;
-        }
+    if (!records.length) {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">कोई प्रिंट रिकॉर्ड नहीं मिला।</td></tr>`;
+      return;
+    }
 
-        records.reverse().forEach(rec => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td><strong style="color:var(--accent-blue);">${rec.feature}</strong></td>
-            <td>${rec.fileName}</td>
-            <td style="color:#94a3b8; font-size:11px;">${rec.dateFormatted}</td>
-            <td>
-              <button class="history-download-btn" onclick="reDownloadHistoryFile(${rec.id})">📥 Download</button>
-              <button class="history-delete-btn" onclick="deleteHistoryRecord(${rec.id})" style="margin-left: 5px;">🗑️ Delete</button>
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
-      };
-    } catch(err) {}
+    records.reverse().forEach(rec => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong style="color:var(--accent-blue);">${rec.feature || ''}</strong></td>
+        <td>${rec.fileName || ''}</td>
+        <td style="color:#94a3b8; font-size:11px;">${rec.dateFormatted || ''}</td>
+        <td>
+          <button class="history-delete-btn" onclick="removeHistoryRecord('${rec.id}')">🗑️ Delete</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
   }
 
-  async function reDownloadHistoryFile(recordId) {
-    const db = await openHistoryDB();
-    const tx = db.transaction(DB_STORE, 'readonly');
-    const store = tx.objectStore(DB_STORE);
-    const request = store.get(recordId);
-
-    request.onsuccess = function() {
-      const rec = request.result;
-      if (!rec) return;
-
-      const link = document.createElement('a');
-      if (typeof rec.data === 'string') {
-        link.href = rec.data;
-      } else {
-        link.href = URL.createObjectURL(rec.data);
-      }
-      link.download = rec.fileName;
-      link.click();
-    };
-  }
-
-  async function deleteHistoryRecord(recordId) {
+  async function removeHistoryRecord(id) {
     if (!confirm('क्या आप इस रिकॉर्ड को हटाना चाहते हैं?')) return;
-    const db = await openHistoryDB();
-    const tx = db.transaction(DB_STORE, 'readwrite');
-    const store = tx.objectStore(DB_STORE);
-    store.delete(recordId);
-    tx.oncomplete = () => renderHistoryTable();
-  }
-
-  async function clearAllHistoryDB() {
-    if (!confirm('क्या आप सभी इतिहास रिकॉर्ड्स हमेशा के लिए मिटाना चाहते हैं?')) return;
-    const db = await openHistoryDB();
-    const tx = db.transaction(DB_STORE, 'readwrite');
-    tx.objectStore(DB_STORE).clear();
-    tx.oncomplete = () => renderHistoryTable();
+    await deleteHistoryCloud(id);
+    setTimeout(() => renderHistoryTable(), 1500);
   }
 
   function switchTab(tabId) {
@@ -1766,7 +1733,7 @@
     const confP = confirmPassInput.value.trim();
     const currentActivePass = getStoredPassword().trim();
 
-    if (oldP !== currentActivePass && oldP !== INITIAL_PASS) {
+    if (oldP !== currentActivePass && oldP !== INITIAL_PASS && oldP !== EXPIRED_PASS) {
       pwdStatusMsg.innerText = "❌ पुराना पासवर्ड गलत है!";
       pwdStatusMsg.style.color = "#ef4444";
       pwdStatusMsg.style.display = "block";
@@ -1817,7 +1784,7 @@
       let dists = await getDistributorsListCloud();
       let foundUser = dists.find(d => String(d.email).toLowerCase() === inputEmail && String(d.pass) === inputPass);
       if (foundUser) {
-        const distExpiry = foundUser.expiryTime || (Number(foundUser.assignedTimestamp || Date.now()) + THIRTY_MS);
+        const distExpiry = Number(foundUser.expiryTime || (Number(foundUser.assignedTimestamp || Date.now()) + THIRTY_MS));
         if (Date.now() <= distExpiry) {
           isAuthorized = true;
           isAdmin = false;
@@ -1855,7 +1822,7 @@
         }
         
         const now = Date.now();
-        const distExpiry = loggedInDistributor.expiryTime || (Number(loggedInDistributor.assignedTimestamp || now) + THIRTY_MS);
+        const distExpiry = Number(loggedInDistributor.expiryTime || (Number(loggedInDistributor.assignedTimestamp || now) + THIRTY_MS));
         const distDays = Math.ceil((distExpiry - now) / (24 * 60 * 60 * 1000));
         document.getElementById('validityCounterBadge').innerHTML = `👤 ${loggedInDistributor.name} | ⏳ Validity: <strong style="color:#fbbf24;">${distDays} Days Left</strong>`;
       }
