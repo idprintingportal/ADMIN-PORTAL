@@ -8,6 +8,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   
+  <!-- Firebase SDK (Firestore Cloud Database) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
   <!-- PDF.js Standalone -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   
@@ -27,7 +31,7 @@
   <style>
     :root {
       --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
-      --card-bg: rgba(30, 41, 59, 0.85);
+      --card-bg: rgba(30, 41, 59, 0.88);
       --accent-blue: #38bdf8;
       --accent-purple: #818cf8;
       --btn-add: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
@@ -51,21 +55,97 @@
     }
 
     .portal-main-heading {
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 800;
       letter-spacing: 1.5px;
       text-transform: uppercase;
       background: linear-gradient(135deg, #38bdf8 0%, #a855f7 50%, #f43f5e 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
       text-align: center;
+    }
+
+    /* Running Ticker Notification Bar */
+    .ticker-container {
+      width: 100%;
+      max-width: 550px;
+      overflow: hidden;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 8px;
+      padding: 8px 0;
+      margin-bottom: 15px;
+      white-space: nowrap;
+    }
+
+    .ticker-text {
+      display: inline-block;
+      padding-left: 100%;
+      animation: tickerAnimation 18s linear infinite;
+      color: #38bdf8;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    @keyframes tickerAnimation {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-100%, 0, 0); }
+    }
+
+    /* Advertisement Image Slider / Grid */
+    .ad-slider-box {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 15px;
+      max-width: 550px;
+      width: 100%;
+    }
+
+    .ad-slide-img {
+      width: calc(33.333% - 7px);
+      height: 95px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      transition: transform 0.3s;
+    }
+    .ad-slide-img:hover { transform: scale(1.05); }
+
+    /* Services Info Box */
+    .services-info-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px 16px;
+      max-width: 550px;
+      width: 100%;
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    .services-info-card h4 {
+      font-size: 13px;
+      color: var(--accent-blue);
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .services-info-card ul {
+      font-size: 11px;
+      color: var(--text-muted);
+      padding-left: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
     }
 
     .top-reg-nav {
       display: flex;
       gap: 12px;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       flex-wrap: wrap;
       justify-content: center;
     }
@@ -74,8 +154,8 @@
       background: rgba(56, 189, 248, 0.15);
       border: 1px solid rgba(56, 189, 248, 0.4);
       color: var(--accent-blue);
-      padding: 10px 22px;
-      font-size: 13px;
+      padding: 8px 18px;
+      font-size: 12px;
       font-weight: 600;
       border-radius: 20px;
       cursor: pointer;
@@ -91,11 +171,11 @@
       background: var(--card-bg);
       backdrop-filter: blur(20px);
       border: 1px solid var(--border-color);
-      padding: 35px 30px;
+      padding: 25px 25px;
       border-radius: 20px;
       box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
       width: 100%;
-      max-width: 400px;
+      max-width: 550px;
       text-align: center;
     }
 
@@ -110,7 +190,7 @@
       color: var(--accent-blue);
       border: 1px solid rgba(56, 189, 248, 0.3);
       border-radius: 20px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .slot-counter-badge {
@@ -127,33 +207,33 @@
 
     .login-input {
       width: 100%;
-      padding: 13px 16px;
-      margin-bottom: 15px;
+      padding: 11px 15px;
+      margin-bottom: 12px;
       background: rgba(15, 23, 42, 0.9);
       border: 1px solid rgba(56, 189, 248, 0.3);
       border-radius: 10px;
       color: #fff;
-      font-size: 14px;
+      font-size: 13px;
       outline: none;
     }
 
     .login-btn {
       width: 100%;
-      padding: 13px;
+      padding: 12px;
       background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
       color: #fff;
       font-weight: 600;
       border: none;
       border-radius: 10px;
       cursor: pointer;
-      font-size: 15px;
+      font-size: 14px;
       transition: 0.3s;
     }
 
     .auth-link {
       display: inline-block;
-      margin-top: 15px;
-      font-size: 13px;
+      margin-top: 12px;
+      font-size: 12px;
       color: var(--accent-blue);
       cursor: pointer;
       text-decoration: underline;
@@ -161,8 +241,8 @@
 
     .error-msg {
       color: #ef4444;
-      font-size: 13px;
-      margin-top: 12px;
+      font-size: 12px;
+      margin-top: 10px;
       display: none;
     }
 
@@ -284,7 +364,6 @@
       margin-bottom: 6px; 
     }
     
-    /* Responsive Canvas Fix to prevent overflow/frame breaking */
     canvas { 
       max-width: 100% !important; 
       height: auto !important; 
@@ -650,16 +729,45 @@
   </a>
 </div>
 
-<!-- 1. Login Screen -->
+<!-- 1. Login Screen with Running Ticker, Ad Images & Services Info -->
 <div id="loginScreen" class="auth-box">
+  
+  <!-- Running Ticker Notification -->
+  <div class="ticker-container">
+    <div class="ticker-text">
+      🚀 Smart & Reliable Print Portal — Fast Operations, Simple Workflow & Daily Business Use! | 📌 Essential Document & Photo Printing Services in One Place!
+    </div>
+  </div>
+
+  <!-- Advertisement Images -->
+  <div class="ad-slider-box">
+    <img src="data:image/jpeg;base64,..." alt="Ad 1" class="ad-slide-img" title="Photo Print Service" id="adImg1">
+    <img src="data:image/jpeg;base64,..." alt="Ad 2" class="ad-slide-img" title="Passport Sheet Service" id="adImg2">
+    <img src="data:image/jpeg;base64,..." alt="Ad 3" class="ad-slide-img" title="Govt ID Card Print Service" id="adImg3">
+  </div>
+
+  <!-- Portal Services Info List -->
+  <div class="services-info-card">
+    <h4>⚡ उपलब्ध मुख्य सर्विसेज (Our Services):</h4>
+    <ul>
+      <li>🔹 5-Cards ID Print</li>
+      <li>🔹 Passport Photos</li>
+      <li>🔹 Name & Date Passport</li>
+      <li>🔹 4×6 Photo Sheets</li>
+      <li>🔹 PDF Arranger / Merge</li>
+      <li>🔹 Image & PDF Resizer</li>
+      <li>🔹 PDF to JPG / Compressor</li>
+    </ul>
+  </div>
+
   <div class="badge">Protected Access</div>
-  <h2 style="font-size: 22px; margin-bottom: 6px;">Sign In</h2>
-  <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Card & Photo Generator Portal</p>
+  <h2 style="font-size: 20px; margin-bottom: 6px;">Sign In</h2>
+  <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 15px;">Card & Photo Generator Portal</p>
 
   <input type="email" id="loginEmail" class="login-input" placeholder="ईमेल आईडी दर्ज करें" value="oneplus777000@gmail.com">
   <input type="password" id="loginPass" class="login-input" placeholder="पासवर्ड दर्ज करें">
   <button id="authBtn" class="login-btn">लॉगिन करें</button>
-  <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड!</div>
+  <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड, या क्लाउड डेटाबेस से कनेक्ट नहीं हो पा रहा!</div>
   
   <div>
     <span id="goToChangePwd" class="auth-link">🔑 Change Password?</span>
@@ -1170,8 +1278,8 @@
     <!-- TAB 11: ADMIN PANEL -->
     <div id="tab-admin" class="tab-content">
       <div class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">Master Administrator Panel</div>
-      <h1 style="color: #fbbf24;">Distributor Management</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। जब तक एडमिन आईडी असाइन नहीं करता, कोई बाहर से लॉगिन नहीं कर पाएगा।</p>
+      <h1 style="color: #fbbf24;">Distributor Management (Cloud Synced)</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। डेटा क्लाउड पर हमेशा के लिए सुरक्षित है जब तक आप डिलीट नहीं करते।</p>
 
       <div class="control-panel" style="max-width: 500px; text-align: left; margin-bottom: 25px;">
         <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 12px;">➕ Add New Distributor</h3>
@@ -1188,12 +1296,12 @@
             <label style="font-size: 11px; color: var(--text-muted); display:block; margin-bottom:4px;">Assign Password:</label>
             <input type="text" id="newDistPass" class="text-field-input" style="max-width:100%;" placeholder="SecurePass123">
           </div>
-          <button onclick="addNewDistributor()" class="action-btn btn-add" style="margin-top: 5px;">🚀 Assign ID & Password</button>
+          <button onclick="addNewDistributor()" class="action-btn btn-add" style="margin-top: 5px;">🚀 Assign ID & Password (Cloud)</button>
           <div id="distMsg" style="font-size: 12px; font-weight: 500; display:none; margin-top:5px;"></div>
         </div>
       </div>
 
-      <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 10px; text-align: left; max-width: 850px; margin-left: auto; margin-right: auto;">Assigned Distributors (Lifetime Access unless deleted by Admin)</h3>
+      <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 10px; text-align: left; max-width: 850px; margin-left: auto; margin-right: auto;">Cloud Assigned Distributors</h3>
       <div class="history-table-container" style="max-width: 850px; margin-left: auto; margin-right: auto;">
         <table class="history-table">
           <thead>
@@ -1207,7 +1315,7 @@
           </thead>
           <tbody id="distributorTableBody">
             <tr>
-              <td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर असाइन नहीं किया गया है।</td>
+              <td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">क्लाउड से डिस्ट्रीब्यूटर लोड हो रहे हैं...</td>
             </tr>
           </tbody>
         </table>
@@ -1247,6 +1355,23 @@
 </div>
 
 <script>
+  // ==========================================================
+  // FIREBASE CLOUD DATABASE CONFIGURATION
+  // ==========================================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyD-DemoKeyForPortal998877",
+    authDomain: "idcard-print-portal.firebaseapp.com",
+    projectId: "idcard-print-portal",
+    storageBucket: "idcard-print-portal.appspot.com",
+    messagingSenderId: "123456789012",
+    appId: "1:123456789012:web:abcdef123456"
+  };
+
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  const db = firebase.firestore();
+
   if (typeof pdfjsLib !== 'undefined') {
     pdfjsLib.GlobalWorkerOptions.workerSrc = '';
   }
@@ -1312,19 +1437,23 @@
   }
 
   // ==========================================================
-  // DISTRIBUTOR / ACCOUNT MANAGEMENT (ADMIN PANEL WITH TIMELINE)
+  // CLOUD FIRESTORE DISTRIBUTOR MANAGEMENT (PERSISTENT ON REFRESH)
   // ==========================================================
-  function getDistributorsList() {
-    let list = localStorage.getItem('portal_distributors_list');
-    if (!list) return [];
-    try { return JSON.parse(list); } catch(e) { return []; }
+  async function getDistributorsListCloud() {
+    try {
+      const snapshot = await db.collection("distributors").get();
+      let list = [];
+      snapshot.forEach(doc => {
+        list.push({ docId: doc.id, ...doc.data() });
+      });
+      return list;
+    } catch(err) {
+      console.error("Cloud fetch error:", err);
+      return [];
+    }
   }
 
-  function saveDistributorsList(arr) {
-    localStorage.setItem('portal_distributors_list', JSON.stringify(arr));
-  }
-
-  function addNewDistributor() {
+  async function addNewDistributor() {
     const name = document.getElementById('newDistName').value.trim();
     const email = document.getElementById('newDistEmail').value.trim().toLowerCase();
     const pass = document.getElementById('newDistPass').value.trim();
@@ -1344,47 +1473,55 @@
       return;
     }
 
-    let dists = getDistributorsList();
-    if (dists.some(d => d.email === email)) {
-      msg.innerText = "⚠️ यह ईमेल आईडी पहले से असाइन की जा चुकी है!";
+    try {
+      let currentList = await getDistributorsListCloud();
+      if (currentList.some(d => d.email === email)) {
+        msg.innerText = "⚠️ यह ईमेल आईडी पहले से क्लाउड पर मौजूद है!";
+        msg.style.color = "#ef4444";
+        msg.style.display = "block";
+        return;
+      }
+
+      const assignedTimestamp = Date.now();
+      const distExpiryTime = assignedTimestamp + THIRTY_MS;
+
+      const newDistData = {
+        id: Date.now(),
+        name,
+        email,
+        pass,
+        assignedTimestamp: assignedTimestamp,
+        expiryTime: distExpiryTime,
+        adminMessage: ''
+      };
+
+      await db.collection("distributors").add(newDistData);
+
+      msg.innerText = "✅ डिस्ट्रीब्यूटर क्लाउड पर सफलतापूर्वक जोड़ दिया गया है!";
+      msg.style.color = "#34d399";
+      msg.style.display = "block";
+
+      document.getElementById('newDistName').value = '';
+      document.getElementById('newDistEmail').value = '';
+      document.getElementById('newDistPass').value = '';
+
+      renderDistributorsTable();
+    } catch(err) {
+      msg.innerText = "⚠️ क्लाउड सेव एरर: नेटवर्क चेक करें!";
       msg.style.color = "#ef4444";
       msg.style.display = "block";
-      return;
     }
-
-    const assignedTimestamp = Date.now();
-    const distExpiryTime = assignedTimestamp + THIRTY_MS;
-
-    dists.push({ 
-      id: Date.now(), 
-      name, 
-      email, 
-      pass, 
-      assignedTimestamp: assignedTimestamp,
-      expiryTime: distExpiryTime,
-      adminMessage: ''
-    });
-
-    saveDistributorsList(dists);
-
-    msg.innerText = "✅ डिस्ट्रीब्यूटर आईडी सफलतापूर्वक असाइन कर दी गई है!";
-    msg.style.color = "#34d399";
-    msg.style.display = "block";
-
-    document.getElementById('newDistName').value = '';
-    document.getElementById('newDistEmail').value = '';
-    document.getElementById('newDistPass').value = '';
-
-    renderDistributorsTable();
   }
 
-  function renderDistributorsTable() {
+  async function renderDistributorsTable() {
     const tbody = document.getElementById('distributorTableBody');
-    let dists = getDistributorsList();
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">क्लाउड से डेटा सिंक हो रहा है...</td></tr>`;
+
+    let dists = await getDistributorsListCloud();
     tbody.innerHTML = '';
 
     if (!dists.length) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर असाइन नहीं किया गया है।</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर क्लाउड पर नहीं मिला।</td></tr>`;
       return;
     }
 
@@ -1410,7 +1547,7 @@
         <td><code style="background:#000; padding:3px 6px; border-radius:4px; color:#38bdf8;">${d.pass}</code></td>
         <td style="color: ${textColor}; font-weight:600;">⏳ ${timelineText}</td>
         <td>
-          <button class="history-delete-btn" onclick="deleteDistributor(${d.id})">🗑️ Delete</button>
+          <button class="history-delete-btn" onclick="deleteDistributorCloud('${d.docId || ''}', ${d.id})">🗑️ Delete</button>
           <button class="history-msg-btn" onclick="openAdminMsgModal('${d.email}')">💬 Message</button>
         </td>
       `;
@@ -1418,12 +1555,19 @@
     });
   }
 
-  function deleteDistributor(id) {
-    if (!confirm('क्या आप इस डिस्ट्रीब्यूटर का एक्सेस हमेशा के लिए हटाना चाहते हैं?')) return;
-    let dists = getDistributorsList();
-    dists = dists.filter(d => d.id !== id);
-    saveDistributorsList(dists);
-    renderDistributorsTable();
+  async function deleteDistributorCloud(docId, fallbackId) {
+    if (!confirm('क्या आप इस डिस्ट्रीब्यूटर को क्लाउड से हमेशा के लिए हटाना चाहते हैं?')) return;
+    try {
+      if (docId) {
+        await db.collection("distributors").doc(docId).delete();
+      } else {
+        const snapshot = await db.collection("distributors").where("id", "==", fallbackId).get();
+        snapshot.forEach(doc => doc.ref.delete());
+      }
+      renderDistributorsTable();
+    } catch(err) {
+      alert("डिलीट करने में समस्या आई!");
+    }
   }
 
   function openAdminMsgModal(email) {
@@ -1436,7 +1580,7 @@
     document.getElementById('adminMsgModal').style.display = 'none';
   }
 
-  function saveAdminMessage() {
+  async function saveAdminMessage() {
     const email = document.getElementById('targetDistEmail').value;
     const msgText = document.getElementById('adminTypedMsg').value.trim();
     if (!msgText) {
@@ -1444,14 +1588,20 @@
       return;
     }
 
-    let dists = getDistributorsList();
-    let dist = dists.find(d => d.email === email);
-    if (dist) {
-      dist.adminMessage = msgText;
-      saveDistributorsList(dists);
-      alert('✅ मैसेज सफलतापूर्वक सेव हो गया है!');
-      closeAdminMsgModal();
-      renderDistributorsTable();
+    try {
+      const snapshot = await db.collection("distributors").where("email", "==", email).get();
+      if (!snapshot.empty) {
+        snapshot.forEach(async (doc) => {
+          await doc.ref.update({ adminMessage: msgText });
+        });
+        alert('✅ मैसेज क्लाउड पर सफलतापूर्वक भेज दिया गया है!');
+        closeAdminMsgModal();
+        renderDistributorsTable();
+      } else {
+        alert('डिस्ट्रीब्यूटर क्लाउड पर नहीं मिला!');
+      }
+    } catch(err) {
+      alert("मैसेज भेजने में त्रुटि हुई!");
     }
   }
 
@@ -1664,7 +1814,7 @@
     }, 1200);
   });
 
-  function handleLogin() {
+  async function handleLogin() {
     const inputEmail = loginEmail.value.trim().toLowerCase();
     const inputPass = loginPass.value.trim();
     const adminActivePass = getStoredPassword().trim();
@@ -1678,8 +1828,8 @@
       isAuthorized = true;
       isAdmin = true;
     } else {
-      // 2. Check Assigned Distributors
-      let dists = getDistributorsList();
+      // 2. Check Cloud Distributors
+      let dists = await getDistributorsListCloud();
       let foundUser = dists.find(d => d.email.toLowerCase() === inputEmail && d.pass === inputPass);
       if (foundUser) {
         const distExpTime = foundUser.expiryTime || (foundUser.assignedTimestamp + THIRTY_MS);
@@ -1730,7 +1880,7 @@
         errorMsg.style.display = 'block';
       }
     } else {
-      errorMsg.innerText = "⚠️ गलत ईमेल आईडी या पासवर्ड, या एडमिन द्वारा आईडी असाइन नहीं की गई है / एक्सपायर हो चुकी है!";
+      errorMsg.innerText = "⚠️ गलत ईमेल आईडी या पासवर्ड, या क्लाउड पर आईडी असाइन नहीं की गई है / एक्सपायर हो चुकी है!";
       errorMsg.style.display = 'block';
     }
   }
@@ -2894,7 +3044,7 @@
   });
 
   // ==========================================================
-  // TAB 8: PDF TO HIGH-DPI JPG (MANUAL & BUTTON DPI)
+  // TAB 8: PDF TO HIGH-DPI JPG CONVERTER
   // ==========================================================
   let pdfToJpgDoc = null;
   let activeDpiValue = 300;
@@ -2983,7 +3133,7 @@
   });
 
   // ==========================================================
-  // TAB 9: INTERACTIVE PDF COMPRESSOR
+  // TAB 9: PDF COMPRESSOR
   // ==========================================================
   let compressOriginalFile = null;
   let compressPdfDoc = null;
