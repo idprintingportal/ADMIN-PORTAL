@@ -1452,7 +1452,7 @@
 
   async function getDistributorsListCloud() {
     try {
-      const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getDistributors`);
+      const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getDistributors`, { cache: "no-store" });
       const data = await response.json();
       return Array.isArray(data) ? data : [];
     } catch(err) {
@@ -1912,7 +1912,7 @@
       isAuthorized = true;
       isAdmin = true;
     } else {
-      // 2. Check Google Sheet Distributors with 30 Days Expiry & Status Enforcement
+      // 2. Fetch fresh list from cloud without cache
       let dists = await getDistributorsListCloud();
       let foundUser = dists.find(d => String(d.email).trim().toLowerCase() === inputEmail);
       
@@ -1923,6 +1923,7 @@
           return;
         }
 
+        // STRICT CHECK FOR STOPPED STATUS
         const distStatus = (foundUser.status !== undefined && foundUser.status !== null && String(foundUser.status).trim() !== "") ? String(foundUser.status).trim() : "Active";
         if (distStatus === "Stopped") {
           errorMsg.innerText = "⚠️ आपकी सर्विस एडमिन द्वारा रोक दी गई है। कृपया पोर्टल चालू करवाने के लिए भुगतान करें!";
