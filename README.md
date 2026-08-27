@@ -1765,7 +1765,9 @@
       }
 
       const currentStatus = (d.status !== undefined && d.status !== null && String(d.status).trim() !== "") ? String(d.status).trim() : "Active";
-      const hasScreenshot = (d.distScreenshot && String(d.distScreenshot).trim() !== "");
+      // Fixed screenshot check for both 'distScreenshot' and object property cases
+      const screenshotVal = d.distScreenshot || d.districtscreenshot || d.screenshot;
+      const hasScreenshot = (screenshotVal && String(screenshotVal).trim() !== "");
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -1776,7 +1778,7 @@
         <td>
           <button class="history-delete-btn" onclick="removeDistributor('${d.id}')">🗑️ Delete</button>
           <button class="history-msg-btn" onclick="openAdminMsgModal('${d.email}')">💬 Message</button>
-          ${hasScreenshot ? `<button class="history-view-ss-btn" onclick="viewDistributorScreenshot('${encodeURIComponent(d.distScreenshot)}')">👁️ View Screenshot</button>` : ''}
+          ${hasScreenshot ? `<button class="history-view-ss-btn" onclick="viewDistributorScreenshot('${encodeURIComponent(screenshotVal)}')">👁️ View Screenshot</button>` : ''}
           <button class="btn-status-stop" onclick="toggleDistributorStatus('${d.email}', 'Stopped')">🛑 Stop</button>
           <button class="btn-status-start" onclick="toggleDistributorStatus('${d.email}', 'Active')">▶️ Start</button>
         </td>
@@ -1842,7 +1844,7 @@
     setTimeout(() => renderDistributorsTable(), 1500);
   }
 
-  // Distributor Screenshot Upload Function
+  // Distributor Screenshot Upload Function (Fixed Email & Payload Capture)
   async function uploadDistributorScreenshot() {
     const fileInput = document.getElementById('distScreenshotInput');
     const statusDiv = document.getElementById('screenshotUploadStatus');
@@ -1860,8 +1862,15 @@
     const reader = new FileReader();
     reader.onload = async function(e) {
       const base64Img = e.target.result;
-      const loggedEmail = loginEmail.value.trim().toLowerCase();
+      // Fetching the currently logged-in distributor email accurately from session or input field fallback
+      const loggedEmail = (document.getElementById('loginEmail').value || "").trim().toLowerCase();
       
+      if (!loggedEmail) {
+        statusDiv.innerText = '⚠️ Error: Login email not found!';
+        statusDiv.style.color = '#ef4444';
+        return;
+      }
+
       let success = await uploadScreenshotCloud(loggedEmail, base64Img);
       if (success) {
         statusDiv.innerText = '✅ Screenshot sent to admin successfully!';
