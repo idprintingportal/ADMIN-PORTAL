@@ -822,7 +822,7 @@
   </div>
 </div>
 
-<!-- 2. Change Password Screen (With Email Identification) -->
+<!-- 2. Change Password Screen -->
 <div id="changePwdScreen" class="auth-box" style="display:none;">
   <div class="badge">Security Settings</div>
   <h2 style="font-size: 20px; margin-bottom: 6px; color: var(--accent-blue);">🔑 Change Password</h2>
@@ -866,9 +866,12 @@
       <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
     </div>
 
-    <!-- Distributor Notification Banner (Appears if Admin sent a message) -->
+    <!-- Distributor Notification Banner & Banner Image (Appears if Admin sent a message/image) -->
     <div id="distributorNoticeBanner" style="display:none; background: rgba(245, 158, 11, 0.2); border: 1px solid #fbbf24; color: #fef08a; padding: 12px 18px; border-radius: 12px; margin-bottom: 15px; font-size: 13px; text-align: left;">
       <strong>📢 Admin Notification:</strong> <span id="distributorNoticeText"></span>
+      <div id="distributorNoticeImgBox" style="margin-top: 8px; display:none;">
+        <img id="distributorNoticeImg" src="" style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);" alt="Notice Image">
+      </div>
     </div>
 
     <!-- TAB 1: 5 CARDS SYSTEM -->
@@ -1400,14 +1403,20 @@
   </div>
 </div>
 
-<!-- Admin Message Modal -->
+<!-- Admin Message & Image Modal (Updated with Image Upload Option) -->
 <div id="adminMsgModal">
-  <div class="auth-box" style="max-width:400px; text-align:left;">
-    <h3 style="color: var(--accent-blue); margin-bottom: 10px; font-size: 18px;">💬 Send Message to Distributor</h3>
-    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">यह मैसेज इस डिस्ट्रीब्यूटर के पोर्टल पर लॉगिन करते ही दिखेगा।</p>
+  <div class="auth-box" style="max-width:420px; text-align:left;">
+    <h3 style="color: var(--accent-blue); margin-bottom: 10px; font-size: 18px;">💬 Send Message & Image to Distributor</h3>
+    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">यह मैसेज और इमेज केवल इस डिस्ट्रीब्यूटर को उसके पोर्टल पर दिखेगी।</p>
     <input type="hidden" id="targetDistEmail">
-    <textarea id="adminTypedMsg" class="login-input" style="height: 90px; resize:none;" placeholder="यहाँ अपना मैसेज टाइप करें..."></textarea>
-    <div style="display: flex; gap: 10px;">
+    
+    <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">✍️ Message / Notice:</label>
+    <textarea id="adminTypedMsg" class="login-input" style="height: 75px; resize:none;" placeholder="यहाँ अपना मैसेज टाइप करें..."></textarea>
+    
+    <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">🖼️ Attach Image / Banner (Optional):</label>
+    <input type="file" id="adminNoticeImgInput" accept="image/*" class="login-input" style="padding: 7px; font-size: 11px;">
+    
+    <div style="display: flex; gap: 10px; margin-top: 10px;">
       <button onclick="saveAdminMessage()" class="action-btn btn-download" style="flex:1;">📤 Send Message</button>
       <button onclick="closeAdminMsgModal()" class="action-btn btn-reset" style="flex:1;">रद्द करें</button>
     </div>
@@ -1492,13 +1501,13 @@
     }
   }
 
-  async function sendAdminMsgCloud(email, message) {
+  async function sendAdminMsgCloud(email, message, imageUrl) {
     try {
       await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "messageDistributor", email: email, message: message })
+        body: JSON.stringify({ action: "messageDistributor", email: email, message: message, imageUrl: imageUrl })
       });
       return true;
     } catch(err) {
@@ -1797,6 +1806,7 @@
   function openAdminMsgModal(email) {
     document.getElementById('targetDistEmail').value = email;
     document.getElementById('adminTypedMsg').value = '';
+    document.getElementById('adminNoticeImgInput').value = '';
     document.getElementById('adminMsgModal').style.display = 'flex';
   }
 
@@ -1807,13 +1817,24 @@
   async function saveAdminMessage() {
     const email = document.getElementById('targetDistEmail').value;
     const msgText = document.getElementById('adminTypedMsg').value.trim();
-    if (!msgText) {
-      alert('कृपया कुछ मैसेज टाइप करें!');
+    const imgFile = document.getElementById('adminNoticeImgInput').files[0];
+
+    if (!msgText && !imgFile) {
+      alert('कृपया कुछ मैसेज या इमेज अटैच करें!');
       return;
     }
 
-    await sendAdminMsgCloud(email, msgText);
-    alert('✅ मैसेज गूगल शीट पर सफलतापूर्वक अपडेट कर दिया गया है!');
+    let imageUrl = "";
+    if (imgFile) {
+      imageUrl = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.readAsDataURL(imgFile);
+      });
+    }
+
+    await sendAdminMsgCloud(email, msgText, imageUrl);
+    alert('✅ मैसेज और इमेज डिस्ट्रीब्यूटर को सफलतापूर्वक भेज दी गई है!');
     closeAdminMsgModal();
     setTimeout(() => renderDistributorsTable(), 1500);
   }
@@ -1878,7 +1899,7 @@
   });
 
   // ==========================================================
-  // ISOLATED CHANGE PASSWORD HANDLER (ADMIN vs DISTRIBUTOR)
+  // PERFECT ISOLATED CHANGE PASSWORD HANDLER (ADMIN vs DISTRIBUTOR)
   // ==========================================================
   saveNewPwdBtn.addEventListener('click', async () => {
     const inputEmailForPwd = pwdEmailInput.value.trim().toLowerCase();
@@ -1907,7 +1928,7 @@
       return;
     }
 
-    // STRICT ISOLATION: Check if target email is ADMIN
+    // 1. STRICT ADMIN ISOLATION
     if (inputEmailForPwd === ADMIN_EMAIL.toLowerCase()) {
       const adminActivePass = getStoredPassword().trim();
       if (oldP !== adminActivePass && oldP !== INITIAL_PASS && oldP !== EXPIRED_PASS) {
@@ -1921,7 +1942,7 @@
       pwdStatusMsg.style.color = "#34d399";
       pwdStatusMsg.style.display = "block";
     } else {
-      // Distributor Password Change (Google Sheet Cloud Synced)
+      // 2. DISTRIBUTOR PASSWORD CHANGE (CLOUD SYNCED ONLY FOR THAT EMAIL)
       pwdStatusMsg.innerText = "⏳ गूगल शीट से डेटा जाँच हो रही है...";
       pwdStatusMsg.style.color = "#fbbf24";
       pwdStatusMsg.style.display = "block";
@@ -2020,11 +2041,30 @@
         adminTabBtn.style.display = 'none';
         switchTabDirect('tab-cards');
         
-        if (loggedInDistributor && loggedInDistributor.adminMessage) {
-          document.getElementById('distributorNoticeText').innerText = loggedInDistributor.adminMessage;
-          document.getElementById('distributorNoticeBanner').style.display = 'block';
-        } else {
-          document.getElementById('distributorNoticeBanner').style.display = 'none';
+        // Show Distributor Notice (Text + Image Banner)
+        if (loggedInDistributor) {
+          let hasNotice = false;
+          const banner = document.getElementById('distributorNoticeBanner');
+          const txtSpan = document.getElementById('distributorNoticeText');
+          const imgBox = document.getElementById('distributorNoticeImgBox');
+          const imgElem = document.getElementById('distributorNoticeImg');
+
+          if (loggedInDistributor.adminMessage && String(loggedInDistributor.adminMessage).trim() !== "") {
+            txtSpan.innerText = loggedInDistributor.adminMessage;
+            hasNotice = true;
+          } else {
+            txtSpan.innerText = "";
+          }
+
+          if (loggedInDistributor.adminImage && String(loggedInDistributor.adminImage).trim() !== "") {
+            imgElem.src = loggedInDistributor.adminImage;
+            imgBox.style.display = 'block';
+            hasNotice = true;
+          } else {
+            imgBox.style.display = 'none';
+          }
+
+          banner.style.display = hasNotice ? 'block' : 'none';
         }
         
         const now = Date.now();
