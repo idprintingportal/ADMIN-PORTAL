@@ -1488,7 +1488,7 @@
   // ==========================================================
   // CLOUD API URL
   // ==========================================================
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw9z9mEnQa4fES7ZN8RDzgpoa3jtKibCvZbOgYX2qlCaxWw6M8uChbFQ14-3ZioWvLk/exec";
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSHIO3kv82EpzsKJSLJWS-zpEytBStF18KySjCO4xVg1yF0PMklmtbX8QEA690_aRj/exec";
 
   async function getDistributorsListCloud() {
     try {
