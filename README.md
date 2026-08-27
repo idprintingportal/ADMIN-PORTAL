@@ -822,12 +822,13 @@
   </div>
 </div>
 
-<!-- 2. Change Password Screen -->
+<!-- 2. Change Password Screen (Updated with Email input for exact identification) -->
 <div id="changePwdScreen" class="auth-box" style="display:none;">
   <div class="badge">Security Settings</div>
   <h2 style="font-size: 20px; margin-bottom: 6px; color: var(--accent-blue);">🔑 Change Password</h2>
-  <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">पुराने पासवर्ड का उपयोग करके नया पासवर्ड सेट करें</p>
+  <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">ईमेल आईडी, पुराना पासवर्ड और नया पासवर्ड दर्ज करें</p>
 
+  <input type="email" id="pwdEmailInput" class="login-input" placeholder="अपनी ईमेल आईडी दर्ज करें">
   <input type="password" id="oldPassInput" class="login-input" placeholder="पुराना पासवर्ड">
   <input type="password" id="newPassInput" class="login-input" placeholder="नया पासवर्ड">
   <input type="password" id="confirmPassInput" class="login-input" placeholder="नया पासवर्ड कन्फर्म करें">
@@ -1845,6 +1846,7 @@
 
   const goToChangePwd = document.getElementById('goToChangePwd');
   const backToLogin = document.getElementById('backToLogin');
+  const pwdEmailInput = document.getElementById('pwdEmailInput');
   const oldPassInput = document.getElementById('oldPassInput');
   const newPassInput = document.getElementById('newPassInput');
   const confirmPassInput = document.getElementById('confirmPassInput');
@@ -1862,6 +1864,7 @@
   goToChangePwd.addEventListener('click', () => {
     loginScreen.style.display = 'none';
     changePwdScreen.style.display = 'block';
+    pwdEmailInput.value = '';
     oldPassInput.value = '';
     newPassInput.value = '';
     confirmPassInput.value = '';
@@ -1875,12 +1878,20 @@
   });
 
   // ==========================================================
-  // CLOUD & LOCAL PASSWORD CHANGE HANDLER (ADMIN + DISTRIBUTOR)
+  // UPDATED CHANGE PASSWORD HANDLER WITH EMAIL IDENTIFICATION
   // ==========================================================
   saveNewPwdBtn.addEventListener('click', async () => {
+    const inputEmailForPwd = pwdEmailInput.value.trim().toLowerCase();
     const oldP = oldPassInput.value.trim();
     const newP = newPassInput.value.trim();
     const confP = confirmPassInput.value.trim();
+
+    if (!inputEmailForPwd || !oldP || !newP || !confP) {
+      pwdStatusMsg.innerText = "⚠️ कृपया सभी फ़ील्ड (ईमेल और पासवर्ड) भरें!";
+      pwdStatusMsg.style.color = "#ef4444";
+      pwdStatusMsg.style.display = "block";
+      return;
+    }
 
     if (newP.length < 4) {
       pwdStatusMsg.innerText = "❌ नया पासवर्ड कम से कम 4 अक्षरों का होना चाहिए!";
@@ -1896,11 +1907,9 @@
       return;
     }
 
-    const typedEmailForPwd = loginEmail.value.trim().toLowerCase();
-    const adminActivePass = getStoredPassword().trim();
-
-    // Check if changing Admin Password
-    if (typedEmailForPwd === ADMIN_EMAIL.toLowerCase()) {
+    // Check if Admin
+    if (inputEmailForPwd === ADMIN_EMAIL.toLowerCase()) {
+      const adminActivePass = getStoredPassword().trim();
       if (oldP !== adminActivePass && oldP !== INITIAL_PASS && oldP !== EXPIRED_PASS) {
         pwdStatusMsg.innerText = "❌ पुराना पासवर्ड गलत है!";
         pwdStatusMsg.style.color = "#ef4444";
@@ -1912,22 +1921,24 @@
       pwdStatusMsg.style.color = "#34d399";
       pwdStatusMsg.style.display = "block";
     } else {
-      // Distributor Password Change (Cloud Synced)
+      // Distributor Password Change (Google Sheet Cloud Synced)
+      pwdStatusMsg.innerText = "⏳ गूगल शीट से डेटा जाँच हो रही है...";
+      pwdStatusMsg.style.color = "#fbbf24";
+      pwdStatusMsg.style.display = "block";
+
       let dists = await getDistributorsListCloud();
-      let foundDist = dists.find(d => String(d.email).trim().toLowerCase() === typedEmailForPwd);
+      let foundDist = dists.find(d => String(d.email).trim().toLowerCase() === inputEmailForPwd);
 
       if (!foundDist || String(foundDist.pass).trim() !== oldP) {
-        pwdStatusMsg.innerText = "❌ पुराना पासवर्ड गलत है!";
+        pwdStatusMsg.innerText = "❌ गलत ईमेल आईडी या पुराना पासवर्ड!";
         pwdStatusMsg.style.color = "#ef4444";
         pwdStatusMsg.style.display = "block";
         return;
       }
 
       pwdStatusMsg.innerText = "⏳ गूगल शीट पर पासवर्ड अपडेट हो रहा है...";
-      pwdStatusMsg.style.color = "#fbbf24";
-      pwdStatusMsg.style.display = "block";
-
-      let success = await updateDistributorPasswordCloud(typedEmailForPwd, newP);
+      let success = await updateDistributorPasswordCloud(inputEmailForPwd, newP);
+      
       if (success) {
         pwdStatusMsg.innerText = "✅ डिस्ट्रीब्यूटर पासवर्ड सफलतापूर्वक बदल गया!";
         pwdStatusMsg.style.color = "#34d399";
@@ -1940,7 +1951,6 @@
     setTimeout(() => {
       changePwdScreen.style.display = 'none';
       loginScreen.style.display = 'block';
-      loginPass.value = '';
     }, 1500);
   });
 
