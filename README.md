@@ -866,7 +866,7 @@
       <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
     </div>
 
-    <!-- Distributor Notification Banner & Banner Image (Appears if Admin sent a message/image) -->
+    <!-- Distributor Notification Banner (Appears if Admin sent a message or image) -->
     <div id="distributorNoticeBanner" style="display:none; background: rgba(245, 158, 11, 0.2); border: 1px solid #fbbf24; color: #fef08a; padding: 12px 18px; border-radius: 12px; margin-bottom: 15px; font-size: 13px; text-align: left;">
       <strong>📢 Admin Notification:</strong> <span id="distributorNoticeText"></span>
       <div id="distributorNoticeImgBox" style="margin-top: 8px; display:none;">
@@ -1403,7 +1403,7 @@
   </div>
 </div>
 
-<!-- Admin Message & Image Modal (Updated with Image Upload Option) -->
+<!-- Admin Message & Image Modal -->
 <div id="adminMsgModal">
   <div class="auth-box" style="max-width:420px; text-align:left;">
     <h3 style="color: var(--accent-blue); margin-bottom: 10px; font-size: 18px;">💬 Send Message & Image to Distributor</h3>
@@ -1458,7 +1458,7 @@
   // ==========================================================
   // GOOGLE SHEET APPS SCRIPT WEB APP API URL (DISTRIBUTORS CLOUD)
   // ==========================================================
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw5K7ZPkCV5IzifJvWvGA8VHsoxbTbv8cz-h9zFCGRnrLP8VO2cr5zlYxUbmq147eA/exec";
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2ql8v54id_JuIoRNZlar3wkt0BmxlpPVMMVAZYmnNW0-jAmE9I11sS5atFZ3rkOLQ/exec";
 
   async function getDistributorsListCloud() {
     try {
