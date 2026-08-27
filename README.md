@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
@@ -771,7 +772,7 @@
     <ul>
       <li>🔹 5-Cards ID Print (A4)</li>
       <li>🔹 Passport Photos (35×45mm)</li>
-      <li>🔹 Multi-Unique Passports (2,4,6,8, Custom)</li>
+      <li>🔹 Multi-Unique Passports (1 to 5 Photos)</li>
       <li>🔹 4×6 Photo Sheets</li>
       <li>🔹 PDF Arranger & Merger</li>
       <li>🔹 Custom Image Resizer</li>
@@ -892,32 +893,35 @@
       </div>
     </div>
 
-    <!-- TAB 2: PASSPORT SIZE PHOTOS (CUSTOM BUTTONS & MANUAL QTY) -->
+    <!-- TAB 2: PASSPORT SIZE PHOTOS (CUSTOM QTY & MULTI-UNIQUE PHOTOS) -->
     <div id="tab-passport" class="tab-content">
-      <div class="badge">Standard 35mm × 45mm • Custom Qty & Manual Type</div>
+      <div class="badge">Standard 35mm × 45mm • Custom Qty & Multi-Photo Buttons</div>
       <h1>Passport Photo Generator</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">फ़ोटो अपलोड करें, नीचे दिए गए शॉर्टकट बटन (2, 4, 6, 8) से या मैन्युअल संख्या टाइप करके शीट तैयार करें।</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">एक से पाँच अलग-अलग फ़ोटो प्रिंट करने के लिए नीचे दिए गए बटन्स का उपयोग करें:</p>
 
-      <div class="upload-section">
-        <label class="upload-box" for="passportInput" style="max-width: 380px;">
-          <strong style="display:block; font-size:14px; margin-bottom:4px;">📁 Passport Photo Upload</strong>
-          <div id="passportFileName" style="font-size: 12px; color: var(--text-muted);">फ़ोटो चुनें व क्रॉप करें</div>
-        </label>
-        <input type="file" id="passportInput" accept="image/*">
-      </div>
-
-      <div class="preview-container">
-        <div class="preview-box">
-          <h4>Cropped Passport Photo</h4>
-          <canvas id="passportCanvas" width="413" height="531" style="width: 140px;"></canvas>
+      <!-- Multi-Photo Buttons Selector -->
+      <div class="control-panel" style="margin-bottom: 12px;">
+        <span style="font-size: 13px; font-weight:600; color: var(--accent-blue);">📂 Select Unique Photos Mode:</span>
+        <div class="qty-select-group" style="margin-top: 8px;">
+          <button class="quick-qty-btn" id="btnCount1" onclick="setPassportCount(1)" style="background:#0284c7;">1 Photo</button>
+          <button class="quick-qty-btn" id="btnCount2" onclick="setPassportCount(2)">2 Photos</button>
+          <button class="quick-qty-btn" id="btnCount3" onclick="setPassportCount(3)">3 Photos</button>
+          <button class="quick-qty-btn" id="btnCount4" onclick="setPassportCount(4)">4 Photos</button>
+          <button class="quick-qty-btn" id="btnCount5" onclick="setPassportCount(5)">5 Photos</button>
         </div>
       </div>
 
-      <div class="control-panel">
-        <span style="font-size: 14px; font-weight:600; color: var(--accent-blue);">🔢 फ़ोटो की संख्या (Quantity) चुनें या टाइप करें:</span>
+      <!-- Dynamic Upload Blocks Container -->
+      <div id="passportUploadBlocksContainer" style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px;">
+        <!-- Dynamically rendered via JS -->
+      </div>
+
+      <!-- Standard Qty Selection & Manual Type -->
+      <div class="control-panel" style="margin-bottom: 12px;">
+        <span style="font-size: 13px; font-weight:600; color: var(--accent-blue);">🔢 A4/4x6 शीट पर कुल फ़ोटो संख्या (Quantity) चुनें या टाइप करें:</span>
         <div class="qty-select-group">
           <input type="number" id="passportQtyInput" class="qty-input" value="8" min="1" max="50">
-          <button class="quick-qty-btn" onclick="setPassportQty(2)" style="background:#0284c7;">2</button>
+          <button class="quick-qty-btn" onclick="setPassportQty(2)">2</button>
           <button class="quick-qty-btn" onclick="setPassportQty(4)">4</button>
           <button class="quick-qty-btn" onclick="setPassportQty(6)">6</button>
           <button class="quick-qty-btn" onclick="setPassportQty(8)">8</button>
@@ -928,14 +932,14 @@
       </div>
 
       <div class="btn-group">
-        <button id="make4x6CustomPassportBtn" class="action-btn btn-add" disabled>🖼️ Generate on 4×6 Sheet</button>
-        <button id="makeA4CustomPassportBtn" class="action-btn btn-add" disabled>📄 Generate on A4 Sheet</button>
+        <button id="make4x6CustomPassportBtn" class="action-btn btn-add">🖼️ Generate on 4×6 Sheet</button>
+        <button id="makeA4CustomPassportBtn" class="action-btn btn-add">📄 Generate on A4 Sheet</button>
       </div>
 
-      <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+      <div style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 15px;">
         <h3 id="passportSheetTitle" style="font-size: 15px; color: var(--accent-blue); margin-bottom: 6px;">Passport Sheet Preview</h3>
         <div style="display:inline-block; max-width: 250px; background:#fff; border-radius:6px; overflow:hidden; border: 1px solid #475569;">
-          <canvas id="passportSheetCanvas" width="1800" height="1200" style="width: 100%; display:block;"></canvas>
+          <canvas id="passportSheetCanvas" width="2480" height="3508" style="width: 100%; display:block;"></canvas>
         </div>
         <div class="btn-group">
           <button id="downloadPassportPdfBtn" class="action-btn btn-download" disabled>📥 Download Passport Sheet PDF</button>
