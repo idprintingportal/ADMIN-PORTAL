@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
@@ -822,13 +821,13 @@
   </div>
 </div>
 
-<!-- 2. Change Password Screen (Updated with Email input for exact identification) -->
+<!-- 2. Change Password Screen (Updated with Email field outside) -->
 <div id="changePwdScreen" class="auth-box" style="display:none;">
   <div class="badge">Security Settings</div>
   <h2 style="font-size: 20px; margin-bottom: 6px; color: var(--accent-blue);">🔑 Change Password</h2>
-  <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">ईमेल आईडी, पुराना पासवर्ड और नया पासवर्ड दर्ज करें</p>
+  <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">ईमेल आईडी, पुराना और नया पासवर्ड दर्ज करें</p>
 
-  <input type="email" id="pwdEmailInput" class="login-input" placeholder="अपनी ईमेल आईडी दर्ज करें">
+  <input type="email" id="pwdEmailInput" class="login-input" placeholder="ईमेल आईडी (लॉगिन ईमेल)">
   <input type="password" id="oldPassInput" class="login-input" placeholder="पुराना पासवर्ड">
   <input type="password" id="newPassInput" class="login-input" placeholder="नया पासवर्ड">
   <input type="password" id="confirmPassInput" class="login-input" placeholder="नया पासवर्ड कन्फर्म करें">
@@ -1449,7 +1448,7 @@
   // ==========================================================
   // GOOGLE SHEET APPS SCRIPT WEB APP API URL (DISTRIBUTORS CLOUD)
   // ==========================================================
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz475xBflkddUqCH0rmF16I29hOqNj9CwU4ST35YVNlmB1mVDe_sawWmnodML_y6alL/exec";
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw5K7ZPkCV5IzifJvWvGA8VHsoxbTbv8cz-h9zFCGRnrLP8VO2cr5zlYxUbmq147eA/exec";
 
   async function getDistributorsListCloud() {
     try {
