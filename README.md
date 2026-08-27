@@ -1765,7 +1765,7 @@
       }
 
       const currentStatus = (d.status !== undefined && d.status !== null && String(d.status).trim() !== "") ? String(d.status).trim() : "Active";
-      const screenshotVal = d.distcreenshot || d.distscreenshot || d.dist_screenshot || d.screenshot || d.districtsx;
+      const screenshotVal = d.distscreenshot || d.distcreenshot || d.dist_screenshot || d.screenshot;
       const hasScreenshot = (screenshotVal && String(screenshotVal).trim() !== "");
 
       const tr = document.createElement('tr');
@@ -1843,7 +1843,6 @@
     setTimeout(() => renderDistributorsTable(), 1500);
   }
 
-  // Active Logged-in Distributor Email storage
   let currentLoggedDistributorEmail = "";
 
   // Distributor Screenshot Upload Function
@@ -1864,15 +1863,15 @@
     const reader = new FileReader();
     reader.onload = async function(e) {
       const base64Img = e.target.result;
-      const targetEmail = currentLoggedDistributorEmail || (loginEmail.value || "").trim().toLowerCase();
+      const loggedEmail = currentLoggedDistributorEmail || (loginEmail.value || "").trim().toLowerCase();
       
-      if (!targetEmail) {
+      if (!loggedEmail) {
         statusDiv.innerText = '⚠️ Error: Login email not found!';
         statusDiv.style.color = '#ef4444';
         return;
       }
 
-      let success = await uploadScreenshotCloud(targetEmail, base64Img);
+      let success = await uploadScreenshotCloud(loggedEmail, base64Img);
       if (success) {
         statusDiv.innerText = '✅ Screenshot sent to admin successfully!';
         statusDiv.style.color = '#34d399';
@@ -2087,7 +2086,7 @@
         adminTabBtn.style.display = 'none';
         switchTabDirect('tab-cards');
         
-        // Save current logged in distributor email for screenshot replies
+        // Save current logged in distributor email safely
         currentLoggedDistributorEmail = inputEmail;
 
         // Show Distributor Notice (Text + Image Banner)
