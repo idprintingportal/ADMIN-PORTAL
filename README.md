@@ -1486,7 +1486,7 @@
   }
 
   // ==========================================================
-  // CLOUD API URL
+  // CLOUD API URL (POST JSON Method)
   // ==========================================================
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxKhLuav8z6u84kw84Z0Y47RuSzz7m8KQg7LVIumJrU7ep3XcayYvZlzQ3etukNYG7K/exec";
 
@@ -1501,89 +1501,43 @@
     }
   }
 
-  async function addDistributorCloud(distData) {
+  async function callCloudPost(payload) {
     try {
-      let params = new URLSearchParams({
-        action: "addDistributor",
-        id: distData.id,
-        name: distData.name,
-        email: distData.email,
-        pass: distData.pass,
-        assignedTimestamp: distData.assignedTimestamp,
-        expiryTime: distData.expiryTime
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
       });
-      await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
       return true;
     } catch(err) {
+      console.error("Post error:", err);
       return false;
     }
+  }
+
+  async function addDistributorCloud(distData) {
+    return await callCloudPost({ action: "addDistributor", data: distData });
   }
 
   async function deleteDistributorCloud(distId) {
-    try {
-      let params = new URLSearchParams({ action: "deleteDistributor", id: distId });
-      await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
-      return true;
-    } catch(err) {
-      return false;
-    }
+    return await callCloudPost({ action: "deleteDistributor", id: distId });
   }
 
   async function sendAdminMsgCloud(email, message, imageUrl) {
-    try {
-      let params = new URLSearchParams({
-        action: "messageDistributor",
-        email: email,
-        message: message,
-        imageUrl: imageUrl
-      });
-      await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
-      return true;
-    } catch(err) {
-      return false;
-    }
+    return await callCloudPost({ action: "messageDistributor", email: email, message: message, imageUrl: imageUrl });
   }
 
   async function uploadScreenshotCloud(email, screenshotUrl) {
-    try {
-      let params = new URLSearchParams({
-        action: "uploadScreenshot",
-        email: email,
-        screenshotUrl: screenshotUrl
-      });
-      await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
-      return true;
-    } catch(err) {
-      return false;
-    }
+    return await callCloudPost({ action: "uploadScreenshot", email: email, screenshotUrl: screenshotUrl });
   }
 
   async function toggleDistributorStatusCloud(email, newStatus) {
-    try {
-      let params = new URLSearchParams({
-        action: "toggleStatus",
-        email: email,
-        status: newStatus
-      });
-      await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
-      return true;
-    } catch(err) {
-      return false;
-    }
+    return await callCloudPost({ action: "toggleStatus", email: email, status: newStatus });
   }
 
   async function updateDistributorPasswordCloud(email, newPass) {
-    try {
-      let params = new URLSearchParams({
-        action: "updatePassword",
-        email: email,
-        newPass: newPass
-      });
-      await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
-      return true;
-    } catch(err) {
-      return false;
-    }
+    return await callCloudPost({ action: "updatePassword", email: email, newPass: newPass });
   }
 
   // ==========================================================
