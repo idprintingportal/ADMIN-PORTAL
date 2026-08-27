@@ -673,6 +673,35 @@
     }
     .history-msg-btn:hover { background: rgba(245, 158, 11, 0.4); }
 
+    /* Stop / Start Status Buttons */
+    .btn-status-stop {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: 0.2s;
+      margin-left: 5px;
+    }
+    .btn-status-stop:hover { background: rgba(239, 68, 68, 0.4); }
+
+    .btn-status-start {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: 0.2s;
+      margin-left: 5px;
+    }
+    .btn-status-start:hover { background: rgba(16, 185, 129, 0.4); }
+
     #cropModal {
       display: none;
       position: fixed;
@@ -770,6 +799,7 @@
     <h4>⚡ Our Printing Services (उपलब्ध मुख्य सर्विसेज):</h4>
     <ul>
       <li>🔹 5-Cards ID Print (A4)</li>
+      <li>🔹 Passport Photos (35×45mm)</li>
       <li>🔹 Multi-Unique Passports (1 to 5 Photos)</li>
       <li>🔹 4×6 Photo Sheets</li>
       <li>🔹 PDF Arranger & Merger</li>
@@ -1476,6 +1506,21 @@
     }
   }
 
+  async function toggleDistributorStatusCloud(email, newStatus) {
+    try {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "toggleStatus", email: email, status: newStatus })
+      });
+      return true;
+    } catch(err) {
+      console.error("Google Sheet status error:", err);
+      return false;
+    }
+  }
+
   // ==========================================================
   // INDEXEDDB HISTORY STORAGE ENGINE (WITH WORKING DOWNLOAD)
   // ==========================================================
@@ -1612,7 +1657,7 @@
   }
 
   // ==========================================================
-  // DISTRIBUTOR MANAGEMENT (GOOGLE SHEET SYNCED)
+  // DISTRIBUTOR MANAGEMENT (GOOGLE SHEET SYNCED WITH STOP/START)
   // ==========================================================
   async function addNewDistributor() {
     const name = document.getElementById('newDistName').value.trim();
@@ -1652,7 +1697,8 @@
       pass: pass,
       assignedTimestamp: assignedTimestamp,
       expiryTime: distExpiryTime,
-      adminMessage: ""
+      adminMessage: "",
+      status: "Active"
     };
 
     let success = await addDistributorCloud(newDistData);
@@ -1701,19 +1747,31 @@
         textColor = "#f87171";
       }
 
+      const currentStatus = d.status || "Active";
+      const statusBtnHTML = currentStatus === "Active" 
+        ? `<button class="btn-status-stop" onclick="toggleDistributorStatus('${d.email}', 'Stopped')">🛑 Stop</button>`
+        : `<button class="btn-status-start" onclick="toggleDistributorStatus('${d.email}', 'Active')">▶️ Start</button>`;
+
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><strong>${d.name || ''}</strong></td>
         <td>${d.email || ''}</td>
         <td><code style="background:#000; padding:3px 6px; border-radius:4px; color:#38bdf8;">${d.pass || ''}</code></td>
-        <td style="color: ${textColor}; font-weight:600;">⏳ ${timelineText}</td>
+        <td style="color: ${textColor}; font-weight:600;">⏳ ${timelineText} (${currentStatus})</td>
         <td>
           <button class="history-delete-btn" onclick="removeDistributor('${d.id}')">🗑️ Delete</button>
           <button class="history-msg-btn" onclick="openAdminMsgModal('${d.email}')">💬 Message</button>
+          ${statusBtnHTML}
         </td>
       `;
       tbody.appendChild(tr);
     });
+  }
+
+  async function toggleDistributorStatus(email, newStatus) {
+    if (!confirm(`क्या आप इस डिस्ट्रीब्यूटर की सर्विस को ${newStatus === 'Stopped' ? 'रोकना (Stop)' : 'चालू (Start)'} करना चाहते हैं?`)) return;
+    await toggleDistributorStatusCloud(email, newStatus);
+    setTimeout(() => renderDistributorsTable(), 1500);
   }
 
   async function removeDistributor(id) {
@@ -1856,10 +1914,15 @@
       isAuthorized = true;
       isAdmin = true;
     } else {
-      // 2. Check Google Sheet Distributors with 30 Days Expiry Enforcement
+      // 2. Check Google Sheet Distributors with 30 Days Expiry & Status Enforcement
       let dists = await getDistributorsListCloud();
       let foundUser = dists.find(d => String(d.email).toLowerCase() === inputEmail && String(d.pass) === inputPass);
       if (foundUser) {
+        if (foundUser.status && String(foundUser.status).trim() === "Stopped") {
+          errorMsg.innerText = "⚠️ एडमिन द्वारा आपकी सर्विस को रोक (Stop) दिया गया है!";
+          errorMsg.style.display = 'block';
+          return;
+        }
         const distExpiry = Number(foundUser.expiryTime || (Number(foundUser.assignedTimestamp || Date.now()) + THIRTY_MS));
         if (Date.now() <= distExpiry) {
           isAuthorized = true;
