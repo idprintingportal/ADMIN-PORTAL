@@ -1357,8 +1357,8 @@
     <!-- TAB 11: ADMIN PANEL -->
     <div id="tab-admin" class="tab-content">
       <div class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">Master Administrator Panel</div>
-      <h1 style="color: #fbbf24;">Google Sheet Cloud Distributor Management</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। डिस्ट्रीब्यूटर की वैलिडिटी 30 दिनों की होगी और डेटा गूगल शीट पर सुरक्षित रहेगा।</p>
+      <h1 style="color: #fbbf24;">Cloud Distributor Management</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। डिस्ट्रीब्यूटर की वैलिडिटी 30 दिनों की होगी और डेटा सुरक्षित रहेगा।</p>
 
       <div class="control-panel" style="max-width: 500px; text-align: left; margin-bottom: 25px;">
         <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 12px;">➕ Add New Distributor</h3>
@@ -1375,12 +1375,12 @@
             <label style="font-size: 11px; color: var(--text-muted); display:block; margin-bottom:4px;">Assign Password:</label>
             <input type="text" id="newDistPass" class="text-field-input" style="max-width:100%;" placeholder="SecurePass123">
           </div>
-          <button onclick="addNewDistributor()" class="action-btn btn-add" style="margin-top: 5px;">🚀 Assign ID & Password (Google Sheet)</button>
+          <button onclick="addNewDistributor()" class="action-btn btn-add" style="margin-top: 5px;">🚀 Assign ID & Password</button>
           <div id="distMsg" style="font-size: 12px; font-weight: 500; display:none; margin-top:5px;"></div>
         </div>
       </div>
 
-      <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 10px; text-align: left; max-width: 850px; margin-left: auto; margin-right: auto;">Google Sheet Connected Distributors (30 Days Validity)</h3>
+      <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 10px; text-align: left; max-width: 850px; margin-left: auto; margin-right: auto;">Connected Distributors List (30 Days Validity)</h3>
       <div class="history-table-container" style="max-width: 850px; margin-left: auto; margin-right: auto;">
         <table class="history-table">
           <thead>
@@ -1394,7 +1394,7 @@
           </thead>
           <tbody id="distributorTableBody">
             <tr>
-              <td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">गूगल शीट से डिस्ट्रीब्यूटर लोड हो रहे हैं...</td>
+              <td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">डेटा लोड हो रहा है...</td>
             </tr>
           </tbody>
         </table>
@@ -1430,7 +1430,9 @@
     <textarea id="adminTypedMsg" class="login-input" style="height: 75px; resize:none;" placeholder="यहाँ अपना मैसेज टाइप करें..."></textarea>
     
     <label style="font-size: 12px; color: #38bdf8; display: block; margin-bottom: 6px; font-weight: 600;">🖼️ Attach QR Code / Banner Image (Optional):</label>
-    <input type="file" id="adminNoticeImgInput" accept="image/*" class="login-input" style="padding: 9px; background: rgba(15,23,42,0.9); border: 1px solid var(--accent-blue); color: #fff; cursor: pointer; margin-bottom: 15px;">
+    <div style="background: rgba(15,23,42,0.9); border: 1px dashed var(--accent-blue); padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
+      <input type="file" id="adminNoticeImgInput" accept="image/*" style="display: block; width: 100%; color: #fff; font-size: 12px; cursor: pointer;">
+    </div>
     
     <div style="display: flex; gap: 10px;">
       <button onclick="saveAdminMessage()" class="action-btn btn-download" style="flex:1;">📤 Send Message & QR</button>
@@ -1484,7 +1486,7 @@
   }
 
   // ==========================================================
-  // GOOGLE SHEET APPS SCRIPT WEB APP API URL (DISTRIBUTORS CLOUD)
+  // CLOUD API URL
   // ==========================================================
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw9z9mEnQa4fES7ZN8RDzgpoa3jtKibCvZbOgYX2qlCaxWw6M8uChbFQ14-3ZioWvLk/exec";
 
@@ -1494,7 +1496,7 @@
       const data = await response.json();
       return Array.isArray(data) ? data : [];
     } catch(err) {
-      console.error("Google Sheet fetch error:", err);
+      console.error("Fetch error:", err);
       return [];
     }
   }
@@ -1509,7 +1511,6 @@
       });
       return true;
     } catch(err) {
-      console.error("Google Sheet add error:", err);
       return false;
     }
   }
@@ -1524,7 +1525,6 @@
       });
       return true;
     } catch(err) {
-      console.error("Google Sheet delete error:", err);
       return false;
     }
   }
@@ -1539,7 +1539,6 @@
       });
       return true;
     } catch(err) {
-      console.error("Google Sheet message error:", err);
       return false;
     }
   }
@@ -1554,7 +1553,6 @@
       });
       return true;
     } catch(err) {
-      console.error("Google Sheet screenshot error:", err);
       return false;
     }
   }
@@ -1569,7 +1567,6 @@
       });
       return true;
     } catch(err) {
-      console.error("Google Sheet status error:", err);
       return false;
     }
   }
@@ -1584,13 +1581,12 @@
       });
       return true;
     } catch(err) {
-      console.error("Google Sheet password update error:", err);
       return false;
     }
   }
 
   // ==========================================================
-  // INDEXEDDB HISTORY STORAGE ENGINE (WITH WORKING DOWNLOAD)
+  // INDEXEDDB HISTORY STORAGE ENGINE
   // ==========================================================
   const DB_NAME = 'PrintPortalPersistentDB';
   const DB_STORE = 'print_records';
@@ -1625,9 +1621,7 @@
       };
 
       store.add(record);
-    } catch(err) {
-      console.error("Storage error:", err);
-    }
+    } catch(err) {}
   }
 
   async function renderHistoryTable() {
@@ -1725,7 +1719,7 @@
   }
 
   // ==========================================================
-  // DISTRIBUTOR MANAGEMENT (GOOGLE SHEET SYNCED)
+  // DISTRIBUTOR MANAGEMENT
   // ==========================================================
   async function addNewDistributor() {
     const name = document.getElementById('newDistName').value.trim();
@@ -1749,7 +1743,7 @@
 
     let currentList = await getDistributorsListCloud();
     if (currentList.some(d => String(d.email).toLowerCase() === email)) {
-      msg.innerText = "⚠️ यह ईमेल आईडी पहले से Google Sheet पर मौजूद है!";
+      msg.innerText = "⚠️ यह ईमेल आईडी पहले से मौजूद है!";
       msg.style.color = "#ef4444";
       msg.style.display = "block";
       return;
@@ -1771,7 +1765,7 @@
 
     let success = await addDistributorCloud(newDistData);
     if (success) {
-      msg.innerText = "✅ डिस्ट्रीब्यूटर Google Sheet पर 30 दिन की वैधता के साथ जोड़ दिया गया है!";
+      msg.innerText = "✅ डिस्ट्रीब्यूटर सफलतापूर्वक जोड़ दिया गया है!";
       msg.style.color = "#34d399";
       msg.style.display = "block";
 
@@ -1781,7 +1775,7 @@
 
       setTimeout(() => renderDistributorsTable(), 1500);
     } else {
-      msg.innerText = "⚠️ सेव करने में समस्या आई, कृपया पुनः प्रयास करें!";
+      msg.innerText = "⚠️ जोड़ने में समस्या आई, पुनः प्रयास करें!";
       msg.style.color = "#ef4444";
       msg.style.display = "block";
     }
@@ -1789,13 +1783,13 @@
 
   async function renderDistributorsTable() {
     const tbody = document.getElementById('distributorTableBody');
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">गूगल शीट से डेटा सिंक हो रहा है...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">डेटा लोड हो रहा है...</td></tr>`;
 
     let dists = await getDistributorsListCloud();
     tbody.innerHTML = '';
 
     if (!dists.length) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर गूगल शीट पर नहीं मिला।</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर नहीं मिला।</td></tr>`;
       return;
     }
 
@@ -1827,7 +1821,7 @@
         <td>
           <button class="history-delete-btn" onclick="removeDistributor('${d.id}')">🗑️ Delete</button>
           <button class="history-msg-btn" onclick="openAdminMsgModal('${d.email}')">💬 Message</button>
-          ${hasScreenshot ? `<button class="history-view-ss-btn" onclick="viewDistributorScreenshot('${encodeURIComponent(d.distScreenshot)}')">👁️ View SS</button>` : ''}
+          ${hasScreenshot ? `<button class="history-view-ss-btn" onclick="viewDistributorScreenshot('${encodeURIComponent(d.distScreenshot)}')">👁️ View Screenshot</button>` : ''}
           <button class="btn-status-stop" onclick="toggleDistributorStatus('${d.email}', 'Stopped')">🛑 Stop</button>
           <button class="btn-status-start" onclick="toggleDistributorStatus('${d.email}', 'Active')">▶️ Start</button>
         </td>
@@ -1852,7 +1846,7 @@
   }
 
   async function removeDistributor(id) {
-    if (!confirm('क्या आप इस डिस्ट्रीब्यूटर को गूगल शीट से हमेशा के लिए हटाना चाहते हैं?')) return;
+    if (!confirm('क्या आप इस डिस्ट्रीब्यूटर को हटाना चाहते हैं?')) return;
     await deleteDistributorCloud(id);
     setTimeout(() => renderDistributorsTable(), 1500);
   }
@@ -1888,7 +1882,7 @@
     }
 
     await sendAdminMsgCloud(email, msgText, imageUrl);
-    alert('✅ मैसेज और QR कोड डिस्ट्रीब्यूटर को सफलतापूर्वक भेज दिया गया है!');
+    alert('✅ मैसेज और QR कोड सफलतापूर्वक भेज दिया गया है!');
     closeAdminMsgModal();
     setTimeout(() => renderDistributorsTable(), 1500);
   }
@@ -1904,7 +1898,7 @@
       return;
     }
 
-    statusDiv.innerText = '⏳ अपलोड हो रहा है...';
+    statusDiv.innerText = '⏳ Uploading screenshot...';
     statusDiv.style.color = '#fbbf24';
     statusDiv.style.display = 'block';
 
@@ -1915,11 +1909,11 @@
       
       let success = await uploadScreenshotCloud(loggedEmail, base64Img);
       if (success) {
-        statusDiv.innerText = '✅ स्क्रीनशॉट एडमिन को भेज दिया गया है!';
+        statusDiv.innerText = '✅ Screenshot sent to admin successfully!';
         statusDiv.style.color = '#34d399';
         fileInput.value = '';
       } else {
-        statusDiv.innerText = '⚠️ भेजने में त्रुटि आई!';
+        statusDiv.innerText = '⚠️ Error sending screenshot!';
         statusDiv.style.color = '#ef4444';
       }
     };
@@ -1986,7 +1980,7 @@
   });
 
   // ==========================================================
-  // PERFECT ISOLATED CHANGE PASSWORD HANDLER (ADMIN vs DISTRIBUTOR)
+  // ISOLATED CHANGE PASSWORD HANDLER WITH PROFESSIONAL MESSAGES
   // ==========================================================
   saveNewPwdBtn.addEventListener('click', async () => {
     const inputEmailForPwd = pwdEmailInput.value.trim().toLowerCase();
@@ -1995,21 +1989,21 @@
     const confP = confirmPassInput.value.trim();
 
     if (!inputEmailForPwd || !oldP || !newP || !confP) {
-      pwdStatusMsg.innerText = "⚠️ कृपया सभी फ़ील्ड (ईमेल और पासवर्ड) भरें!";
+      pwdStatusMsg.innerText = "⚠️ Please fill in all required fields!";
       pwdStatusMsg.style.color = "#ef4444";
       pwdStatusMsg.style.display = "block";
       return;
     }
 
     if (newP.length < 4) {
-      pwdStatusMsg.innerText = "❌ नया पासवर्ड कम से कम 4 अक्षरों का होना चाहिए!";
+      pwdStatusMsg.innerText = "❌ New password must be at least 4 characters long!";
       pwdStatusMsg.style.color = "#ef4444";
       pwdStatusMsg.style.display = "block";
       return;
     }
 
     if (newP !== confP) {
-      pwdStatusMsg.innerText = "❌ नया पासवर्ड और कन्फर्म पासवर्ड मैच नहीं हो रहे!";
+      pwdStatusMsg.innerText = "❌ New password and confirmation do not match!";
       pwdStatusMsg.style.color = "#ef4444";
       pwdStatusMsg.style.display = "block";
       return;
@@ -2019,18 +2013,18 @@
     if (inputEmailForPwd === ADMIN_EMAIL.toLowerCase()) {
       const adminActivePass = getStoredPassword().trim();
       if (oldP !== adminActivePass && oldP !== INITIAL_PASS && oldP !== EXPIRED_PASS) {
-        pwdStatusMsg.innerText = "❌ एडमिन का पुराना पासवर्ड गलत है!";
+        pwdStatusMsg.innerText = "❌ Invalid old password!";
         pwdStatusMsg.style.color = "#ef4444";
         pwdStatusMsg.style.display = "block";
         return;
       }
       localStorage.setItem('system_auth_pwd', newP);
-      pwdStatusMsg.innerText = "✅ एडमिन पासवर्ड बदल गया! अब नए पासवर्ड से लॉगिन करें।";
+      pwdStatusMsg.innerText = "✅ Password updated successfully! Please login with your new password.";
       pwdStatusMsg.style.color = "#34d399";
       pwdStatusMsg.style.display = "block";
     } else {
-      // 2. DISTRIBUTOR PASSWORD CHANGE (CLOUD SYNCED ONLY FOR THAT EMAIL)
-      pwdStatusMsg.innerText = "⏳ गूगल शीट से डेटा जाँच हो रही है...";
+      // 2. DISTRIBUTOR PASSWORD CHANGE WITH PROFESSIONAL MESSAGES
+      pwdStatusMsg.innerText = "⏳ Please wait, checking your details...";
       pwdStatusMsg.style.color = "#fbbf24";
       pwdStatusMsg.style.display = "block";
 
@@ -2038,20 +2032,20 @@
       let foundDist = dists.find(d => String(d.email).trim().toLowerCase() === inputEmailForPwd);
 
       if (!foundDist || String(foundDist.pass).trim() !== oldP) {
-        pwdStatusMsg.innerText = "❌ गलत ईमेल आईडी या पुराना पासवर्ड!";
+        pwdStatusMsg.innerText = "❌ Invalid email ID or old password!";
         pwdStatusMsg.style.color = "#ef4444";
         pwdStatusMsg.style.display = "block";
         return;
       }
 
-      pwdStatusMsg.innerText = "⏳ गूगल शीट पर पासवर्ड अपडेट हो रहा है...";
+      pwdStatusMsg.innerText = "⏳ Please wait, changing your password...";
       let success = await updateDistributorPasswordCloud(inputEmailForPwd, newP);
       
       if (success) {
-        pwdStatusMsg.innerText = "✅ डिस्ट्रीब्यूटर पासवर्ड सफलतापूर्वक बदल गया!";
+        pwdStatusMsg.innerText = "✅ Please wait, your password has been updated successfully!";
         pwdStatusMsg.style.color = "#34d399";
       } else {
-        pwdStatusMsg.innerText = "⚠️ पासवर्ड अपडेट करने में त्रुटि आई!";
+        pwdStatusMsg.innerText = "⚠️ Error updating password. Please try again!";
         pwdStatusMsg.style.color = "#ef4444";
       }
     }
@@ -2059,7 +2053,7 @@
     setTimeout(() => {
       changePwdScreen.style.display = 'none';
       loginScreen.style.display = 'block';
-    }, 1500);
+    }, 2000);
   });
 
   async function handleLogin() {
@@ -2076,7 +2070,7 @@
       isAuthorized = true;
       isAdmin = true;
     } else {
-      // 2. Check Google Sheet Distributors with 30 Days Expiry & Status Enforcement
+      // 2. Check Cloud Distributors with 30 Days Expiry & Status Enforcement
       let dists = await getDistributorsListCloud();
       let foundUser = dists.find(d => String(d.email).trim().toLowerCase() === inputEmail);
       
@@ -2089,7 +2083,7 @@
 
         const distStatus = (foundUser.status !== undefined && foundUser.status !== null && String(foundUser.status).trim() !== "") ? String(foundUser.status).trim() : "Active";
         if (distStatus === "Stopped") {
-          errorMsg.innerText = "⚠️ आपकी सर्विस एडमिन द्वारा रोक दी गई है। कृपया पोर्टल चालू करवाने के लिए भुगतान करें!";
+          errorMsg.innerText = "⚠️ आपकी सर्विस एडमिन द्वारा रोक दी गई है। अपनी सेवाएं बिना किसी रुकावट के अगले 30 दिनों (पूरा 1 महीना) तक लगातार चालू रखने के लिए कृपया केवल ₹36 का भुगतान करें और भुगतान का स्क्रीनशॉट हमारे WhatsApp (+91 7887575671) पर भेज दें। आपका पोर्टल 30 मिनट के भीतर पुनः चालू कर दिया जाएगा!";
           errorMsg.style.display = 'block';
           return;
         }
