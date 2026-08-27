@@ -892,7 +892,7 @@
       </div>
     </div>
 
-    <!-- TAB 2: PASSPORT SIZE PHOTOS (CUSTOM BUTTONS & MULTI-UNIQUE PHOTOS) -->
+    <!-- TAB 2: PASSPORT SIZE PHOTOS (STANDARD + MULTI-UNIQUE PHOTOS) -->
     <div id="tab-passport" class="tab-content">
       <div class="badge">Standard 35mm × 45mm • Multi-Unique Photo Generator & Custom Qty</div>
       <h1>Passport Photo Generator</h1>
@@ -2298,7 +2298,7 @@
     const maxCols = 4;
 
     let photoIndexToPrint = 0;
-    const totalSlots = 20; // 5 rows x 4 cols = 20 slots on A4
+    const totalSlots = 20;
 
     let placed = 0;
     for (let r = 0; r < 5; r++) {
