@@ -1914,7 +1914,8 @@
     } else {
       // 2. Check Google Sheet Distributors with 30 Days Expiry & Status Enforcement
       let dists = await getDistributorsListCloud();
-      let foundUser = dists.find(d => String(d.email).toLowerCase() === inputEmail && String(d.pass) === inputPass);
+      let foundUser = dists.find(d => String(d.email).trim().toLowerCase() === inputEmail && String(d.pass).trim() === inputPass);
+      
       if (foundUser) {
         const distStatus = (foundUser.status !== undefined && foundUser.status !== null && String(foundUser.status).trim() !== "") ? String(foundUser.status).trim() : "Active";
         if (distStatus === "Stopped") {
@@ -2671,7 +2672,7 @@
   });
 
   // ==========================================================
-  // TAB 5: PDF ARRANGER ENGINE (DRAG & DROP / HOLD & MOVE)
+  // TAB 5: PDF ARRANGER (DRAG & DROP / HOLD & MOVE)
   // ==========================================================
   let arrangedPdfPagesList = [];
   let draggedArrangerIdx = null;
