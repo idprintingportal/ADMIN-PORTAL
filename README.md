@@ -1419,21 +1419,23 @@
   </div>
 </div>
 
-<!-- Admin Message & Image Modal -->
+<!-- Admin Message & Image Modal (With Clear Image Box) -->
 <div id="adminMsgModal">
-  <div class="auth-box" style="max-width:420px; text-align:left;">
-    <h3 style="color: var(--accent-blue); margin-bottom: 10px; font-size: 18px;">💬 Send Message & Image to Distributor</h3>
-    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">यह मैसेज और इमेज केवल इस डिस्ट्रीब्यूटर को उसके पोर्टल पर दिखेगी।</p>
+  <div class="auth-box" style="max-width:440px; text-align:left;">
+    <h3 style="color: var(--accent-blue); margin-bottom: 10px; font-size: 18px;">💬 Send Notice & QR Code to Distributor</h3>
+    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">यह मैसेज और QR कोड केवल इस विशेष डिस्ट्रीब्यूटर को दिखेगा।</p>
     <input type="hidden" id="targetDistEmail">
     
     <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">✍️ Message / Notice:</label>
     <textarea id="adminTypedMsg" class="login-input" style="height: 75px; resize:none;" placeholder="यहाँ अपना मैसेज टाइप करें..."></textarea>
     
-    <label style="font-size: 12px; color: #38bdf8; display: block; margin-bottom: 6px; font-weight: 600;">🖼️ Attach Image / QR Code (Optional):</label>
-    <input type="file" id="adminNoticeImgInput" accept="image/*" class="login-input" style="padding: 8px; background: rgba(15,23,42,0.9); border: 1px solid var(--accent-blue); color: #fff; cursor: pointer; margin-bottom: 15px;">
+    <label style="font-size: 12px; color: #38bdf8; display: block; margin-bottom: 6px; font-weight: 600;">🖼️ Attach QR Code / Banner Image (Optional):</label>
+    <div style="background: rgba(15,23,42,0.9); border: 1px dashed var(--accent-blue); padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
+      <input type="file" id="adminNoticeImgInput" accept="image/*" style="display: block; width: 100%; color: #fff; font-size: 12px; cursor: pointer;">
+    </div>
     
     <div style="display: flex; gap: 10px;">
-      <button onclick="saveAdminMessage()" class="action-btn btn-download" style="flex:1;">📤 Send Message</button>
+      <button onclick="saveAdminMessage()" class="action-btn btn-download" style="flex:1;">📤 Send Message & QR</button>
       <button onclick="closeAdminMsgModal()" class="action-btn btn-reset" style="flex:1;">रद्द करें</button>
     </div>
   </div>
@@ -1486,7 +1488,7 @@
   // ==========================================================
   // GOOGLE SHEET APPS SCRIPT WEB APP API URL (DISTRIBUTORS CLOUD)
   // ==========================================================
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzbZTTnAWxM0epJSPoxbNbFtVwAdUVfGKFK4X_jeJPCpYVUkU9VX4XjsDeQ519rxs2R/exec";
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw9z9mEnQa4fES7ZN8RDzgpoa3jtKibCvZbOgYX2qlCaxWw6M8uChbFQ14-3ZioWvLk/exec";
 
   async function getDistributorsListCloud() {
     try {
@@ -1888,7 +1890,7 @@
     }
 
     await sendAdminMsgCloud(email, msgText, imageUrl);
-    alert('✅ मैसेज और इमेज डिस्ट्रीब्यूटर को सफलतापूर्वक भेज दी गई है!');
+    alert('✅ मैसेज और QR कोड डिस्ट्रीब्यूटर को सफलतापूर्वक भेज दिया गया है!');
     closeAdminMsgModal();
     setTimeout(() => renderDistributorsTable(), 1500);
   }
