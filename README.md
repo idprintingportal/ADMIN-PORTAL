@@ -674,6 +674,20 @@
     }
     .history-msg-btn:hover { background: rgba(245, 158, 11, 0.4); }
 
+    .history-view-ss-btn {
+      background: rgba(56, 189, 248, 0.2);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: 0.2s;
+      margin-left: 5px;
+    }
+    .history-view-ss-btn:hover { background: rgba(56, 189, 248, 0.4); }
+
     /* Separate Stop and Start Buttons */
     .btn-status-stop {
       background: rgba(239, 68, 68, 0.25);
@@ -703,7 +717,7 @@
     }
     .btn-status-start:hover { background: rgba(16, 185, 129, 0.45); }
 
-    #cropModal {
+    #cropModal, #adminMsgModal, #viewScreenshotModal {
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -728,18 +742,6 @@
       max-width: 100%;
       max-height: 70vh;
       display: block;
-    }
-
-    /* Admin Message Modal Styling */
-    #adminMsgModal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.85);
-      z-index: 100000;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
     }
 
     /* Registration Modal Popup Styles */
@@ -867,11 +869,24 @@
       <button id="logoutBtn" class="logout-btn">🔒 Logout</button>
     </div>
 
-    <!-- Distributor Notification Banner (Appears if Admin sent a message or image) -->
-    <div id="distributorNoticeBanner" style="display:none; background: rgba(245, 158, 11, 0.2); border: 1px solid #fbbf24; color: #fef08a; padding: 12px 18px; border-radius: 12px; margin-bottom: 15px; font-size: 13px; text-align: left;">
-      <strong>📢 Admin Notification:</strong> <span id="distributorNoticeText"></span>
-      <div id="distributorNoticeImgBox" style="margin-top: 8px; display:none;">
-        <img id="distributorNoticeImg" src="" style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);" alt="Notice Image">
+    <!-- Distributor Notification Banner with QR/Image & Reply Payment Screenshot Option -->
+    <div id="distributorNoticeBanner" style="display:none; background: rgba(245, 158, 11, 0.2); border: 1px solid #fbbf24; color: #fef08a; padding: 14px 18px; border-radius: 12px; margin-bottom: 15px; font-size: 13px; text-align: left;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 240px;">
+          <strong>📢 Admin Notice / QR Code:</strong>
+          <div id="distributorNoticeText" style="margin-top: 4px; font-weight: 500;"></div>
+          <div id="distributorNoticeImgBox" style="margin-top: 10px; display:none;">
+            <img id="distributorNoticeImg" src="" style="max-width: 100%; max-height: 220px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3);" alt="QR / Banner">
+          </div>
+        </div>
+
+        <!-- Reply Payment Screenshot Box for Distributor -->
+        <div style="background: rgba(15,23,42,0.85); border: 1px solid rgba(56,189,248,0.4); padding: 12px; border-radius: 10px; min-width: 220px; text-align: center;">
+          <div style="font-size: 11px; color: var(--accent-blue); margin-bottom: 6px; font-weight: 600;">💳 Reply Your Payment Screenshot</div>
+          <input type="file" id="distScreenshotInput" accept="image/*" style="display:block; width:100%; background:#334155; color:#fff; padding:6px; font-size:11px; border-radius:6px; border:1px solid rgba(56,189,248,0.4); margin-bottom:8px; cursor:pointer;">
+          <button onclick="uploadDistributorScreenshot()" class="action-btn btn-download" style="padding: 6px 12px; font-size: 11px; width: 100%;">📤 Send Screenshot</button>
+          <div id="screenshotUploadStatus" style="font-size:10px; margin-top:4px; display:none;"></div>
+        </div>
       </div>
     </div>
 
@@ -1414,13 +1429,25 @@
     <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">✍️ Message / Notice:</label>
     <textarea id="adminTypedMsg" class="login-input" style="height: 75px; resize:none;" placeholder="यहाँ अपना मैसेज टाइप करें..."></textarea>
     
-    <label style="font-size: 11px; color: #38bdf8; display: block; margin-bottom: 4px; font-weight: 600;">🖼️ Attach Image / Banner (Optional):</label>
-    <input type="file" id="adminNoticeImgInput" accept="image/*" style="display:block; width:150px; background:#334155; color:#fff; padding:6px; font-size:11px; border-radius:6px; border:1px solid rgba(56,189,248,0.4); margin-bottom:12px; cursor:pointer;">
+    <label style="font-size: 12px; color: #38bdf8; display: block; margin-bottom: 6px; font-weight: 600;">🖼️ Attach Image / QR Code (Optional):</label>
+    <input type="file" id="adminNoticeImgInput" accept="image/*" class="login-input" style="padding: 8px; background: rgba(15,23,42,0.9); border: 1px solid var(--accent-blue); color: #fff; cursor: pointer; margin-bottom: 15px;">
     
     <div style="display: flex; gap: 10px;">
       <button onclick="saveAdminMessage()" class="action-btn btn-download" style="flex:1;">📤 Send Message</button>
       <button onclick="closeAdminMsgModal()" class="action-btn btn-reset" style="flex:1;">रद्द करें</button>
     </div>
+  </div>
+</div>
+
+<!-- View Distributor Screenshot Modal for Admin -->
+<div id="viewScreenshotModal">
+  <div class="auth-box" style="max-width:450px; text-align:center;">
+    <h3 style="color: var(--accent-blue); margin-bottom: 10px; font-size: 18px;">📸 Distributor Payment Screenshot</h3>
+    <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">डिस्ट्रीब्यूटर द्वारा भेजा गया भुगतान का स्क्रीनशॉट:</p>
+    <div style="background:#000; padding:10px; border-radius:8px; margin-bottom:15px; border:1px solid var(--border-color);">
+      <img id="adminViewScreenshotImg" src="" style="max-width:100%; max-height:350px; border-radius:6px; display:block; margin:0 auto;" alt="Screenshot">
+    </div>
+    <button onclick="closeViewScreenshotModal()" class="action-btn btn-reset" style="width:100%;">❌ बंद करें (Close)</button>
   </div>
 </div>
 
@@ -1459,7 +1486,7 @@
   // ==========================================================
   // GOOGLE SHEET APPS SCRIPT WEB APP API URL (DISTRIBUTORS CLOUD)
   // ==========================================================
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2ql8v54id_JuIoRNZlar3wkt0BmxlpPVMMVAZYmnNW0-jAmE9I11sS5atFZ3rkOLQ/exec";
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzbZTTnAWxM0epJSPoxbNbFtVwAdUVfGKFK4X_jeJPCpYVUkU9VX4XjsDeQ519rxs2R/exec";
 
   async function getDistributorsListCloud() {
     try {
@@ -1513,6 +1540,21 @@
       return true;
     } catch(err) {
       console.error("Google Sheet message error:", err);
+      return false;
+    }
+  }
+
+  async function uploadScreenshotCloud(email, screenshotUrl) {
+    try {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "uploadScreenshot", email: email, screenshotUrl: screenshotUrl })
+      });
+      return true;
+    } catch(err) {
+      console.error("Google Sheet screenshot error:", err);
       return false;
     }
   }
@@ -1774,6 +1816,7 @@
       }
 
       const currentStatus = (d.status !== undefined && d.status !== null && String(d.status).trim() !== "") ? String(d.status).trim() : "Active";
+      const hasScreenshot = (d.distScreenshot && String(d.distScreenshot).trim() !== "");
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -1784,12 +1827,22 @@
         <td>
           <button class="history-delete-btn" onclick="removeDistributor('${d.id}')">🗑️ Delete</button>
           <button class="history-msg-btn" onclick="openAdminMsgModal('${d.email}')">💬 Message</button>
+          ${hasScreenshot ? `<button class="history-view-ss-btn" onclick="viewDistributorScreenshot('${encodeURIComponent(d.distScreenshot)}')">👁️ View SS</button>` : ''}
           <button class="btn-status-stop" onclick="toggleDistributorStatus('${d.email}', 'Stopped')">🛑 Stop</button>
           <button class="btn-status-start" onclick="toggleDistributorStatus('${d.email}', 'Active')">▶️ Start</button>
         </td>
       `;
       tbody.appendChild(tr);
     });
+  }
+
+  function viewDistributorScreenshot(ssUrl) {
+    document.getElementById('adminViewScreenshotImg').src = decodeURIComponent(ssUrl);
+    document.getElementById('viewScreenshotModal').style.display = 'flex';
+  }
+
+  function closeViewScreenshotModal() {
+    document.getElementById('viewScreenshotModal').style.display = 'none';
   }
 
   async function toggleDistributorStatus(email, newStatus) {
@@ -1838,6 +1891,39 @@
     alert('✅ मैसेज और इमेज डिस्ट्रीब्यूटर को सफलतापूर्वक भेज दी गई है!');
     closeAdminMsgModal();
     setTimeout(() => renderDistributorsTable(), 1500);
+  }
+
+  // Distributor Screenshot Upload Function
+  async function uploadDistributorScreenshot() {
+    const fileInput = document.getElementById('distScreenshotInput');
+    const statusDiv = document.getElementById('screenshotUploadStatus');
+    const file = fileInput.files[0];
+
+    if (!file) {
+      alert('कृपया पहले पेमेंट का स्क्रीनशॉट सेलेक्ट करें!');
+      return;
+    }
+
+    statusDiv.innerText = '⏳ अपलोड हो रहा है...';
+    statusDiv.style.color = '#fbbf24';
+    statusDiv.style.display = 'block';
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      const base64Img = e.target.result;
+      const loggedEmail = loginEmail.value.trim().toLowerCase();
+      
+      let success = await uploadScreenshotCloud(loggedEmail, base64Img);
+      if (success) {
+        statusDiv.innerText = '✅ स्क्रीनशॉट एडमिन को भेज दिया गया है!';
+        statusDiv.style.color = '#34d399';
+        fileInput.value = '';
+      } else {
+        statusDiv.innerText = '⚠️ भेजने में त्रुटि आई!';
+        statusDiv.style.color = '#ef4444';
+      }
+    };
+    reader.readAsDataURL(file);
   }
 
   function switchTab(tabId) {
