@@ -674,11 +674,11 @@
     }
     .history-msg-btn:hover { background: rgba(245, 158, 11, 0.4); }
 
-    /* Stop / Start Status Buttons */
+    /* Separate Stop and Start Buttons */
     .btn-status-stop {
-      background: rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.25);
       color: #fca5a5;
-      border: 1px solid rgba(239, 68, 68, 0.4);
+      border: 1px solid rgba(239, 68, 68, 0.5);
       padding: 5px 10px;
       border-radius: 6px;
       cursor: pointer;
@@ -687,12 +687,12 @@
       transition: 0.2s;
       margin-left: 5px;
     }
-    .btn-status-stop:hover { background: rgba(239, 68, 68, 0.4); }
+    .btn-status-stop:hover { background: rgba(239, 68, 68, 0.45); }
 
     .btn-status-start {
-      background: rgba(16, 185, 129, 0.2);
+      background: rgba(16, 185, 129, 0.25);
       color: #34d399;
-      border: 1px solid rgba(16, 185, 129, 0.4);
+      border: 1px solid rgba(16, 185, 129, 0.5);
       padding: 5px 10px;
       border-radius: 6px;
       cursor: pointer;
@@ -701,7 +701,7 @@
       transition: 0.2s;
       margin-left: 5px;
     }
-    .btn-status-start:hover { background: rgba(16, 185, 129, 0.4); }
+    .btn-status-start:hover { background: rgba(16, 185, 129, 0.45); }
 
     #cropModal {
       display: none;
@@ -800,7 +800,6 @@
     <h4>⚡ Our Printing Services (उपलब्ध मुख्य सर्विसेज):</h4>
     <ul>
       <li>🔹 5-Cards ID Print (A4)</li>
-      <li>🔹 Passport Photos (35×45mm)</li>
       <li>🔹 Multi-Unique Passports (1 to 5 Photos)</li>
       <li>🔹 4×6 Photo Sheets</li>
       <li>🔹 PDF Arranger & Merger</li>
@@ -1658,7 +1657,7 @@
   }
 
   // ==========================================================
-  // DISTRIBUTOR MANAGEMENT (GOOGLE SHEET SYNCED)
+  // DISTRIBUTOR MANAGEMENT (GOOGLE SHEET SYNCED WITH SEPARATE STOP & START BUTTONS)
   // ==========================================================
   async function addNewDistributor() {
     const name = document.getElementById('newDistName').value.trim();
@@ -1749,20 +1748,18 @@
       }
 
       const currentStatus = (d.status !== undefined && d.status !== null && String(d.status).trim() !== "") ? String(d.status).trim() : "Active";
-      const statusBtnHTML = currentStatus === "Active" 
-        ? `<button class="btn-status-stop" onclick="toggleDistributorStatus('${d.email}', 'Stopped')">🛑 Stop</button>`
-        : `<button class="btn-status-start" onclick="toggleDistributorStatus('${d.email}', 'Active')">▶️ Start</button>`;
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><strong>${d.name || ''}</strong></td>
         <td>${d.email || ''}</td>
         <td><code style="background:#000; padding:3px 6px; border-radius:4px; color:#38bdf8;">${d.pass || ''}</code></td>
-        <td style="color: ${textColor}; font-weight:600;">⏳ ${timelineText} (${currentStatus})</td>
+        <td style="color: ${textColor}; font-weight:600;">⏳ ${timelineText} (<span style="color:${currentStatus === 'Active' ? '#34d399' : '#f87171'}">${currentStatus}</span>)</td>
         <td>
           <button class="history-delete-btn" onclick="removeDistributor('${d.id}')">🗑️ Delete</button>
           <button class="history-msg-btn" onclick="openAdminMsgModal('${d.email}')">💬 Message</button>
-          ${statusBtnHTML}
+          <button class="btn-status-stop" onclick="toggleDistributorStatus('${d.email}', 'Stopped')">🛑 Stop</button>
+          <button class="btn-status-start" onclick="toggleDistributorStatus('${d.email}', 'Active')">▶️ Start</button>
         </td>
       `;
       tbody.appendChild(tr);
@@ -1770,7 +1767,7 @@
   }
 
   async function toggleDistributorStatus(email, newStatus) {
-    if (!confirm(`क्या आप इस डिस्ट्रीब्यूटर की सर्विस को ${newStatus === 'Stopped' ? 'रोकना (Stop)' : 'चालू (Start)'} करना चाहते हैं?`)) return;
+    if (!confirm(`क्या आप इस डिस्ट्रीब्यूटर की सर्विस को ${newStatus === 'Stopped' ? '🛑 Stop (रोकना)' : '▶️ Start (चालू करना)'} चाहते हैं?`)) return;
     await toggleDistributorStatusCloud(email, newStatus);
     setTimeout(() => renderDistributorsTable(), 1500);
   }
