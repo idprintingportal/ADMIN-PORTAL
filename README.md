@@ -1521,6 +1521,21 @@
     }
   }
 
+  async function updateDistributorPasswordCloud(email, newPass) {
+    try {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "updatePassword", email: email, newPass: newPass })
+      });
+      return true;
+    } catch(err) {
+      console.error("Google Sheet password update error:", err);
+      return false;
+    }
+  }
+
   // ==========================================================
   // INDEXEDDB HISTORY STORAGE ENGINE (WITH WORKING DOWNLOAD)
   // ==========================================================
@@ -1859,18 +1874,13 @@
     errorMsg.style.display = 'none';
   });
 
-  saveNewPwdBtn.addEventListener('click', () => {
+  // ==========================================================
+  // CLOUD & LOCAL PASSWORD CHANGE HANDLER (ADMIN + DISTRIBUTOR)
+  // ==========================================================
+  saveNewPwdBtn.addEventListener('click', async () => {
     const oldP = oldPassInput.value.trim();
     const newP = newPassInput.value.trim();
     const confP = confirmPassInput.value.trim();
-    const currentActivePass = getStoredPassword().trim();
-
-    if (oldP !== currentActivePass && oldP !== INITIAL_PASS && oldP !== EXPIRED_PASS) {
-      pwdStatusMsg.innerText = "❌ पुराना पासवर्ड गलत है!";
-      pwdStatusMsg.style.color = "#ef4444";
-      pwdStatusMsg.style.display = "block";
-      return;
-    }
 
     if (newP.length < 4) {
       pwdStatusMsg.innerText = "❌ नया पासवर्ड कम से कम 4 अक्षरों का होना चाहिए!";
@@ -1886,16 +1896,52 @@
       return;
     }
 
-    localStorage.setItem('system_auth_pwd', newP);
-    pwdStatusMsg.innerText = "✅ पासवर्ड बदल गया! अब नए पासवर्ड से लॉगिन करें।";
-    pwdStatusMsg.style.color = "#34d399";
-    pwdStatusMsg.style.display = "block";
+    const typedEmailForPwd = loginEmail.value.trim().toLowerCase();
+    const adminActivePass = getStoredPassword().trim();
+
+    // Check if changing Admin Password
+    if (typedEmailForPwd === ADMIN_EMAIL.toLowerCase()) {
+      if (oldP !== adminActivePass && oldP !== INITIAL_PASS && oldP !== EXPIRED_PASS) {
+        pwdStatusMsg.innerText = "❌ पुराना पासवर्ड गलत है!";
+        pwdStatusMsg.style.color = "#ef4444";
+        pwdStatusMsg.style.display = "block";
+        return;
+      }
+      localStorage.setItem('system_auth_pwd', newP);
+      pwdStatusMsg.innerText = "✅ एडमिन पासवर्ड बदल गया! अब नए पासवर्ड से लॉगिन करें।";
+      pwdStatusMsg.style.color = "#34d399";
+      pwdStatusMsg.style.display = "block";
+    } else {
+      // Distributor Password Change (Cloud Synced)
+      let dists = await getDistributorsListCloud();
+      let foundDist = dists.find(d => String(d.email).trim().toLowerCase() === typedEmailForPwd);
+
+      if (!foundDist || String(foundDist.pass).trim() !== oldP) {
+        pwdStatusMsg.innerText = "❌ पुराना पासवर्ड गलत है!";
+        pwdStatusMsg.style.color = "#ef4444";
+        pwdStatusMsg.style.display = "block";
+        return;
+      }
+
+      pwdStatusMsg.innerText = "⏳ गूगल शीट पर पासवर्ड अपडेट हो रहा है...";
+      pwdStatusMsg.style.color = "#fbbf24";
+      pwdStatusMsg.style.display = "block";
+
+      let success = await updateDistributorPasswordCloud(typedEmailForPwd, newP);
+      if (success) {
+        pwdStatusMsg.innerText = "✅ डिस्ट्रीब्यूटर पासवर्ड सफलतापूर्वक बदल गया!";
+        pwdStatusMsg.style.color = "#34d399";
+      } else {
+        pwdStatusMsg.innerText = "⚠️ पासवर्ड अपडेट करने में त्रुटि आई!";
+        pwdStatusMsg.style.color = "#ef4444";
+      }
+    }
 
     setTimeout(() => {
       changePwdScreen.style.display = 'none';
       loginScreen.style.display = 'block';
       loginPass.value = '';
-    }, 1200);
+    }, 1500);
   });
 
   async function handleLogin() {
@@ -1912,7 +1958,7 @@
       isAuthorized = true;
       isAdmin = true;
     } else {
-      // 2. Fetch fresh list from cloud without cache
+      // 2. Check Google Sheet Distributors with 30 Days Expiry & Status Enforcement
       let dists = await getDistributorsListCloud();
       let foundUser = dists.find(d => String(d.email).trim().toLowerCase() === inputEmail);
       
@@ -1923,7 +1969,6 @@
           return;
         }
 
-        // STRICT CHECK FOR STOPPED STATUS
         const distStatus = (foundUser.status !== undefined && foundUser.status !== null && String(foundUser.status).trim() !== "") ? String(foundUser.status).trim() : "Active";
         if (distStatus === "Stopped") {
           errorMsg.innerText = "⚠️ आपकी सर्विस एडमिन द्वारा रोक दी गई है। कृपया पोर्टल चालू करवाने के लिए भुगतान करें!";
