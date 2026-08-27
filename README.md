@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
@@ -1447,7 +1448,7 @@
   // ==========================================================
   // GOOGLE SHEET APPS SCRIPT WEB APP API URL (DISTRIBUTORS CLOUD)
   // ==========================================================
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9i8_skogKKtu5ubqAvZmyofI0ZiD2ND3v-JHwume-gzQu4BaW1xkSgd2B3jvQG0QL/exec";
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz475xBflkddUqCH0rmF16I29hOqNj9CwU4ST35YVNlmB1mVDe_sawWmnodML_y6alL/exec";
 
   async function getDistributorsListCloud() {
     try {
