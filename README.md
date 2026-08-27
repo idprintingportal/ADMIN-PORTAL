@@ -800,6 +800,7 @@
     <h4>⚡ Our Printing Services (उपलब्ध मुख्य सर्विसेज):</h4>
     <ul>
       <li>🔹 5-Cards ID Print (A4)</li>
+      <li>🔹 Passport Photos (35×45mm)</li>
       <li>🔹 Multi-Unique Passports (1 to 5 Photos)</li>
       <li>🔹 4×6 Photo Sheets</li>
       <li>🔹 PDF Arranger & Merger</li>
@@ -1747,7 +1748,7 @@
         textColor = "#f87171";
       }
 
-      const currentStatus = d.status || "Active";
+      const currentStatus = (d.status !== undefined && d.status !== null && String(d.status).trim() !== "") ? String(d.status).trim() : "Active";
       const statusBtnHTML = currentStatus === "Active" 
         ? `<button class="btn-status-stop" onclick="toggleDistributorStatus('${d.email}', 'Stopped')">🛑 Stop</button>`
         : `<button class="btn-status-start" onclick="toggleDistributorStatus('${d.email}', 'Active')">▶️ Start</button>`;
@@ -1918,7 +1919,8 @@
       let dists = await getDistributorsListCloud();
       let foundUser = dists.find(d => String(d.email).toLowerCase() === inputEmail && String(d.pass) === inputPass);
       if (foundUser) {
-        if (foundUser.status && String(foundUser.status).trim() === "Stopped") {
+        const distStatus = (foundUser.status !== undefined && foundUser.status !== null && String(foundUser.status).trim() !== "") ? String(foundUser.status).trim() : "Active";
+        if (distStatus === "Stopped") {
           errorMsg.innerText = "⚠️ एडमिन द्वारा आपकी सर्विस को रोक (Stop) दिया गया है!";
           errorMsg.style.display = 'block';
           return;
