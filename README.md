@@ -1657,7 +1657,7 @@
   }
 
   // ==========================================================
-  // DISTRIBUTOR MANAGEMENT (GOOGLE SHEET SYNCED WITH SEPARATE STOP & START BUTTONS)
+  // DISTRIBUTOR MANAGEMENT (GOOGLE SHEET SYNCED)
   // ==========================================================
   async function addNewDistributor() {
     const name = document.getElementById('newDistName').value.trim();
@@ -1918,7 +1918,7 @@
       if (foundUser) {
         const distStatus = (foundUser.status !== undefined && foundUser.status !== null && String(foundUser.status).trim() !== "") ? String(foundUser.status).trim() : "Active";
         if (distStatus === "Stopped") {
-          errorMsg.innerText = "⚠️ एडमिन द्वारा आपकी सर्विस को रोक (Stop) दिया गया है!";
+          errorMsg.innerText = "⚠️ आपकी सर्विस एडमिन द्वारा रोक दी गई है। कृपया पोर्टल चालू करवाने के लिए भुगतान करें!";
           errorMsg.style.display = 'block';
           return;
         }
