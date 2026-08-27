@@ -675,9 +675,9 @@
     .history-msg-btn:hover { background: rgba(245, 158, 11, 0.4); }
 
     .history-view-ss-btn {
-      background: rgba(56, 189, 248, 0.2);
+      background: rgba(56, 189, 248, 0.25);
       color: #38bdf8;
-      border: 1px solid rgba(56, 189, 248, 0.4);
+      border: 1px solid rgba(56, 189, 248, 0.5);
       padding: 5px 10px;
       border-radius: 6px;
       cursor: pointer;
@@ -686,7 +686,7 @@
       transition: 0.2s;
       margin-left: 5px;
     }
-    .history-view-ss-btn:hover { background: rgba(56, 189, 248, 0.4); }
+    .history-view-ss-btn:hover { background: rgba(56, 189, 248, 0.45); }
 
     /* Separate Stop and Start Buttons */
     .btn-status-stop {
@@ -1419,7 +1419,7 @@
   </div>
 </div>
 
-<!-- Admin Message & Image Modal (With Clear Image Box) -->
+<!-- Admin Message & Image Modal -->
 <div id="adminMsgModal">
   <div class="auth-box" style="max-width:440px; text-align:left;">
     <h3 style="color: var(--accent-blue); margin-bottom: 10px; font-size: 18px;">💬 Send Notice & QR Code to Distributor</h3>
@@ -1430,9 +1430,7 @@
     <textarea id="adminTypedMsg" class="login-input" style="height: 75px; resize:none;" placeholder="यहाँ अपना मैसेज टाइप करें..."></textarea>
     
     <label style="font-size: 12px; color: #38bdf8; display: block; margin-bottom: 6px; font-weight: 600;">🖼️ Attach QR Code / Banner Image (Optional):</label>
-    <div style="background: rgba(15,23,42,0.9); border: 1px dashed var(--accent-blue); padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
-      <input type="file" id="adminNoticeImgInput" accept="image/*" style="display: block; width: 100%; color: #fff; font-size: 12px; cursor: pointer;">
-    </div>
+    <input type="file" id="adminNoticeImgInput" accept="image/*" class="login-input" style="padding: 9px; background: rgba(15,23,42,0.9); border: 1px solid var(--accent-blue); color: #fff; cursor: pointer; margin-bottom: 15px;">
     
     <div style="display: flex; gap: 10px;">
       <button onclick="saveAdminMessage()" class="action-btn btn-download" style="flex:1;">📤 Send Message & QR</button>
