@@ -770,7 +770,6 @@
     <h4>⚡ Our Printing Services (उपलब्ध मुख्य सर्विसेज):</h4>
     <ul>
       <li>🔹 5-Cards ID Print (A4)</li>
-      <li>🔹 Passport Photos (35×45mm)</li>
       <li>🔹 Multi-Unique Passports (1 to 5 Photos)</li>
       <li>🔹 4×6 Photo Sheets</li>
       <li>🔹 PDF Arranger & Merger</li>
@@ -892,13 +891,13 @@
       </div>
     </div>
 
-    <!-- TAB 2: PASSPORT SIZE PHOTOS (MULTI-UNIQUE PHOTOS & CUSTOM QTY BUTTONS) -->
+    <!-- TAB 2: PASSPORT SIZE PHOTOS (MULTI-UNIQUE PHOTOS & GENERATE/DOWNLOAD FLOW) -->
     <div id="tab-passport" class="tab-content">
       <div class="badge">Standard 35mm × 45mm • Multi-Unique Photo Generator & Custom Qty</div>
       <h1>Passport Photo Generator</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">1 से 5 अलग-अलग फ़ोटो चुनें, अपनी ज़रूरत के अनुसार कुल संख्या (Quantity) सेट करें और A4 शीट PDF बनाएं:</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">1 से 5 अलग-अलग फ़ोटो चुनें, संख्या सेट करें, पहले 'Generate' करके प्रीव्यू देखें और फिर डाउनलोड करें:</p>
 
-      <!-- Multi-Photo Count Selector (1 to 5 Photos) -->
+      <!-- Multi-Photo Buttons Selector (1 to 5 Photos) -->
       <div class="control-panel" style="margin-bottom: 12px;">
         <span style="font-size: 13px; font-weight:600; color: var(--accent-blue);">📂 Select Unique Photos Mode (1 to 5 Photos):</span>
         <div class="qty-select-group" style="margin-top: 8px;">
@@ -911,7 +910,7 @@
       </div>
 
       <!-- Dynamic Upload Blocks Container -->
-      <div id="passportUploadBlocksContainer" style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 15px;">
+      <div id="passportUploadBlocksContainer" style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px;">
         <!-- Dynamically rendered via JS -->
       </div>
 
@@ -930,14 +929,19 @@
         </div>
       </div>
 
+      <!-- STEP 1: GENERATE BUTTON (UPPER) -->
       <div class="btn-group">
-        <button id="generateMultiPassportA4Btn" class="action-btn btn-download">📄 Generate & Download A4 Sheet PDF</button>
+        <button id="generateMultiPassportA4Btn" class="action-btn btn-add">🖼️ Generate Sheet (Preview)</button>
       </div>
 
+      <!-- PREVIEW & STEP 2: DOWNLOAD BUTTON (LOWER) -->
       <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px;">
-        <h3 id="passportSheetTitle" style="font-size: 15px; color: var(--accent-blue); margin-bottom: 6px;">Passport Sheet Preview</h3>
+        <h3 id="passportSheetTitle" style="font-size: 15px; color: var(--accent-blue); margin-bottom: 6px;">A4 Passport Sheet Preview</h3>
         <div style="display:inline-block; max-width: 250px; background:#fff; border-radius:6px; overflow:hidden; border: 1px solid #475569;">
           <canvas id="passportSheetCanvas" width="2480" height="3508" style="width: 100%; display:block;"></canvas>
+        </div>
+        <div class="btn-group">
+          <button id="downloadMultiPassportPdfBtn" class="action-btn btn-download" disabled>📥 Download A4 Sheet PDF</button>
         </div>
       </div>
     </div>
@@ -2289,7 +2293,13 @@
       }
     }
 
-    document.getElementById('passportSheetTitle').innerText = `A4 Passport Sheet (${activePassportCount} Unique Photos, Total Qty: ${targetQty})`;
+    document.getElementById('passportSheetTitle').innerText = `A4 Passport Sheet Preview (${activePassportCount} Unique Photos, Total Qty: ${targetQty})`;
+    document.getElementById('downloadMultiPassportPdfBtn').disabled = false;
+  });
+
+  document.getElementById('downloadMultiPassportPdfBtn').addEventListener('click', () => {
+    const sheetCanvas = document.getElementById('passportSheetCanvas');
+    const targetQty = document.getElementById('passportQtyInput').value;
     
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
