@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
@@ -799,7 +800,6 @@
     <h4>⚡ Our Printing Services (उपलब्ध मुख्य सर्विसेज):</h4>
     <ul>
       <li>🔹 5-Cards ID Print (A4)</li>
-      <li>🔹 Passport Photos (35×45mm)</li>
       <li>🔹 Multi-Unique Passports (1 to 5 Photos)</li>
       <li>🔹 4×6 Photo Sheets</li>
       <li>🔹 PDF Arranger & Merger</li>
@@ -1448,7 +1448,7 @@
   // ==========================================================
   // GOOGLE SHEET APPS SCRIPT WEB APP API URL (DISTRIBUTORS CLOUD)
   // ==========================================================
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxkUUV2wkFrUxaFS9UwDHre9KgIeeVrV_rGNov09I91pwrk7IYabWbcnr_ZuDm8igpL/exec";
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDtZ28w4axnRql7cBQLkh_RZ3uSOAUf_4n6jWipOeo0RFaXxqH3Z8BHzquEDJVDysi/exec";
 
   async function getDistributorsListCloud() {
     try {
@@ -1657,7 +1657,7 @@
   }
 
   // ==========================================================
-  // DISTRIBUTOR MANAGEMENT (GOOGLE SHEET SYNCED WITH STOP/START)
+  // DISTRIBUTOR MANAGEMENT (GOOGLE SHEET SYNCED)
   // ==========================================================
   async function addNewDistributor() {
     const name = document.getElementById('newDistName').value.trim();
