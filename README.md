@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
@@ -742,7 +741,7 @@
   ID CARD PRINT & CONVERTER PORTAL
 </div>
 
-<!-- Contact for Registration Button (Opens Popup) -->
+<!-- Contact for Registration Button -->
 <div class="top-reg-nav" id="topNavRegistrationBox">
   <button class="top-reg-btn" onclick="openRegModal()">
     💬 Contact for Registration
@@ -772,7 +771,7 @@
     <ul>
       <li>🔹 5-Cards ID Print (A4)</li>
       <li>🔹 Passport Photos (35×45mm)</li>
-      <li>🔹 Multi-Photo Unique Passports</li>
+      <li>🔹 Multi-Unique Passports (2,4,6,8, Custom)</li>
       <li>🔹 4×6 Photo Sheets</li>
       <li>🔹 PDF Arranger & Merger</li>
       <li>🔹 Custom Image Resizer</li>
@@ -893,37 +892,53 @@
       </div>
     </div>
 
-    <!-- TAB 2: PASSPORT SIZE PHOTOS (1 TO 5 UNIQUE PHOTOS & SHEETS) -->
+    <!-- TAB 2: PASSPORT SIZE PHOTOS (CUSTOM BUTTONS & MANUAL QTY) -->
     <div id="tab-passport" class="tab-content">
-      <div class="badge">Standard 35mm × 45mm • Multi-Unique Photo Generator</div>
-      <h1>Passport Photo Generator (1 to 5 Unique Photos)</h1>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">नीचे जितने फोटो की शीट चाहिए उतने ब्लॉक्स में अलग-अलग फ़ोटो अपलोड करें और A4 शीट PDF डाउनलोड करें।</p>
+      <div class="badge">Standard 35mm × 45mm • Custom Qty & Manual Type</div>
+      <h1>Passport Photo Generator</h1>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">फ़ोटो अपलोड करें, नीचे दिए गए शॉर्टकट बटन (2, 4, 6, 8) से या मैन्युअल संख्या टाइप करके शीट तैयार करें।</p>
 
-      <!-- Multi-Photo Count Selector -->
-      <div class="control-panel" style="margin-bottom: 15px;">
-        <span style="font-size: 13px; font-weight:600; color: var(--accent-blue);">🔢 कितने अलग-अलग पासपोर्ट फ़ोटो प्रिंट करने हैं?</span>
-        <div class="qty-select-group" style="margin-top: 10px;">
-          <button class="quick-qty-btn" id="btnCount1" onclick="setPassportCount(1)" style="background:#0284c7;">1 Photo</button>
-          <button class="quick-qty-btn" id="btnCount2" onclick="setPassportCount(2)">2 Photos</button>
-          <button class="quick-qty-btn" id="btnCount3" onclick="setPassportCount(3)">3 Photos</button>
-          <button class="quick-qty-btn" id="btnCount4" onclick="setPassportCount(4)">4 Photos</button>
-          <button class="quick-qty-btn" id="btnCount5" onclick="setPassportCount(5)">5 Photos</button>
+      <div class="upload-section">
+        <label class="upload-box" for="passportInput" style="max-width: 380px;">
+          <strong style="display:block; font-size:14px; margin-bottom:4px;">📁 Passport Photo Upload</strong>
+          <div id="passportFileName" style="font-size: 12px; color: var(--text-muted);">फ़ोटो चुनें व क्रॉप करें</div>
+        </label>
+        <input type="file" id="passportInput" accept="image/*">
+      </div>
+
+      <div class="preview-container">
+        <div class="preview-box">
+          <h4>Cropped Passport Photo</h4>
+          <canvas id="passportCanvas" width="413" height="531" style="width: 140px;"></canvas>
         </div>
       </div>
 
-      <!-- Dynamic Upload Blocks Container -->
-      <div id="passportUploadBlocksContainer" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 15px;">
-        <!-- Dynamically rendered via JS -->
+      <div class="control-panel">
+        <span style="font-size: 14px; font-weight:600; color: var(--accent-blue);">🔢 फ़ोटो की संख्या (Quantity) चुनें या टाइप करें:</span>
+        <div class="qty-select-group">
+          <input type="number" id="passportQtyInput" class="qty-input" value="8" min="1" max="50">
+          <button class="quick-qty-btn" onclick="setPassportQty(2)" style="background:#0284c7;">2</button>
+          <button class="quick-qty-btn" onclick="setPassportQty(4)">4</button>
+          <button class="quick-qty-btn" onclick="setPassportQty(6)">6</button>
+          <button class="quick-qty-btn" onclick="setPassportQty(8)">8</button>
+          <button class="quick-qty-btn" onclick="setPassportQty(12)">12</button>
+          <button class="quick-qty-btn" onclick="setPassportQty(16)">16</button>
+          <button class="quick-qty-btn" onclick="setPassportQty(30)">30</button>
+        </div>
       </div>
 
       <div class="btn-group">
-        <button id="generateMultiPassportA4Btn" class="action-btn btn-download">📄 Generate & Download A4 Sheet PDF</button>
+        <button id="make4x6CustomPassportBtn" class="action-btn btn-add" disabled>🖼️ Generate on 4×6 Sheet</button>
+        <button id="makeA4CustomPassportBtn" class="action-btn btn-add" disabled>📄 Generate on A4 Sheet</button>
       </div>
 
       <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px;">
-        <h3 id="passportSheetTitle" style="font-size: 15px; color: var(--accent-blue); margin-bottom: 6px;">A4 Passport Sheet Preview</h3>
+        <h3 id="passportSheetTitle" style="font-size: 15px; color: var(--accent-blue); margin-bottom: 6px;">Passport Sheet Preview</h3>
         <div style="display:inline-block; max-width: 250px; background:#fff; border-radius:6px; overflow:hidden; border: 1px solid #475569;">
-          <canvas id="passportSheetCanvas" width="2480" height="3508" style="width: 100%; display:block;"></canvas>
+          <canvas id="passportSheetCanvas" width="1800" height="1200" style="width: 100%; display:block;"></canvas>
+        </div>
+        <div class="btn-group">
+          <button id="downloadPassportPdfBtn" class="action-btn btn-download" disabled>📥 Download Passport Sheet PDF</button>
         </div>
       </div>
     </div>
@@ -1377,7 +1392,7 @@
     </div>
 
     <div style="background: rgba(15,23,42,0.8); padding: 12px; border-radius: 10px; margin-bottom: 20px; border: 1px solid var(--border-color); text-align: left;">
-      <div style="font-size: 11px; color: var(--text-muted);">📧 Official Email ID:</div>
+      <div style="font-size: 11px; color: var(--text-muted);">📧 Official Email IDs:</div>
       <a href="mailto:idprintingportal@gmail.com" style="color: #38bdf8; font-weight: 600; font-size: 13px; text-decoration: none;">idprintingportal@gmail.com</a><br>
       <a href="mailto:oneplus777000@gmail.com" style="color: #38bdf8; font-weight: 600; font-size: 13px; text-decoration: none;">oneplus777000@gmail.com</a>
     </div>
@@ -2016,25 +2031,13 @@
       }
       if (img1Loaded && img2Loaded) addCardBtn.disabled = false;
     } 
-    else if (activeCropType === 'passport' || activeCropType.startsWith('multi_passport_')) {
+    else if (activeCropType === 'passport') {
       const croppedCanvas = cropper.getCroppedCanvas({ width: 413, height: 531, imageSmoothingQuality: 'high' });
-      
-      if (activeCropType === 'passport') {
-        passportCtx.clearRect(0, 0, 413, 531);
-        passportCtx.drawImage(croppedCanvas, 0, 0);
-        passportLoaded = true;
-      } else {
-        const idx = parseInt(activeCropType.split('_')[2], 10);
-        multiPassportCanvases[idx] = croppedCanvas;
-        const previewCanvas = document.getElementById(`multiPassPreview${idx}`);
-        if (previewCanvas) {
-          previewCanvas.style.display = 'block';
-          const pCtx = previewCanvas.getContext('2d');
-          pCtx.clearRect(0, 0, 413, 531);
-          pCtx.drawImage(croppedCanvas, 0, 0);
-        }
-        multiPassportLoaded[idx] = true;
-      }
+      passportCtx.clearRect(0, 0, 413, 531);
+      passportCtx.drawImage(croppedCanvas, 0, 0);
+      passportLoaded = true;
+      document.getElementById('make4x6CustomPassportBtn').disabled = false;
+      document.getElementById('makeA4CustomPassportBtn').disabled = false;
     }
     else if (activeCropType === 'name_passport') {
       rawNamePassportImg = cropper.getCroppedCanvas({ width: 413, height: 531, imageSmoothingQuality: 'high' });
@@ -2188,109 +2191,111 @@
     saveToHistory('ID Card Print (5-Slots)', fileName, blob, 'application/pdf');
   });
 
-  // ==========================================================
-  // TAB 2: MULTI-PHOTO UNIQUE PASSPORT GENERATOR (1 to 5 PHOTOS)
-  // ==========================================================
-  let activePassportCount = 1;
-  let multiPassportCanvases = [];
-  let multiPassportLoaded = [];
+  // ==========================================
+  // TAB 2: PASSPORT SIZE PHOTOS (STANDARD)
+  // ==========================================
+  const passportCanvas = document.getElementById('passportCanvas');
+  const passportCtx = passportCanvas.getContext('2d');
+  const passportSheetCanvas = document.getElementById('passportSheetCanvas');
+  const passportSheetCtx = passportSheetCanvas.getContext('2d');
+  const passportQtyInput = document.getElementById('passportQtyInput');
+  let passportLoaded = false;
+  let passportSheetFormat = '4x6';
 
-  function setPassportCount(count) {
-    activePassportCount = count;
-    for (let i = 1; i <= 5; i++) {
-      const btn = document.getElementById(`btnCount${i}`);
-      if (btn) btn.style.background = '#334155';
-    }
-    const activeBtn = document.getElementById(`btnCount${count}`);
-    if (activeBtn) activeBtn.style.background = '#0284c7';
-    renderPassportUploadBlocks();
+  function setPassportQty(qty) {
+    passportQtyInput.value = qty;
   }
 
-  function renderPassportUploadBlocks() {
-    const container = document.getElementById('passportUploadBlocksContainer');
-    if (!container) return;
-    container.innerHTML = '';
-    multiPassportCanvases = new Array(activePassportCount);
-    multiPassportLoaded = new Array(activePassportCount).fill(false);
-
-    for (let i = 0; i < activePassportCount; i++) {
-      const box = document.createElement('div');
-      box.style.cssText = "flex: 1; min-width: 140px; background: rgba(15,23,42,0.8); border: 1px solid var(--border-color); padding: 10px; border-radius: 10px; text-align: center;";
-      
-      box.innerHTML = `
-        <h5 style="font-size: 11px; color: var(--accent-blue); margin-bottom: 6px;">Photo #${i + 1}</h5>
-        <canvas id="multiPassPreview${i}" width="413" height="531" style="width: 85px; height: 110px; display:none; margin: 0 auto 6px auto; background:#fff; border-radius:4px;"></canvas>
-        <label class="action-btn btn-add" style="display: block; padding: 6px; font-size: 11px; cursor: pointer;">
-          📁 Select Photo
-          <input type="file" accept="image/*" style="display:none;" onchange="handleMultiPassportUpload(event, ${i})">
-        </label>
-      `;
-      container.appendChild(box);
+  document.getElementById('passportInput').addEventListener('change', (e) => {
+    if (e.target.files[0]) {
+      document.getElementById('passportFileName').innerText = e.target.files[0].name;
+      openCropEngine(e.target.files[0], 'passport');
     }
-  }
+  });
 
-  function handleMultiPassportUpload(event, index) {
-    const file = event.target.files[0];
-    if (file) {
-      openCropEngine(file, `multi_passport_${index}`);
-    }
-  }
+  document.getElementById('make4x6CustomPassportBtn').addEventListener('click', () => {
+    if (!passportLoaded) return;
+    passportSheetFormat = '4x6';
+    const targetQty = Math.max(1, Math.min(20, parseInt(passportQtyInput.value) || 8));
 
-  document.getElementById('generateMultiPassportA4Btn').addEventListener('click', () => {
-    for (let i = 0; i < activePassportCount; i++) {
-      if (!multiPassportLoaded[i]) {
-        alert(`⚠️ कृपया Photo #${i + 1} अपलोड और क्रॉप करें!`);
-        return;
-      }
-    }
+    passportSheetCanvas.width = 1800;
+    passportSheetCanvas.height = 1200;
 
-    const sheetCanvas = document.getElementById('passportSheetCanvas');
-    const sheetCtx = sheetCanvas.getContext('2d');
-
-    sheetCanvas.width = 2480;
-    sheetCanvas.height = 3508;
-    sheetCtx.fillStyle = '#ffffff';
-    sheetCtx.fillRect(0, 0, 2480, 3508);
+    passportSheetCtx.fillStyle = '#ffffff';
+    passportSheetCtx.fillRect(0, 0, 1800, 1200);
 
     const pw = 413, ph = 531;
-    const startX = 120, startY = 120, gapX = 50, gapY = 60;
+    const startX = 50, startY = 50, gapX = 20, gapY = 35;
     const maxCols = 4;
 
-    let photoIndexToPrint = 0;
-    const totalSlots = 20;
-
     let placed = 0;
-    for (let r = 0; r < 5; r++) {
+    for (let r = 0; r < 2; r++) {
       for (let c = 0; c < maxCols; c++) {
-        if (placed >= totalSlots) break;
+        if (placed >= targetQty) break;
         const x = startX + c * (pw + gapX);
         const y = startY + r * (ph + gapY);
-
-        const currentCanvas = multiPassportCanvases[photoIndexToPrint % activePassportCount];
-        sheetCtx.drawImage(currentCanvas, x, y, pw, ph);
-        
-        sheetCtx.strokeStyle = '#000000';
-        sheetCtx.lineWidth = 2;
-        sheetCtx.strokeRect(x, y, pw, ph);
-
-        photoIndexToPrint++;
+        passportSheetCtx.drawImage(passportCanvas, x, y, pw, ph);
+        passportSheetCtx.strokeStyle = '#000000';
+        passportSheetCtx.lineWidth = 2;
+        passportSheetCtx.strokeRect(x, y, pw, ph);
         placed++;
       }
     }
 
-    document.getElementById('passportSheetTitle').innerText = `A4 Passport Sheet (${activePassportCount} Unique Photos)`;
-    
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    pdf.addImage(sheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
-    
-    const fileName = `Multi_Unique_Passport_${activePassportCount}_Photos_A4.pdf`;
-    const blob = pdf.output('blob');
-    pdf.save(fileName);
-    saveToHistory('Multi-Unique Passports', fileName, blob, 'application/pdf');
+    document.getElementById('passportSheetTitle').innerText = `Passport 4×6 Sheet (${targetQty} Photos Generated)`;
+    document.getElementById('downloadPassportPdfBtn').disabled = false;
   });
 
-  renderPassportUploadBlocks();
+  document.getElementById('makeA4CustomPassportBtn').addEventListener('click', () => {
+    if (!passportLoaded) return;
+    passportSheetFormat = 'a4';
+    const targetQty = Math.max(1, Math.min(50, parseInt(passportQtyInput.value) || 30));
+
+    passportSheetCanvas.width = 2480;
+    passportSheetCanvas.height = 3508;
+
+    passportSheetCtx.fillStyle = '#ffffff';
+    passportSheetCtx.fillRect(0, 0, 2480, 3508);
+
+    const pw = 413, ph = 531;
+    const startX = 75, startY = 80, gapX = 30, gapY = 40;
+    const maxCols = 5;
+
+    let placed = 0;
+    for (let r = 0; r < 10; r++) {
+      for (let c = 0; c < maxCols; c++) {
+        if (placed >= targetQty) break;
+        const x = startX + c * (pw + gapX);
+        const y = startY + r * (ph + gapY);
+        passportSheetCtx.drawImage(passportCanvas, x, y, pw, ph);
+        passportSheetCtx.strokeStyle = '#000000';
+        passportSheetCtx.lineWidth = 2;
+        passportSheetCtx.strokeRect(x, y, pw, ph);
+        placed++;
+      }
+    }
+
+    document.getElementById('passportSheetTitle').innerText = `Passport A4 Sheet (${targetQty} Photos Generated)`;
+    document.getElementById('downloadPassportPdfBtn').disabled = false;
+  });
+
+  document.getElementById('downloadPassportPdfBtn').addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    let fileName = '';
+    let pdf;
+    if (passportSheetFormat === '4x6') {
+      pdf = new jsPDF({ orientation: 'landscape', unit: 'in', format: [4, 6] });
+      pdf.addImage(passportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 6, 4);
+      fileName = `Passport_Photos_4x6_${passportQtyInput.value}_Qty.pdf`;
+    } else {
+      pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      pdf.addImage(passportSheetCanvas.toDataURL('image/jpeg', 1.0), 'JPEG', 0, 0, 210, 297);
+      fileName = `Passport_Photos_A4_${passportQtyInput.value}_Qty.pdf`;
+    }
+    const blob = pdf.output('blob');
+    pdf.save(fileName);
+    saveToHistory('Passport Photos', fileName, blob, 'application/pdf');
+  });
 
   // ==========================================
   // TAB 3: NAME & DATE PASSPORT (3 FONT SLIDERS)
@@ -3240,6 +3245,15 @@
   function initAllCanvases() {
     clearCurrentCardInputs();
     resetCardA4Sheet();
+
+    if (typeof passportCtx !== 'undefined' && passportCtx) {
+      passportCtx.fillStyle = '#ffffff';
+      passportCtx.fillRect(0, 0, 413, 531);
+      passportCtx.fillStyle = '#94a3b8';
+      passportCtx.font = 'bold 20px Poppins';
+      passportCtx.textAlign = 'center';
+      passportCtx.fillText('Passport Preview', 413 / 2, 531 / 2);
+    }
 
     namePassportCtx.fillStyle = '#ffffff';
     namePassportCtx.fillRect(0, 0, 413, 531);
