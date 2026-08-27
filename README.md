@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
@@ -1448,7 +1447,7 @@
   // ==========================================================
   // GOOGLE SHEET APPS SCRIPT WEB APP API URL (DISTRIBUTORS CLOUD)
   // ==========================================================
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDtZ28w4axnRql7cBQLkh_RZ3uSOAUf_4n6jWipOeo0RFaXxqH3Z8BHzquEDJVDysi/exec";
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9i8_skogKKtu5ubqAvZmyofI0ZiD2ND3v-JHwume-gzQu4BaW1xkSgd2B3jvQG0QL/exec";
 
   async function getDistributorsListCloud() {
     try {
@@ -1914,15 +1913,22 @@
     } else {
       // 2. Check Google Sheet Distributors with 30 Days Expiry & Status Enforcement
       let dists = await getDistributorsListCloud();
-      let foundUser = dists.find(d => String(d.email).trim().toLowerCase() === inputEmail && String(d.pass).trim() === inputPass);
+      let foundUser = dists.find(d => String(d.email).trim().toLowerCase() === inputEmail);
       
       if (foundUser) {
+        if (String(foundUser.pass).trim() !== inputPass) {
+          errorMsg.innerText = "⚠️ गलत ईमेल आईडी या पासवर्ड!";
+          errorMsg.style.display = 'block';
+          return;
+        }
+
         const distStatus = (foundUser.status !== undefined && foundUser.status !== null && String(foundUser.status).trim() !== "") ? String(foundUser.status).trim() : "Active";
         if (distStatus === "Stopped") {
           errorMsg.innerText = "⚠️ आपकी सर्विस एडमिन द्वारा रोक दी गई है। कृपया पोर्टल चालू करवाने के लिए भुगतान करें!";
           errorMsg.style.display = 'block';
           return;
         }
+
         const distExpiry = Number(foundUser.expiryTime || (Number(foundUser.assignedTimestamp || Date.now()) + THIRTY_MS));
         if (Date.now() <= distExpiry) {
           isAuthorized = true;
@@ -1933,6 +1939,10 @@
           errorMsg.style.display = 'block';
           return;
         }
+      } else {
+        errorMsg.innerText = "⚠️ गलत ईमेल आईडी या पासवर्ड!";
+        errorMsg.style.display = 'block';
+        return;
       }
     }
 
