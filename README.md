@@ -1503,12 +1503,16 @@
 
   async function addDistributorCloud(distData) {
     try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "addDistributor", data: distData })
+      let params = new URLSearchParams({
+        action: "addDistributor",
+        id: distData.id,
+        name: distData.name,
+        email: distData.email,
+        pass: distData.pass,
+        assignedTimestamp: distData.assignedTimestamp,
+        expiryTime: distData.expiryTime
       });
+      await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
       return true;
     } catch(err) {
       return false;
@@ -1517,12 +1521,8 @@
 
   async function deleteDistributorCloud(distId) {
     try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "deleteDistributor", id: distId })
-      });
+      let params = new URLSearchParams({ action: "deleteDistributor", id: distId });
+      await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
       return true;
     } catch(err) {
       return false;
@@ -1531,12 +1531,13 @@
 
   async function sendAdminMsgCloud(email, message, imageUrl) {
     try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "messageDistributor", email: email, message: message, imageUrl: imageUrl })
+      let params = new URLSearchParams({
+        action: "messageDistributor",
+        email: email,
+        message: message,
+        imageUrl: imageUrl
       });
+      await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
       return true;
     } catch(err) {
       return false;
@@ -1545,12 +1546,12 @@
 
   async function uploadScreenshotCloud(email, screenshotUrl) {
     try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "uploadScreenshot", email: email, screenshotUrl: screenshotUrl })
+      let params = new URLSearchParams({
+        action: "uploadScreenshot",
+        email: email,
+        screenshotUrl: screenshotUrl
       });
+      await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
       return true;
     } catch(err) {
       return false;
@@ -1559,12 +1560,12 @@
 
   async function toggleDistributorStatusCloud(email, newStatus) {
     try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "toggleStatus", email: email, status: newStatus })
+      let params = new URLSearchParams({
+        action: "toggleStatus",
+        email: email,
+        status: newStatus
       });
+      await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
       return true;
     } catch(err) {
       return false;
@@ -1573,12 +1574,12 @@
 
   async function updateDistributorPasswordCloud(email, newPass) {
     try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "updatePassword", email: email, newPass: newPass })
+      let params = new URLSearchParams({
+        action: "updatePassword",
+        email: email,
+        newPass: newPass
       });
+      await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
       return true;
     } catch(err) {
       return false;
