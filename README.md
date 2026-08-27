@@ -1765,8 +1765,7 @@
       }
 
       const currentStatus = (d.status !== undefined && d.status !== null && String(d.status).trim() !== "") ? String(d.status).trim() : "Active";
-      // Fixed screenshot check for both 'distScreenshot' and object property cases
-      const screenshotVal = d.distScreenshot || d.districtscreenshot || d.screenshot;
+      const screenshotVal = d.distcreenshot || d.distscreenshot || d.dist_screenshot || d.screenshot || d.districtsx;
       const hasScreenshot = (screenshotVal && String(screenshotVal).trim() !== "");
 
       const tr = document.createElement('tr');
@@ -1844,7 +1843,10 @@
     setTimeout(() => renderDistributorsTable(), 1500);
   }
 
-  // Distributor Screenshot Upload Function (Fixed Email & Payload Capture)
+  // Active Logged-in Distributor Email storage
+  let currentLoggedDistributorEmail = "";
+
+  // Distributor Screenshot Upload Function
   async function uploadDistributorScreenshot() {
     const fileInput = document.getElementById('distScreenshotInput');
     const statusDiv = document.getElementById('screenshotUploadStatus');
@@ -1862,16 +1864,15 @@
     const reader = new FileReader();
     reader.onload = async function(e) {
       const base64Img = e.target.result;
-      // Fetching the currently logged-in distributor email accurately from session or input field fallback
-      const loggedEmail = (document.getElementById('loginEmail').value || "").trim().toLowerCase();
+      const targetEmail = currentLoggedDistributorEmail || (loginEmail.value || "").trim().toLowerCase();
       
-      if (!loggedEmail) {
+      if (!targetEmail) {
         statusDiv.innerText = '⚠️ Error: Login email not found!';
         statusDiv.style.color = '#ef4444';
         return;
       }
 
-      let success = await uploadScreenshotCloud(loggedEmail, base64Img);
+      let success = await uploadScreenshotCloud(targetEmail, base64Img);
       if (success) {
         statusDiv.innerText = '✅ Screenshot sent to admin successfully!';
         statusDiv.style.color = '#34d399';
@@ -2086,6 +2087,9 @@
         adminTabBtn.style.display = 'none';
         switchTabDirect('tab-cards');
         
+        // Save current logged in distributor email for screenshot replies
+        currentLoggedDistributorEmail = inputEmail;
+
         // Show Distributor Notice (Text + Image Banner)
         if (loggedInDistributor) {
           let hasNotice = false;
@@ -2094,15 +2098,18 @@
           const imgBox = document.getElementById('distributorNoticeImgBox');
           const imgElem = document.getElementById('distributorNoticeImg');
 
-          if (loggedInDistributor.adminMessage && String(loggedInDistributor.adminMessage).trim() !== "") {
-            txtSpan.innerText = loggedInDistributor.adminMessage;
+          const noticeText = loggedInDistributor.adminmessage || loggedInDistributor.adminMessage;
+          const noticeImg = loggedInDistributor.adminimage || loggedInDistributor.adminImage;
+
+          if (noticeText && String(noticeText).trim() !== "") {
+            txtSpan.innerText = noticeText;
             hasNotice = true;
           } else {
             txtSpan.innerText = "";
           }
 
-          if (loggedInDistributor.adminImage && String(loggedInDistributor.adminImage).trim() !== "") {
-            imgElem.src = loggedInDistributor.adminImage;
+          if (noticeImg && String(noticeImg).trim() !== "") {
+            imgElem.src = noticeImg;
             imgBox.style.display = 'block';
             hasNotice = true;
           } else {
@@ -2140,6 +2147,7 @@
     changePwdScreen.style.display = 'none';
     loginScreen.style.display = 'block';
     loginPass.value = '';
+    currentLoggedDistributorEmail = "";
     if (adminTabBtn) adminTabBtn.style.display = 'none';
     const topNavReg = document.getElementById('topNavRegistrationBox');
     if (topNavReg) topNavReg.style.display = 'flex';
