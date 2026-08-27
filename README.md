@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
@@ -821,13 +822,13 @@
   </div>
 </div>
 
-<!-- 2. Change Password Screen (Updated with Email field outside) -->
+<!-- 2. Change Password Screen (With Email Identification) -->
 <div id="changePwdScreen" class="auth-box" style="display:none;">
   <div class="badge">Security Settings</div>
   <h2 style="font-size: 20px; margin-bottom: 6px; color: var(--accent-blue);">🔑 Change Password</h2>
   <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">ईमेल आईडी, पुराना और नया पासवर्ड दर्ज करें</p>
 
-  <input type="email" id="pwdEmailInput" class="login-input" placeholder="ईमेल आईडी (लॉगिन ईमेल)">
+  <input type="email" id="pwdEmailInput" class="login-input" placeholder="अपनी ईमेल आईडी (Login Email)">
   <input type="password" id="oldPassInput" class="login-input" placeholder="पुराना पासवर्ड">
   <input type="password" id="newPassInput" class="login-input" placeholder="नया पासवर्ड">
   <input type="password" id="confirmPassInput" class="login-input" placeholder="नया पासवर्ड कन्फर्म करें">
@@ -1877,7 +1878,7 @@
   });
 
   // ==========================================================
-  // UPDATED CHANGE PASSWORD HANDLER WITH EMAIL IDENTIFICATION
+  // ISOLATED CHANGE PASSWORD HANDLER (ADMIN vs DISTRIBUTOR)
   // ==========================================================
   saveNewPwdBtn.addEventListener('click', async () => {
     const inputEmailForPwd = pwdEmailInput.value.trim().toLowerCase();
@@ -1906,11 +1907,11 @@
       return;
     }
 
-    // Check if Admin
+    // STRICT ISOLATION: Check if target email is ADMIN
     if (inputEmailForPwd === ADMIN_EMAIL.toLowerCase()) {
       const adminActivePass = getStoredPassword().trim();
       if (oldP !== adminActivePass && oldP !== INITIAL_PASS && oldP !== EXPIRED_PASS) {
-        pwdStatusMsg.innerText = "❌ पुराना पासवर्ड गलत है!";
+        pwdStatusMsg.innerText = "❌ एडमिन का पुराना पासवर्ड गलत है!";
         pwdStatusMsg.style.color = "#ef4444";
         pwdStatusMsg.style.display = "block";
         return;
