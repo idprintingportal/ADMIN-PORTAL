@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
@@ -729,11 +730,12 @@
       display: block;
     }
 
+    /* Admin Message Modal Styling */
     #adminMsgModal {
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.85);
       z-index: 100000;
       align-items: center;
       justify-content: center;
@@ -1412,10 +1414,10 @@
     <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">✍️ Message / Notice:</label>
     <textarea id="adminTypedMsg" class="login-input" style="height: 75px; resize:none;" placeholder="यहाँ अपना मैसेज टाइप करें..."></textarea>
     
-    <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">🖼️ Attach Image / Banner (Optional):</label>
-    <input type="file" id="adminNoticeImgInput" accept="image/*" class="login-input" style="padding: 7px; font-size: 11px;">
+    <label style="font-size: 11px; color: #38bdf8; display: block; margin-bottom: 4px; font-weight: 600;">🖼️ Attach Image / Banner (Optional):</label>
+    <input type="file" id="adminNoticeImgInput" accept="image/*" style="display:block; width:150px; background:#334155; color:#fff; padding:6px; font-size:11px; border-radius:6px; border:1px solid rgba(56,189,248,0.4); margin-bottom:12px; cursor:pointer;">
     
-    <div style="display: flex; gap: 10px; margin-top: 10px;">
+    <div style="display: flex; gap: 10px;">
       <button onclick="saveAdminMessage()" class="action-btn btn-download" style="flex:1;">📤 Send Message</button>
       <button onclick="closeAdminMsgModal()" class="action-btn btn-reset" style="flex:1;">रद्द करें</button>
     </div>
