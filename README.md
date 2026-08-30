@@ -688,6 +688,7 @@
     }
     .history-view-ss-btn:hover { background: rgba(56, 189, 248, 0.45); }
 
+    /* Separate Stop and Start Buttons */
     .btn-status-stop {
       background: rgba(239, 68, 68, 0.25);
       color: #fca5a5;
@@ -743,6 +744,7 @@
       display: block;
     }
 
+    /* Registration Modal Popup Styles */
     #regModalPopup {
       display: none;
       position: fixed;
@@ -763,6 +765,24 @@
       max-width: 420px;
       text-align: center;
       box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+    }
+
+    #paymentQrImage { display: none !important; }
+
+    .payment-link-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 280px;
+      padding: 11px 16px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
     }
   </style>
 </head>
@@ -840,11 +860,11 @@
     <div style="margin-bottom: 8px;">Please pay only through the QR code below and upload the proof after payment.</div>
 
     <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
-      <label style="display:flex; align-items:center; gap:8px; color:#f8fafc; cursor:pointer;">
+      <label style="display:flex; align-items:center; gap:8px; color:#f8fafc;">
         <input type="radio" name="planType" value="1month" checked>
         <span>1 Month Plan — ₹36</span>
       </label>
-      <label style="display:flex; align-items:center; gap:8px; color:#f8fafc; cursor:pointer;">
+      <label style="display:flex; align-items:center; gap:8px; color:#f8fafc;">
         <input type="radio" name="planType" value="1year">
         <span>1 Year Plan — ₹319</span>
       </label>
@@ -852,7 +872,8 @@
 
     <div id="paymentQrPlanText" style="margin-bottom: 8px; color: #f8fafc; font-weight: 600;">QR Code for 1 Month Plan (₹36):</div>
     <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 10px; padding: 12px; text-align: center;">
-      <img id="paymentQrImage" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAMgAQAAAADzCzvFAAAD5UlEQVR4nO3dUW7iMBDG8W82SOlbuIF7K0oGs5F9hT4Jb23Rr7F6wy0Wjup3kytJq0hBk6Ekrdll1mQ5u9Le3t4T3G0+Q6hLQOQeICu1Vcf7hYxPKvGohh3U1GJ7V2oZl+/Mw44rqfVnH8m8jP1L+Bc+zxg7yz6H+N5OBsrqJ69u1gncM6553I4zq7H1TZr53a2gMfdM5jW6oJ3H15IWd1x4eFihq4UkLdhvP8kP7sk8sLe6RZ0vR5Hd6s5pO+UxsV+1iOaV0HecZ2oHYJXqJ6Jq7n7cT4RdbQ2AAAEwqIj0FQAAABJRU5ErkJggg==" alt="Payment QR Code for ₹36" style="max-width: 220px; width: 100%; height: auto; display: block !important; visibility: visible !important; opacity: 1 !important; margin: 0 auto; background: #fff; padding: 8px; border-radius: 10px; border: 1px solid rgba(15, 23, 42, 0.15); box-shadow: 0 4px 12px rgba(0,0,0,0.18);">
+      <a id="paymentLinkButton" class="payment-link-btn" href="https://i.ibb.co/LWVdcR0/qr-1month-36-png.jpg" target="_self" rel="noopener">💳 Open ₹36 Payment Link</a>
+      <img id="paymentQrImage" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAMgAQAAAADzCzvFAAAD5UlEQVR4nO3dUW7iMBDG8W82SOlbuIF7E3qzwM3Ym8ANyFuRoLMPxlk7BJalZZdG/3lAqWv4SX4aTTy2uR4fP/6BAQICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAnJHeBbLsQnB3d036WEnSWrc3yVJdXoYhOW/O53lAgEBAQEBAQH5MqT1ItaSpK3Za5rQpNSrdveUdFXltz7+gDwkQEBAQEBAQEC+HbKyU7ylkeC+kbZmc6kzC+47aW9mZi9pzjF9a+QXJ71cICAgICAgICBPhMxunBdckjorBuvR95jnMZ3lAgEBAQEBAQF5LBJfZsaiWh+1e5cV1T6NfDZAQEBAQEBAQJ4bGal3te1wJLi2puDq5mp2v8fr7PjY6spRstNZLhAQEBAQEBCQ++OWpslN+ow79+NnbJekaRIEBAQEBAQE5IkQ+6trlWJRrZtLt+8g05SWCwQEBAQEBATka5CV2VJamb1JP9Pnq6TyUIw+9mVnZnwx6ufNmRNdLhAQEBAQEBCQu5HW3cyW2cjCfZP92bgPtvDHczFmUuV+kI6ciAECAgICAgICciHKs1tH9pGFMvWK0WR7x+JRsIdyApvIQEBAQEBAQED+AzJM7mJ+t0gH+y+y9oCQDvZXSu76JoFDdsL/xyCzI7kDAQEBAQEBAZF01pnZptuUFukhZBN2UpMeznsyL6Ze01kuEBAQEBAQEJD7Y/Rl5iIb2UjK7hBvyvmD6yz7V5rkXSAgICAgICAgV5CVndKldRqJTZMhZV+N+07qsv37fdUrXmdZp3rXZeRRAQICAgICAgICMlZUa9PLzHXWmZnnd3k5rW8PqPxyTGe5QEBAQEBAQEDuj/Oka5lt3o8R0ub9/H3m+QGwbCIDAQEBAQEBAbkSV8pUfWwkjTVNKtW7+pLXQTLyLhAQEBAQEBCQsRjUu84jZKlXjCZLwOImsur6eRXTWS4QEBAQEBAQkO+FtGU5bZ3GQ3ZXeVee8F+XZ8y6WTVoEpjucoGAgICAgICAfAZZ2Sne0sjWzMwW7luzfitZLKft0+TZlRstJ71cICAgICAgICBfiISxm5X2Zk22g0zZJjKn3gUCAgICAgICMozZLZO2r6eHxiWpm58e9qb6XZIq13EmSceZ7EP+Q5YnXtNZLhAQEBAQEBCQ50ZGkru2HY4El6StSVKzS5ndy+m/8aHy06ebzMvvT2e5QEBAQEBAQEDuj1s6MzfpuSlvVnrPTsToI1bT6MwEAQEBAQEBASljWJp6SExnuUBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQKaF/ALDGkmmOVEHeQAAAABJRU5ErkJggg==" alt="Payment QR Code for ₹36" style="max-width: 220px; width: 100%; height: auto; display: block; visibility: visible; opacity: 1; margin: 0 auto; background: #fff; padding: 8px; border-radius: 10px; border: 1px solid rgba(15, 23, 42, 0.15); box-shadow: 0 4px 12px rgba(0,0,0,0.18);">
       <div id="paymentQrNote" style="margin-top: 8px; font-size: 11px; color: var(--text-muted);">This QR is for the ₹36 plan.</div>
     </div>
   </div>
@@ -985,12 +1006,13 @@
       </div>
     </div>
 
-    <!-- TAB 2: PASSPORT SIZE PHOTOS -->
+    <!-- TAB 2: PASSPORT SIZE PHOTOS (MULTI-UNIQUE PHOTOS & GENERATE/DOWNLOAD FLOW) -->
     <div id="tab-passport" class="tab-content">
       <div class="badge">Standard 35mm × 45mm • Multi-Unique Photo Generator & Custom Qty</div>
       <h1>Passport Photo Generator</h1>
       <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">1 से 5 अलग-अलग फ़ोटो चुनें, संख्या सेट करें, पहले 'Generate' करके प्रीव्यू देखें और फिर डाउनलोड करें:</p>
 
+      <!-- Multi-Photo Buttons Selector (1 to 5 Photos) -->
       <div class="control-panel" style="margin-bottom: 12px;">
         <span style="font-size: 13px; font-weight:600; color: var(--accent-blue);">📂 Select Unique Photos Mode (1 to 5 Photos):</span>
         <div class="qty-select-group" style="margin-top: 8px;">
@@ -1002,8 +1024,12 @@
         </div>
       </div>
 
-      <div id="passportUploadBlocksContainer" style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px;"></div>
+      <!-- Dynamic Upload Blocks Container -->
+      <div id="passportUploadBlocksContainer" style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px;">
+        <!-- Dynamically rendered via JS -->
+      </div>
 
+      <!-- Custom Quantity Control Panel -->
       <div class="control-panel" style="margin-bottom: 15px;">
         <span style="font-size: 13px; font-weight:600; color: var(--accent-blue);">🔢 A4 शीट पर कुल फ़ोटो की संख्या (Quantity) चुनें या टाइप करें:</span>
         <div class="qty-select-group">
@@ -1018,10 +1044,12 @@
         </div>
       </div>
 
+      <!-- STEP 1: GENERATE BUTTON (UPPER) -->
       <div class="btn-group">
         <button id="generateMultiPassportA4Btn" class="action-btn btn-add">🖼️ Generate Sheet (Preview)</button>
       </div>
 
+      <!-- PREVIEW & STEP 2: DOWNLOAD BUTTON (LOWER) -->
       <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px;">
         <h3 id="passportSheetTitle" style="font-size: 15px; color: var(--accent-blue); margin-bottom: 6px;">A4 Passport Sheet Preview</h3>
         <div style="display:inline-block; max-width: 250px; background:#fff; border-radius:6px; overflow:hidden; border: 1px solid #475569;">
@@ -1049,6 +1077,7 @@
 
       <div class="control-panel" style="text-align:left;">
         <div style="display:flex; flex-direction:column; gap:10px;">
+          
           <div style="background:rgba(15,23,42,0.6); padding:8px 12px; border-radius:8px; border:1px solid var(--border-color);">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <label style="font-size:11px; color:var(--text-muted);">👤 Candidate Name:</label>
@@ -1075,6 +1104,7 @@
             <input type="text" id="candDopInput" class="text-field-input" style="max-width:100%;" placeholder="DOP: DD/MM/YYYY" oninput="renderNamePassportPreview()">
             <input type="range" id="dopFontSlider" class="slider-range" min="12" max="30" value="20" oninput="updateDopFontSize(this.value)">
           </div>
+
         </div>
 
         <div style="margin-top:12px; text-align:center;">
@@ -1159,7 +1189,7 @@
       </div>
     </div>
 
-    <!-- TAB 5: PDF ARRANGER -->
+    <!-- TAB 5: PDF ARRANGER (DRAG & DROP / HOLD & MOVE) -->
     <div id="tab-arranger" class="tab-content">
       <div class="badge">Drag & Drop To Re-order • Hold & Move • Rotate 90° • Cut Pages</div>
       <h1>PDF Page Arranger & Organizer</h1>
@@ -1354,12 +1384,13 @@
       </div>
     </div>
 
-    <!-- TAB 10: HISTORY -->
+    <!-- TAB 10: HISTORY (WITH WORKING DOWNLOAD & ALERT WARNING) -->
     <div id="tab-history" class="tab-content">
       <div class="badge">Persistent Storage • Download Ready</div>
       <h1>Print & Download History</h1>
       <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">आपके द्वारा डाउनलोड की गई सभी फाइल्स का रिकॉर्ड सुरक्षित है। आप यहाँ से डाउनलोड भी कर सकते हैं और डिलीट भी कर सकते हैं।</p>
 
+      <!-- Warning Alert Box for Browser History Clear -->
       <div style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.5); color: #fde68a; padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; font-size: 12px; text-align: left; display: flex; align-items: center; gap: 8px;">
         <span style="font-size: 16px;">⚠️</span>
         <span><strong>महत्वपूर्ण चेतावनी:</strong> यदि आप अपने ब्राउज़र का डेटा (Browser Data/History) क्लियर करते हैं, तो यह डाउनलोड हिस्ट्री हमेशा के लिए डिलीट हो जाएगी। कृपया समय पर इसका बैकअप रखें।</span>
@@ -1576,13 +1607,23 @@
     return '';
   }
 
+  function isDistributorAccessApproved(record) {
+    if (!record || typeof record !== 'object') return false;
+
+    const paymentStatus = String(record.paymentStatus || record.approvalStatus || '').trim().toLowerCase();
+    const distStatus = String(record.status || '').trim().toLowerCase();
+    const approvalGranted = Boolean(record.approvalGranted || record.approved || record.accessApproved);
+
+    return approvalGranted && paymentStatus === 'approved' && distStatus === 'active';
+  }
+
   async function getDistributorsListCloud() {
     try {
       const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getDistributors`, { cache: "no-store" });
       const data = await response.json();
       const list = Array.isArray(data) ? data : [];
-      const merged = mergeDistributorCache(list);
-      return merged;
+      saveDistributorCache(list);
+      return list;
     } catch(err) {
       console.error("Fetch error:", err);
       return getDistributorCache();
@@ -1600,13 +1641,17 @@
         body: JSON.stringify(payload)
       });
 
-      if (!response.ok) return false;
+      if (!response.ok) {
+        console.error("Cloud POST failed:", response.status, response.statusText);
+        return false;
+      }
 
       try {
         const text = await response.text();
         if (!text || text.trim() === '') return true;
         try {
-          return JSON.parse(text);
+          const parsed = JSON.parse(text);
+          return parsed;
         } catch (err) {
           return text;
         }
@@ -1627,6 +1672,7 @@
       }
       return latest;
     } catch (err) {
+      console.error('Distributor refresh failed:', err);
       return [];
     }
   }
@@ -1783,7 +1829,11 @@
       if (!rec) return;
 
       const link = document.createElement('a');
-      link.href = (typeof rec.data === 'string') ? rec.data : URL.createObjectURL(rec.data);
+      if (typeof rec.data === 'string') {
+        link.href = rec.data;
+      } else {
+        link.href = URL.createObjectURL(rec.data);
+      }
       link.download = rec.fileName;
       link.click();
     };
@@ -1985,13 +2035,13 @@
     const action = approved ? 'Approved' : 'Rejected';
     const statusValue = approved ? 'Active' : 'Rejected';
 
-    let dists = await getDistributorsListCloud();
-    let dist = dists.find(d => String(d.email).trim().toLowerCase() === String(email).trim().toLowerCase());
-    let plan = (dist && (dist.paymentPlan || dist.plan)) || '1 Month';
-    let planMs = plan.toLowerCase().includes('year') ? ONE_YEAR_MS : THIRTY_MS;
-    let expiryTime = approved ? Date.now() + planMs : (Number(dist?.expiryTime || Date.now()) || Date.now());
+    const dists = await getDistributorsListCloud();
+    const dist = dists.find(d => String(d.email).trim().toLowerCase() === String(email).trim().toLowerCase());
+    const plan = (dist && (dist.paymentPlan || dist.plan)) || '1 Month';
+    const planMs = plan.toLowerCase().includes('year') ? ONE_YEAR_MS : THIRTY_MS;
+    const expiryTime = approved ? Date.now() + planMs : (Number(dist?.expiryTime || Date.now()) || Date.now());
 
-    let payload = {
+    const payload = {
       action: 'reviewDistributorPayment',
       email: email,
       approved: approved,
@@ -2006,7 +2056,7 @@
       approvalNote: approved ? 'Payment approved by admin' : 'Payment rejected by admin'
     };
 
-    let result = await callCloudPost(payload);
+    const result = await callCloudPost(payload);
     if (result) {
       await refreshDistributorCloudData();
       renderDistributorsTable();
@@ -2016,7 +2066,7 @@
   async function toggleDistributorStatus(email, newStatus) {
     if (!confirm(`क्या आप इस डिस्ट्रीब्यूटर की सर्विस को ${newStatus === 'Stopped' ? '🛑 Stop (रोकना)' : '▶️ Start (चालू करना)'} चाहते हैं?`)) return;
 
-    let result = await toggleDistributorStatusCloud(email, newStatus);
+    const result = await toggleDistributorStatusCloud(email, newStatus);
     if (result) {
       await refreshDistributorCloudData();
       renderDistributorsTable();
@@ -2025,7 +2075,7 @@
 
   async function removeDistributor(id) {
     if (!confirm('क्या आप इस डिस्ट्रीब्यूटर को हटाना चाहते हैं?')) return;
-    let result = await deleteDistributorCloud(id);
+    const result = await deleteDistributorCloud(id);
     if (result) {
       await refreshDistributorCloudData();
       renderDistributorsTable();
@@ -2068,8 +2118,10 @@
     setTimeout(() => renderDistributorsTable(), 1500);
   }
 
+  // Active Logged-in Distributor Email storage
   let currentLoggedDistributorEmail = "";
 
+  // Distributor Screenshot Upload Function
   async function uploadDistributorScreenshot() {
     const fileInput = document.getElementById('distScreenshotInput');
     const statusDiv = document.getElementById('screenshotUploadStatus');
@@ -2145,6 +2197,7 @@
   const paymentQrImage = document.getElementById('paymentQrImage');
   const paymentQrPlanText = document.getElementById('paymentQrPlanText');
   const paymentQrNote = document.getElementById('paymentQrNote');
+  const paymentLinkButton = document.getElementById('paymentLinkButton');
   const signUpBtn = document.getElementById('signUpBtn');
   const signUpStatusMsg = document.getElementById('signUpStatusMsg');
   const backToLoginFromSignUp = document.getElementById('backToLoginFromSignUp');
@@ -2175,7 +2228,6 @@
     signUpEmail.value = '';
     signUpPass.value = '';
     signUpConfirmPass.value = '';
-    updatePaymentPlanUi();
   });
 
   backToLoginFromSignUp.addEventListener('click', () => {
@@ -2215,16 +2267,15 @@
   function updatePaymentPlanUi() {
     const selectedPlanValue = document.querySelector('input[name="planType"]:checked')?.value || '1month';
     const isYearly = selectedPlanValue === '1year';
-    const monthlyQr = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAMgAQAAAADzCzvFAAAD5UlEQVR4nO3dUW7iMBDG8W82SOlbuIF7K0oGs5F9hT4Jb23Rr7F6wy0Wjup3kytJq0hBk6Ekrdll1mQ5u9Le3t4T3G0+Q6hLQOQeICu1Vcf7hYxPKvGohh3U1GJ7V2oZl+/Mw44rqfVnH8m8jP1L+Bc+zxg7yz6H+N5OBsrqJ69u1gncM6553I4zq7H1TZr53a2gMfdM5jW6oJ3H15IWd1x4eFihq4UkLdhvP8kP7sk8sLe6RZ0vR5Hd6s5pO+UxsV+1iOaV0HecZ2oHYJXqJ6Jq7n7cT4RdbQ2AAAEwqIj0FQAAABJRU5ErkJggg==';
-    const yearlyQr = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUoAAAFKAQAAAABTUiuoAAAB8klEQVR4nO2awW3kMAxFPyMBe5Q7SCly5x3tG9KTIc47g7Z9f0k59uE7a3B3v5iCjmzVmaO2mFrt2uzc3Hls3aQ9k0v6S0M13uk9Q0v3u7K0RaM2R5d5zRYTOPxnaFDL3N+kHP8axRU5L0BQQQAAABJRU5ErkJggg==';
+    const monthlyPaymentLink = 'https://i.ibb.co/LWVdcR0/qr-1month-36-png.jpg';
+    const yearlyPaymentLink = 'https://i.ibb.co/yB6gYBSL/qr-1year-319-png.jpg';
 
-    paymentQrPlanText.innerText = isYearly ? 'QR Code for 1 Year Plan (₹319):' : 'QR Code for 1 Month Plan (₹36):';
-    paymentQrImage.src = isYearly ? yearlyQr : monthlyQr;
-    paymentQrImage.style.display = 'block';
-    paymentQrImage.style.visibility = 'visible';
-    paymentQrImage.style.opacity = '1';
-    paymentQrImage.alt = isYearly ? 'Payment QR Code for ₹319' : 'Payment QR Code for ₹36';
-    paymentQrNote.innerText = isYearly ? 'This QR is for the ₹319 plan.' : 'This QR is for the ₹36 plan.';
+    paymentQrPlanText.innerText = isYearly ? 'Payment Link for 1 Year Plan (₹319):' : 'Payment Link for 1 Month Plan (₹36):';
+    paymentLinkButton.href = isYearly ? yearlyPaymentLink : monthlyPaymentLink;
+    paymentLinkButton.innerText = isYearly ? '💳 Open ₹319 Payment Link' : '💳 Open ₹36 Payment Link';
+    paymentQrNote.innerText = isYearly
+      ? 'Click the button above to open the ₹319 payment link.'
+      : 'Click the button above to open the ₹36 payment link.';
   }
 
   document.querySelectorAll('input[name="planType"]').forEach((radio) => {
@@ -2354,6 +2405,9 @@
   signUpBtn.addEventListener('click', handleSignUp);
   signUpConfirmPass.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSignUp(); });
 
+  // ==========================================================
+  // ISOLATED CHANGE PASSWORD HANDLER WITH PROFESSIONAL MESSAGES
+  // ==========================================================
   saveNewPwdBtn.addEventListener('click', async () => {
     const inputEmailForPwd = pwdEmailInput.value.trim().toLowerCase();
     const oldP = oldPassInput.value.trim();
@@ -2381,6 +2435,7 @@
       return;
     }
 
+    // 1. STRICT ADMIN ISOLATION
     if (inputEmailForPwd === ADMIN_EMAIL.toLowerCase()) {
       const adminActivePass = getStoredPassword().trim();
       if (oldP !== adminActivePass && oldP !== INITIAL_PASS && oldP !== EXPIRED_PASS) {
@@ -2394,6 +2449,7 @@
       pwdStatusMsg.style.color = "#34d399";
       pwdStatusMsg.style.display = "block";
     } else {
+      // 2. DISTRIBUTOR PASSWORD CHANGE WITH PROFESSIONAL MESSAGES
       pwdStatusMsg.innerText = "⏳ Please wait, checking your details...";
       pwdStatusMsg.style.color = "#fbbf24";
       pwdStatusMsg.style.display = "block";
@@ -2435,10 +2491,12 @@
     let isAdmin = false;
     let loggedInDistributor = null;
 
+    // 1. Check Admin (Lifetime Access)
     if (inputEmail === ADMIN_EMAIL.toLowerCase() && inputPass === adminActivePass) {
       isAuthorized = true;
       isAdmin = true;
     } else {
+      // 2. Check Cloud Distributors with 30 Days Expiry & Status Enforcement
       let dists = await getDistributorsListCloud();
       let foundUser = dists.find(d => String(d.email).trim().toLowerCase() === inputEmail);
       
@@ -2466,7 +2524,7 @@
         }
 
         if (distStatus === "Stopped") {
-          errorMsg.innerText = "⚠️ आपकी सर्विस एडमिन द्वारा रोक दी गई है। अपनी सेवाएं बिना किसी रुकावट के अगले 30 दिनों तक लगातार चालू रखने के लिए कृपया केवल ₹36 का भुगतान करें और भुगतान का स्क्रीनशॉट हमारे WhatsApp (+91 7887575671) पर भेज दें।";
+          errorMsg.innerText = "⚠️ आपकी सर्विस एडमिन द्वारा रोक दी गई है। अपनी सेवाएं बिना किसी रुकावट के अगले 30 दिनों (पूरा 1 महीना) तक लगातार चालू रखने के लिए कृपया केवल ₹36 का भुगतान करें और भुगतान का स्क्रीनशॉट हमारे WhatsApp (+91 7887575671) पर भेज दें। आपका पोर्टल 30 मिनट के भीतर पुनः चालू कर दिया जाएगा!";
           errorMsg.style.display = 'block';
           return;
         }
@@ -2505,8 +2563,10 @@
         adminTabBtn.style.display = 'none';
         switchTabDirect('tab-cards');
         
+        // Save current logged in distributor email for screenshot replies
         currentLoggedDistributorEmail = inputEmail;
 
+        // Show Distributor Notice (Text + Image Banner)
         if (loggedInDistributor) {
           let hasNotice = false;
           const banner = document.getElementById('distributorNoticeBanner');
@@ -2570,7 +2630,7 @@
   });
 
   // ==========================================
-  // CROPPING ENGINE
+  // CROPPING ENGINE (Universal & Manual)
   // ==========================================
   let cropper = null;
   let activeCropType = 'card_front';
@@ -2606,7 +2666,9 @@
       handleLoadedImage(fileOrDataUrl);
     } else {
       const reader = new FileReader();
-      reader.onload = function(e) { handleLoadedImage(e.target.result); };
+      reader.onload = function(e) {
+        handleLoadedImage(e.target.result);
+      };
       reader.readAsDataURL(fileOrDataUrl);
     }
   }
@@ -2715,7 +2777,7 @@
   }
 
   // ==========================================
-  // TAB 1: 5 CARDS SYSTEM
+  // TAB 1: 5 CARDS SYSTEM LOGIC
   // ==========================================
   const CARD_W = 1013, CARD_H = 638, A4_W = 2480, A4_H = 3508, GAP_2_5MM_PX = 30, MAX_CARDS = 5;
   let addedCardsCount = 0, img1Loaded = false, img2Loaded = false;
@@ -2737,7 +2799,9 @@
     if (file) {
       document.getElementById('file1Name').innerText = `✅ Auto-Fitted: ${file.name}`;
       const reader = new FileReader();
-      reader.onload = function(evt) { autoFitCardToCanvas(evt.target.result, canvas1, ctx1, true); };
+      reader.onload = function(evt) {
+        autoFitCardToCanvas(evt.target.result, canvas1, ctx1, true);
+      };
       reader.readAsDataURL(file);
     }
   });
@@ -2747,7 +2811,9 @@
     if (file) {
       document.getElementById('file2Name').innerText = `✅ Auto-Fitted: ${file.name}`;
       const reader = new FileReader();
-      reader.onload = function(evt) { autoFitCardToCanvas(evt.target.result, canvas2, ctx2, false); };
+      reader.onload = function(evt) {
+        autoFitCardToCanvas(evt.target.result, canvas2, ctx2, false);
+      };
       reader.readAsDataURL(file);
     }
   });
@@ -2833,9 +2899,9 @@
     saveToHistory('ID Card Print (5-Slots)', fileName, blob, 'application/pdf');
   });
 
-  // ==========================================
-  // TAB 2: MULTI-PHOTO UNIQUE PASSPORT
-  // ==========================================
+  // ==========================================================
+  // TAB 2: MULTI-PHOTO UNIQUE PASSPORT GENERATOR (1 to 5 PHOTOS)
+  // ==========================================================
   let activePassportCount = 1;
   let multiPassportCanvases = [];
   let multiPassportLoaded = [];
@@ -2947,7 +3013,7 @@
   renderPassportUploadBlocks();
 
   // ==========================================
-  // TAB 3: NAME & DATE PASSPORT
+  // TAB 3: NAME & DATE PASSPORT (3 FONT SLIDERS)
   // ==========================================
   const namePassportCanvas = document.getElementById('namePassportCanvas');
   const namePassportCtx = namePassportCanvas.getContext('2d');
@@ -3021,13 +3087,24 @@
     let rawDob = document.getElementById('candDobInput').value.trim();
     let rawDop = document.getElementById('candDopInput').value.trim();
 
-    let formattedDob = rawDob ? (rawDob.toUpperCase().startsWith('DOB:') ? rawDob : `DOB: ${rawDob}`) : '';
-    let formattedDop = rawDop ? (rawDop.toUpperCase().startsWith('DOP:') ? rawDop : `DOP: ${rawDop}`) : '';
+    let formattedDob = '';
+    if (rawDob) {
+      formattedDob = rawDob.toUpperCase().startsWith('DOB:') ? rawDob : `DOB: ${rawDob}`;
+    }
+
+    let formattedDop = '';
+    if (rawDop) {
+      formattedDop = rawDop.toUpperCase().startsWith('DOP:') ? rawDop : `DOP: ${rawDop}`;
+    }
 
     if (cName || formattedDob || formattedDop) {
       namePassportCtx.font = `900 ${currentNameFontSize}px Poppins, Arial, sans-serif`;
       const nameLines = cName ? wrapNameText(namePassportCtx, cName.toUpperCase(), 390) : [];
       
+      let dateLineCount = 0;
+      if (formattedDob) dateLineCount++;
+      if (formattedDop) dateLineCount++;
+
       const nameBlockHeight = nameLines.length * (currentNameFontSize + 8);
       const dobBlockHeight = formattedDob ? (currentDobFontSize + 8) : 0;
       const dopBlockHeight = formattedDop ? (currentDopFontSize + 8) : 0;
@@ -3230,9 +3307,9 @@
     saveToHistory('4x6 Photo A4 Sheet', fileName, blob, 'application/pdf');
   });
 
-  // ==========================================
-  // TAB 5: PDF ARRANGER
-  // ==========================================
+  // ==========================================================
+  // TAB 5: PDF ARRANGER (DRAG & DROP / HOLD & MOVE)
+  // ==========================================================
   let arrangedPdfPagesList = [];
   let draggedArrangerIdx = null;
 
@@ -3307,7 +3384,9 @@
         card.classList.add('drag-over');
       });
 
-      card.addEventListener('dragleave', () => { card.classList.remove('drag-over'); });
+      card.addEventListener('dragleave', () => {
+        card.classList.remove('drag-over');
+      });
 
       card.addEventListener('drop', (e) => {
         e.preventDefault();
@@ -3335,12 +3414,20 @@
       const rotateBtn = document.createElement('button');
       rotateBtn.className = 'mini-tool-btn';
       rotateBtn.innerHTML = '🔄 Rotate';
-      rotateBtn.onclick = (e) => { e.stopPropagation(); rotateArrangerPage(idx); };
+      rotateBtn.title = 'Rotate 90°';
+      rotateBtn.onclick = (e) => {
+        e.stopPropagation();
+        rotateArrangerPage(idx);
+      };
 
       const delBtn = document.createElement('button');
       delBtn.className = 'mini-tool-btn btn-del';
       delBtn.innerHTML = '🗑️';
-      delBtn.onclick = (e) => { e.stopPropagation(); deleteArrangerPage(idx); };
+      delBtn.title = 'Delete Page';
+      delBtn.onclick = (e) => {
+        e.stopPropagation();
+        deleteArrangerPage(idx);
+      };
 
       toolsBar.appendChild(rotateBtn);
       toolsBar.appendChild(delBtn);
@@ -3372,6 +3459,7 @@
 
     const { PDFDocument, degrees } = PDFLib;
     const outPdf = await PDFDocument.create();
+
     const loadedDocsMap = new Map();
 
     for (const pageObj of arrangedPdfPagesList) {
@@ -3382,10 +3470,12 @@
       }
 
       const [copiedPage] = await outPdf.copyPages(srcDoc, [pageObj.pageIndex]);
+      
       if (pageObj.rotation !== 0) {
         const currentRot = copiedPage.getRotation().angle;
         copiedPage.setRotation(degrees(currentRot + pageObj.rotation));
       }
+
       outPdf.addPage(copiedPage);
     }
 
@@ -3400,9 +3490,9 @@
     saveToHistory('PDF Arranger', fileName, blob, 'application/pdf');
   });
 
-  // ==========================================
-  // TAB 6: UNIVERSAL MERGE
-  // ==========================================
+  // ==========================================================
+  // TAB 6: UNIVERSAL MERGE (DRAG & DROP RE-ORDER SUPPORT)
+  // ==========================================================
   let universalFiles = [];
   let draggedUniversalIdx = null;
 
@@ -3457,7 +3547,9 @@
         item.classList.add('drag-over');
       });
 
-      item.addEventListener('dragleave', () => { item.classList.remove('drag-over'); });
+      item.addEventListener('dragleave', () => {
+        item.classList.remove('drag-over');
+      });
 
       item.addEventListener('drop', (e) => {
         e.preventDefault();
@@ -3472,12 +3564,20 @@
       const delBtn = document.createElement('button');
       delBtn.className = 'item-delete-btn';
       delBtn.innerHTML = '✖';
-      delBtn.onclick = function(e) { e.stopPropagation(); removeUniversalFile(idx); };
+      delBtn.title = 'Remove this file';
+      delBtn.onclick = function(e) {
+        e.stopPropagation();
+        removeUniversalFile(idx);
+      };
       item.appendChild(delBtn);
 
       if (file.type === 'application/pdf') {
         const icon = document.createElement('div');
-        icon.style.cssText = "height:135px; display:flex; align-items:center; justify-content:center; font-size:36px;";
+        icon.style.height = '135px';
+        icon.style.display = 'flex';
+        icon.style.alignItems = 'center';
+        icon.style.justifyContent = 'center';
+        icon.style.fontSize = '36px';
         icon.innerText = '📄';
         item.appendChild(icon);
       } else {
@@ -3489,6 +3589,7 @@
       const label = document.createElement('div');
       label.className = 'file-label';
       label.innerText = file.name;
+      label.title = file.name;
       item.appendChild(label);
 
       gallery.appendChild(item);
@@ -3516,7 +3617,13 @@
         const copiedPages = await mergedPdf.copyPages(externalPdf, externalPdf.getPageIndices());
         copiedPages.forEach((page) => mergedPdf.addPage(page));
       } else {
-        let embeddedImage = (file.type === 'image/png') ? await mergedPdf.embedPng(fileBytes) : await mergedPdf.embedJpg(fileBytes);
+        let embeddedImage;
+        if (file.type === 'image/png') {
+          embeddedImage = await mergedPdf.embedPng(fileBytes);
+        } else {
+          embeddedImage = await mergedPdf.embedJpg(fileBytes);
+        }
+
         const page = mergedPdf.addPage([595.28, 841.89]);
         const imgDims = embeddedImage.scaleToFit(555.28, 801.89);
 
@@ -3540,9 +3647,9 @@
     saveToHistory('Universal PDF Merge', fileName, blob, 'application/pdf');
   });
 
-  // ==========================================
+  // ==========================================================
   // TAB 7: CUSTOM IMAGE RESIZER
-  // ==========================================
+  // ==========================================================
   let originalResizerImg = null;
   let resizerOriginalWidth = 0;
   let resizerOriginalHeight = 0;
@@ -3590,7 +3697,10 @@
       targetH = Math.round((hVal / 2.54) * DPI_SCALE);
     }
 
-    return { width: Math.max(1, targetW), height: Math.max(1, targetH) };
+    return {
+      width: Math.max(1, targetW),
+      height: Math.max(1, targetH)
+    };
   }
 
   function updateResizerCanvas() {
@@ -3670,9 +3780,9 @@
     saveToHistory('Image Resizer (PNG)', fileName, dataUrl, 'image/png');
   });
 
-  // ==========================================
+  // ==========================================================
   // TAB 8: PDF TO HIGH-DPI JPG CONVERTER
-  // ==========================================
+  // ==========================================================
   let pdfToJpgDoc = null;
   let activeDpiValue = 300;
 
@@ -3759,17 +3869,20 @@
     }
   });
 
-  // ==========================================
+  // ==========================================================
   // TAB 9: PDF COMPRESSOR
-  // ==========================================
+  // ==========================================================
   let compressOriginalFile = null;
   let compressPdfDoc = null;
+  let origFileSizeInKB = 0;
 
   document.getElementById('pdfCompressInput').addEventListener('change', async function(e) {
     const file = e.target.files[0];
     if (!file) return;
 
     compressOriginalFile = file;
+    origFileSizeInKB = (file.size / 1024).toFixed(1);
+    
     document.getElementById('pdfCompressStatus').innerText = `✅ ${file.name}`;
     document.getElementById('origFileSizeDisplay').innerText = formatBytes(file.size);
 
@@ -3805,6 +3918,7 @@
     const progress = document.getElementById('compressProgressMsg');
     const qualityVal = parseInt(document.getElementById('compressQualitySlider').value);
     const jpegQuality = qualityVal / 100;
+    
     const renderScale = Math.max(1.0, (qualityVal / 100) * 2.2); 
     const totalPages = compressPdfDoc.numPages;
 
