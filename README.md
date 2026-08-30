@@ -1616,6 +1616,8 @@
       const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
         mode: "cors",
+        cache: "no-store",
+        credentials: "omit",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
@@ -1626,12 +1628,33 @@
       }
 
       try {
-        await response.text();
-      } catch (err) {}
-      return true;
+        const text = await response.text();
+        if (!text || text.trim() === '') return true;
+        try {
+          const parsed = JSON.parse(text);
+          return parsed;
+        } catch (err) {
+          return text;
+        }
+      } catch (err) {
+        return true;
+      }
     } catch(err) {
       console.error("Post error:", err);
       return false;
+    }
+  }
+
+  async function refreshDistributorCloudData() {
+    try {
+      const latest = await getDistributorsListCloud();
+      if (Array.isArray(latest)) {
+        saveDistributorCache(latest);
+      }
+      return latest;
+    } catch (err) {
+      console.error('Distributor refresh failed:', err);
+      return [];
     }
   }
 
@@ -1684,7 +1707,19 @@
   }
 
   async function toggleDistributorStatusCloud(email, newStatus) {
-    return await callCloudPost({ action: "toggleStatus", email: email, status: newStatus });
+    const normalizedStatus = String(newStatus || 'Active').trim();
+    const payload = {
+      action: "toggleStatus",
+      email: email,
+      status: normalizedStatus,
+      newStatus: normalizedStatus,
+      updatedStatus: normalizedStatus,
+      paymentStatus: normalizedStatus === 'Stopped' ? 'Stopped' : 'Approved',
+      approvalGranted: normalizedStatus === 'Active',
+      accessApproved: normalizedStatus === 'Active',
+      approved: normalizedStatus === 'Active'
+    };
+    return await callCloudPost(payload);
   }
 
   async function updateDistributorPasswordCloud(email, newPass) {
@@ -2019,6 +2054,8 @@
       approvalGranted: approved,
       accessApproved: approved,
       status: statusValue,
+      newStatus: statusValue,
+      updatedStatus: statusValue,
       paymentStatus: action,
       paymentPlan: plan,
       expiryTime: expiryTime,
@@ -2027,20 +2064,28 @@
 
     const result = await callCloudPost(payload);
     if (result) {
-      setTimeout(() => renderDistributorsTable(), 1500);
+      await refreshDistributorCloudData();
+      renderDistributorsTable();
     }
   }
 
   async function toggleDistributorStatus(email, newStatus) {
     if (!confirm(`क्या आप इस डिस्ट्रीब्यूटर की सर्विस को ${newStatus === 'Stopped' ? '🛑 Stop (रोकना)' : '▶️ Start (चालू करना)'} चाहते हैं?`)) return;
-    await toggleDistributorStatusCloud(email, newStatus);
-    setTimeout(() => renderDistributorsTable(), 1500);
+
+    const result = await toggleDistributorStatusCloud(email, newStatus);
+    if (result) {
+      await refreshDistributorCloudData();
+      renderDistributorsTable();
+    }
   }
 
   async function removeDistributor(id) {
     if (!confirm('क्या आप इस डिस्ट्रीब्यूटर को हटाना चाहते हैं?')) return;
-    await deleteDistributorCloud(id);
-    setTimeout(() => renderDistributorsTable(), 1500);
+    const result = await deleteDistributorCloud(id);
+    if (result) {
+      await refreshDistributorCloudData();
+      renderDistributorsTable();
+    }
   }
 
   function openAdminMsgModal(email) {
