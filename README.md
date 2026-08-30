@@ -880,7 +880,7 @@
 
   <input type="text" id="signUpTxnId" class="login-input" placeholder="Transaction ID / Reference Number">
   <label style="display:block; width:100%; text-align:left; font-size:11px; color:var(--text-muted); margin-bottom:8px;">📸 Upload payment screenshot</label>
-  <input type="file" id="signUpPaymentScreenshot" accept="image/*" style="display:block; width:100%; background: rgba(15, 23, 42, 0.9); color:#fff; padding:10px; border-radius:10px; border:1px solid rgba(56, 189, 248, 0.3); margin-bottom:12px;">
+  <input type="file" id="signUpPaymentScreenshot" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:block; width:100%; background: rgba(15, 23, 42, 0.9); color:#fff; padding:10px; border-radius:10px; border:1px solid rgba(56, 189, 248, 0.3); margin-bottom:12px;">
 
   <button id="signUpBtn" class="login-btn" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">✅ Create Account</button>
   <div id="signUpStatusMsg" style="font-size:13px; margin-top:12px; display:none; font-weight:500;"></div>
@@ -948,7 +948,7 @@
         <!-- Reply Payment Screenshot Box for Distributor -->
         <div style="background: rgba(15,23,42,0.85); border: 1px solid rgba(56,189,248,0.4); padding: 12px; border-radius: 10px; min-width: 220px; text-align: center;">
           <div style="font-size: 11px; color: var(--accent-blue); margin-bottom: 6px; font-weight: 600;">💳 Reply Your Payment Screenshot</div>
-          <input type="file" id="distScreenshotInput" accept="image/*" style="display:block; width:100%; background:#334155; color:#fff; padding:6px; font-size:11px; border-radius:6px; border:1px solid rgba(56,189,248,0.4); margin-bottom:8px; cursor:pointer;">
+          <input type="file" id="distScreenshotInput" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:block; width:100%; background:#334155; color:#fff; padding:6px; font-size:11px; border-radius:6px; border:1px solid rgba(56,189,248,0.4); margin-bottom:8px; cursor:pointer;">
           <button onclick="uploadDistributorScreenshot()" class="action-btn btn-download" style="padding: 6px 12px; font-size: 11px; width: 100%;">📤 Send Screenshot</button>
           <div id="screenshotUploadStatus" style="font-size:10px; margin-top:4px; display:none;"></div>
         </div>
@@ -1755,7 +1755,7 @@
 
       // An Apps Script Web App's POST response can be opaque in browsers. Confirm
       // the saved Drive URL by reading the Sheet data instead of trusting the POST.
-      for (let attempt = 0; attempt < 3; attempt++) {
+      for (let attempt = 0; attempt < 10; attempt++) {
         await new Promise(resolve => setTimeout(resolve, 1200));
         const latest = await refreshDistributorCloudData();
         const savedRecord = (latest || []).find((dist) =>
@@ -2346,17 +2346,22 @@
 
   function preparePaymentScreenshot(file) {
     return new Promise((resolve, reject) => {
+      if (!file || !/^image\/(jpeg|jpg|png|webp)$/i.test(file.type)) {
+        reject(new Error('Only JPG, PNG, or WEBP screenshots are supported'));
+        return;
+      }
       const reader = new FileReader();
       reader.onload = (event) => {
         const image = new Image();
         image.onload = () => {
-          const maxDimension = 1400;
+          // Smaller image data uploads faster and reliably stays within Apps Script limits.
+          const maxDimension = 1000;
           const scale = Math.min(1, maxDimension / Math.max(image.width, image.height));
           const canvas = document.createElement('canvas');
           canvas.width = Math.max(1, Math.round(image.width * scale));
           canvas.height = Math.max(1, Math.round(image.height * scale));
           canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
-          resolve(canvas.toDataURL('image/jpeg', 0.78));
+          resolve(canvas.toDataURL('image/jpeg', 0.68));
         };
         image.onerror = () => reject(new Error('Unable to decode screenshot'));
         image.src = event.target.result;
