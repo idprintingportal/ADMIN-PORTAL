@@ -1597,7 +1597,7 @@
   // ==========================================================
   // CLOUD API URL (POST JSON Method)
   // ==========================================================
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby9cny7fS1FyccdcdwE5MGEL_ob6UQTl8cOS9D19D90azYpChm-u6io8I8w2yDQHCAy/exec";
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhAJ-GhVFqlNsimIap4r_eZD68LPi_EGf1yMPS82aOpMHP-oDGmJ64D73oXiLRsoaP/exec";
 
   let authToken = '';
   let authRole = '';
