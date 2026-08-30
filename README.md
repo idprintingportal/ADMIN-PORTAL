@@ -1637,9 +1637,11 @@
         mode: "cors",
         cache: "no-store",
         credentials: "omit",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "text/plain;charset=UTF-8" },
         body: JSON.stringify(payload)
       });
+
+      if (response.type === 'opaque') return true;
 
       if (!response.ok) {
         console.error("Cloud POST failed:", response.status, response.statusText);
@@ -1656,11 +1658,6 @@
           }
           return Boolean(parsed);
         } catch (err) {
-          const normalizedText = text.trim().toLowerCase();
-          if (normalizedText.includes('<html') || normalizedText.includes('error')) {
-            console.error('Cloud POST response:', text);
-            return false;
-          }
           return Boolean(text.trim());
         }
       } catch (err) {
