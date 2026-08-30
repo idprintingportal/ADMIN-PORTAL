@@ -785,7 +785,56 @@
       text-decoration: none;
       box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
     }
-  </style>
+      /* Opaque defaults keep host-site table styles from making rows white. */
+    #tab-admin .history-table-container,
+    #tab-admin .history-table {
+      background: #0f172a !important;
+      color: #f1f5f9 !important;
+      color-scheme: dark;
+    }
+    #tab-admin .history-table thead th {
+      background: #263449 !important;
+      color: #7dd3fc !important;
+      border-color: #475569 !important;
+    }
+    #tab-admin .history-table tbody tr,
+    #tab-admin .history-table tbody tr > td {
+      background: #172033 !important;
+      color: #f1f5f9 !important;
+      border-color: #334155 !important;
+      box-shadow: none !important;
+      opacity: 1;
+    }
+    #tab-admin .history-table tbody tr:nth-child(even),
+    #tab-admin .history-table tbody tr:nth-child(even) > td {
+      background: #1e293b !important;
+    }
+    #tab-admin .history-table tbody tr:hover,
+    #tab-admin .history-table tbody tr:hover > td {
+      background: #29394f !important;
+    }
+    #tab-admin .history-table .history-msg-btn {
+      background: #3a2b16 !important;
+      color: #fde68a !important;
+      border: 1px solid #b7832f !important;
+      opacity: 1;
+    }
+    #tab-admin .history-table .history-msg-btn:hover,
+    #tab-admin .history-table .history-msg-btn:focus-visible {
+      background: #57401d !important;
+      color: #fff3c4 !important;
+    }
+    #tab-admin .history-table .history-msg-btn:focus-visible {
+      outline: 2px solid #7dd3fc;
+      outline-offset: 2px;
+    }
+    #tab-admin .history-table .history-msg-btn:disabled {
+      background: #334155 !important;
+      color: #cbd5e1 !important;
+      cursor: wait;
+    }
+
+</style>
 </head>
 <body>
 
