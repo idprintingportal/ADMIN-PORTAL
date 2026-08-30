@@ -854,7 +854,7 @@
 
     <div id="paymentQrPlanText" style="margin-bottom: 8px; color: #f8fafc; font-weight: 600;">QR Code for 1 Month Plan (₹36):</div>
     <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 10px; padding: 12px; text-align: center;">
-      <img id="paymentQrImage" src="assets/qr-1month-36.png" alt="Payment QR Code for ₹36" style="max-width: 180px; width: 100%; display: block; margin: 0 auto; background: #fff; border-radius: 8px;">
+      <img id="paymentQrImage" src="assets/qr-1month-36.png" alt="Payment QR Code for ₹36" style="max-width: 220px; width: 100%; height: auto; display: block; margin: 0 auto; background: #fff; padding: 8px; border-radius: 10px; border: 1px solid rgba(15, 23, 42, 0.15); box-shadow: 0 4px 12px rgba(0,0,0,0.18);">
       <div id="paymentQrNote" style="margin-top: 8px; font-size: 11px; color: var(--text-muted);">This QR is for the ₹36 plan.</div>
     </div>
   </div>
