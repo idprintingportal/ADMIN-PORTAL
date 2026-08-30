@@ -890,6 +890,24 @@
   </div>
 </div>
 
+<!-- Expired Distributor Renewal Screen -->
+<div id="renewalScreen" class="auth-box" style="display:none;">
+  <div class="badge" style="color:#fbbf24; border-color:rgba(245,158,11,.4); background:rgba(245,158,11,.15);">Renewal Required</div>
+  <h2 style="font-size:20px; margin-bottom:6px; color:#fbbf24;">🔄 Renew Your Portal</h2>
+  <p id="renewalGreeting" style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">आपकी validity समाप्त हो चुकी है। अपना plan चुनकर payment पूरा करें।</p>
+  <div style="background:rgba(15,23,42,.9); border:1px solid rgba(56,189,248,.35); border-radius:12px; padding:12px; margin-bottom:12px; text-align:left; font-size:12px;">
+    <label style="display:flex; align-items:center; gap:8px; margin-bottom:9px;"><input type="radio" name="renewalPlanType" value="1month"><span>1 Month Renewal — ₹36</span></label>
+    <label style="display:flex; align-items:center; gap:8px;"><input type="radio" name="renewalPlanType" value="1year"><span>1 Year Renewal — ₹319</span></label>
+    <a id="renewalPaymentLink" class="payment-link-btn" href="#" target="_blank" rel="noopener noreferrer" style="margin-top:12px;">💳 Open Payment Link</a>
+  </div>
+  <input type="text" id="renewalTxnId" class="login-input" placeholder="Transaction ID / Reference Number">
+  <label style="display:block; width:100%; text-align:left; font-size:11px; color:var(--text-muted); margin-bottom:8px;">📸 Upload payment screenshot</label>
+  <input type="file" id="renewalPaymentScreenshot" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:block; width:100%; background:rgba(15,23,42,.9); color:#fff; padding:10px; border-radius:10px; border:1px solid rgba(56,189,248,.3); margin-bottom:12px;">
+  <button id="submitRenewalBtn" class="login-btn" style="background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%);">📤 Submit Renewal for Approval</button>
+  <div id="renewalStatusMsg" style="font-size:13px; margin-top:12px; display:none; font-weight:500;"></div>
+  <div><span id="backToLoginFromRenewal" class="auth-link">⬅️ Back to Login</span></div>
+</div>
+
 <!-- 3. Change Password Screen -->
 <div id="changePwdScreen" class="auth-box" style="display:none;">
   <div class="badge">Security Settings</div>
@@ -1592,6 +1610,7 @@
   function getDistributorScreenshotUrl(record) {
     if (!record || typeof record !== 'object') return '';
     const candidates = [
+      record.renewalScreenshot,
       record.paymentScreenshot,
       record.distScreenshot,
       record.distscreenshot,
@@ -1613,7 +1632,7 @@
 
     const paymentStatus = String(record.paymentStatus || record.approvalStatus || '').trim().toLowerCase();
     const distStatus = String(record.status || '').trim().toLowerCase();
-    const approvalGranted = Boolean(record.approvalGranted || record.approved || record.accessApproved);
+    const approvalGranted = [record.approvalGranted, record.approved, record.accessApproved].some(value => String(value).toLowerCase() === 'true');
 
     return approvalGranted && paymentStatus === 'approved' && distStatus === 'active';
   }
@@ -1629,6 +1648,14 @@
       console.error("Fetch error:", err);
       return getDistributorCache();
     }
+  }
+
+  async function callRenewalPost(payload) {
+    const response = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', cache: 'no-store', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify(payload) });
+    if (!response.ok) throw new Error('Server HTTP ' + response.status);
+    const result = await response.json();
+    if (result.success !== true) throw new Error(result.error || 'Server did not confirm renewal.');
+    return result;
   }
 
   async function callCloudPost(payload) {
@@ -2035,8 +2062,9 @@
 
       const currentStatus = (d.status !== undefined && d.status !== null && String(d.status).trim() !== "") ? String(d.status).trim() : "Active";
       const paymentStatus = (d.paymentStatus !== undefined && d.paymentStatus !== null && String(d.paymentStatus).trim() !== "") ? String(d.paymentStatus).trim() : ((currentStatus === 'Pending' || currentStatus === 'Rejected') ? currentStatus : 'Approved');
-      const paymentPlan = d.paymentPlan || d.plan || '1 Month';
-      const paymentAmount = d.paymentAmount || (paymentPlan.toLowerCase().includes('year') ? '₹319' : '₹36');
+      const isRenewalRequest = String(d.renewalRequested || '').toLowerCase() === 'true';
+      const paymentPlan = (isRenewalRequest ? d.renewalPlan : '') || d.paymentPlan || d.plan || '1 Month';
+      const paymentAmount = (isRenewalRequest ? d.renewalAmount : '') || d.paymentAmount || (paymentPlan.toLowerCase().includes('year') ? '₹319' : '₹36');
       const screenshotVal = getDistributorScreenshotUrl(d);
       const txnId = d.paymentTxnId || d.transactionId || d.txnId || 'N/A';
       const distributorReply = d.distributorMessage || d.distributorReply || '';
@@ -2056,6 +2084,7 @@
           <div style="color:#94a3b8; font-size:10px;">Plan: ${paymentPlan}</div>
           <div style="color:#94a3b8; font-size:10px;">Amount: ${paymentAmount}</div>
           <div style="color:#94a3b8; font-size:10px;">Txn: ${txnId}</div>
+          ${isRenewalRequest ? '<div style="color:#fbbf24; font-size:10px; font-weight:700;">🔄 Renewal Request</div>' : ''}
         </td>
         <td style="color: ${textColor}; font-weight:600;">⏳ ${timelineText} (<span style="color:${currentStatus === 'Active' ? '#34d399' : currentStatus === 'Rejected' ? '#f87171' : '#fbbf24'}">${currentStatus}</span>)</td>
         <td>
@@ -2100,34 +2129,14 @@
   async function reviewDistributorPayment(email, approved) {
     if (!confirm(approved ? 'क्या आप इस distributor का भुगतान approve करना चाहते हैं?' : 'क्या आप इस distributor का भुगतान reject करना चाहते हैं?')) return;
 
-    const action = approved ? 'Approved' : 'Rejected';
-    const statusValue = approved ? 'Active' : 'Rejected';
-
-    const dists = await getDistributorsListCloud();
-    const dist = dists.find(d => String(d.email).trim().toLowerCase() === String(email).trim().toLowerCase());
-    const plan = (dist && (dist.paymentPlan || dist.plan)) || '1 Month';
-    const planMs = plan.toLowerCase().includes('year') ? ONE_YEAR_MS : THIRTY_MS;
-    const expiryTime = approved ? Date.now() + planMs : (Number(dist?.expiryTime || Date.now()) || Date.now());
-
-    const result = await callCloudGet(new URLSearchParams({
-      action: 'reviewDistributorPayment',
-      email,
-      approved: approved ? 'true' : 'false',
-      approvalGranted: approved ? 'true' : 'false',
-      accessApproved: approved ? 'true' : 'false',
-      status: statusValue,
-      paymentStatus: action,
-      paymentPlan: plan,
-      expiryTime,
-      approvalNote: approved ? 'Payment approved by admin' : 'Payment rejected by admin'
-    }));
-    if (result) {
+    const adminReviewKey = prompt('Admin approval key डालें (Apps Script की ADMIN_REVIEW_KEY):');
+    if (!adminReviewKey) return;
+    try {
+      await callRenewalPost({ action: 'reviewDistributorPayment', email, approved: String(approved), adminReviewKey });
       await refreshDistributorCloudData();
       renderDistributorsTable();
-      alert(approved ? '✅ Application approved और Google Sheet में sync हो गया।' : '✅ Application rejected और Google Sheet में sync हो गया।');
-    } else {
-      alert('⚠️ Approval update Google Sheet में save नहीं हुआ। Apps Script deployment और Sheet permissions जाँचें।');
-    }
+      alert(approved ? '✅ Approved: नई validity Google Sheet में save हो गई।' : '✅ Rejected: access बंद रहेगा।');
+    } catch (error) { alert('⚠️ ' + error.message); }
   }
 
   async function toggleDistributorStatus(email, newStatus) {
@@ -2293,6 +2302,7 @@
 
   const loginScreen = document.getElementById('loginScreen');
   const signUpScreen = document.getElementById('signUpScreen');
+  const renewalScreen = document.getElementById('renewalScreen');
   const changePwdScreen = document.getElementById('changePwdScreen');
   const mainApp = document.getElementById('mainApp');
   
@@ -2317,6 +2327,15 @@
   const signUpBtn = document.getElementById('signUpBtn');
   const signUpStatusMsg = document.getElementById('signUpStatusMsg');
   const backToLoginFromSignUp = document.getElementById('backToLoginFromSignUp');
+  const renewalTxnId = document.getElementById('renewalTxnId');
+  const renewalPaymentScreenshot = document.getElementById('renewalPaymentScreenshot');
+  const renewalPaymentLink = document.getElementById('renewalPaymentLink');
+  const renewalStatusMsg = document.getElementById('renewalStatusMsg');
+  const submitRenewalBtn = document.getElementById('submitRenewalBtn');
+  const backToLoginFromRenewal = document.getElementById('backToLoginFromRenewal');
+  let currentRenewalDistributor = null;
+  let activeDistributorSession = null;
+  let renewalSubmitting = false;
 
   const goToChangePwd = document.getElementById('goToChangePwd');
   const backToLogin = document.getElementById('backToLogin');
@@ -2351,6 +2370,75 @@
     loginScreen.style.display = 'block';
     errorMsg.style.display = 'none';
     signUpStatusMsg.style.display = 'none';
+  });
+
+  function updateRenewalPlanUi() {
+    const selected = document.querySelector('input[name="renewalPlanType"]:checked')?.value || '1month';
+    const isYearly = selected === '1year';
+    renewalPaymentLink.href = isYearly ? 'https://i.ibb.co/yB6gYBSL/qr-1year-319-png.jpg' : 'https://i.ibb.co/LWVdcR0/qr-1month-36-png.jpg';
+    renewalPaymentLink.innerText = isYearly ? '💳 Open ₹319 Payment Link' : '💳 Open ₹36 Payment Link';
+  }
+
+  function showRenewalScreen(distributor) {
+    currentRenewalDistributor = distributor;
+    activeDistributorSession = null;
+    currentLoggedDistributorEmail = '';
+    sessionStorage.removeItem('isLoggedIn');
+    const existingPlan = String(distributor.paymentPlan || '').toLowerCase();
+    document.querySelector(`input[name="renewalPlanType"][value="${existingPlan.includes('year') ? '1year' : '1month'}"]`).checked = true;
+    document.getElementById('renewalGreeting').innerText = `${distributor.name || 'Distributor'}, आपकी validity समाप्त हो गई है। Payment के बाद admin approval मिलने पर portal फिर से चालू होगा।`;
+    renewalTxnId.value = '';
+    renewalPaymentScreenshot.value = '';
+    const pending = String(distributor.renewalRequested).toLowerCase() === 'true';
+    submitRenewalBtn.disabled = pending;
+    document.querySelectorAll('input[name="renewalPlanType"]').forEach(radio => radio.disabled = pending);
+    renewalTxnId.disabled = pending;
+    renewalPaymentScreenshot.disabled = pending;
+    renewalStatusMsg.style.display = pending ? 'block' : 'none';
+    renewalStatusMsg.style.color = '#fbbf24';
+    renewalStatusMsg.innerText = '⏳ Renewal admin approval की प्रतीक्षा में है। Approval के बाद दोबारा login करें।';
+    updateRenewalPlanUi();
+    loginScreen.style.display = 'none';
+    signUpScreen.style.display = 'none';
+    changePwdScreen.style.display = 'none';
+    mainApp.style.display = 'none';
+    renewalScreen.style.display = 'block';
+  }
+
+  document.querySelectorAll('input[name="renewalPlanType"]').forEach(radio => radio.addEventListener('change', updateRenewalPlanUi));
+  backToLoginFromRenewal.addEventListener('click', () => {
+    renewalScreen.style.display = 'none';
+    loginScreen.style.display = 'block';
+    currentRenewalDistributor = null;
+  });
+
+  submitRenewalBtn.addEventListener('click', async () => {
+    if (renewalSubmitting || submitRenewalBtn.disabled) return;
+    const txnId = renewalTxnId.value.trim();
+    const file = renewalPaymentScreenshot.files[0];
+    const selectedPlan = document.querySelector('input[name="renewalPlanType"]:checked')?.value || '1month';
+    if (!currentRenewalDistributor || !txnId || !file) {
+      renewalStatusMsg.innerText = '⚠️ Transaction ID और payment screenshot दोनों जरूरी हैं।';
+      renewalStatusMsg.style.color = '#ef4444'; renewalStatusMsg.style.display = 'block'; return;
+    }
+    renewalSubmitting = true;
+    submitRenewalBtn.disabled = true;
+    renewalStatusMsg.innerText = '⏳ Renewal request भेजी जा रही है...';
+    renewalStatusMsg.style.color = '#fbbf24'; renewalStatusMsg.style.display = 'block';
+    try {
+      const imageData = await preparePaymentScreenshot(file);
+      const plan = PAYMENT_PLAN_OPTIONS[selectedPlan];
+      const result = await callRenewalPost({ action: 'submitRenewal', email: currentRenewalDistributor.email, renewalPlan: plan.label, renewalAmount: plan.amount, renewalTxnId: txnId, imageData });
+      if (!result) throw new Error('Renewal request could not be saved.');
+      currentRenewalDistributor.renewalRequested = 'true';
+      showRenewalScreen(currentRenewalDistributor);
+      renewalStatusMsg.innerText = '✅ Renewal request admin को भेज दी गई है। Approval के बाद portal चालू होगा।';
+      renewalStatusMsg.style.color = '#34d399';
+    } catch (err) {
+      renewalStatusMsg.innerText = `⚠️ Renewal request भेजने में समस्या हुई: ${err?.message || err}`;
+      renewalStatusMsg.style.color = '#ef4444';
+      submitRenewalBtn.disabled = false;
+    } finally { renewalSubmitting = false; }
   });
 
   goToChangePwd.addEventListener('click', () => {
@@ -2640,7 +2728,17 @@
       isAdmin = true;
     } else {
       // 2. Check Cloud Distributors with 30 Days Expiry & Status Enforcement
-      let dists = await getDistributorsListCloud();
+      let dists;
+      try {
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getDistributors`, { cache: 'no-store' });
+        if (!response.ok) throw new Error('Cloud unavailable');
+        dists = await response.json();
+        if (!Array.isArray(dists)) throw new Error('Invalid response');
+      } catch (error) {
+        errorMsg.innerText = '⚠️ Login verify नहीं हुआ। Internet जाँचकर फिर कोशिश करें।';
+        errorMsg.style.display = 'block';
+        return;
+      }
       let foundUser = dists.find(d => String(d.email).trim().toLowerCase() === inputEmail);
       
       if (foundUser) {
@@ -2652,7 +2750,13 @@
 
         const paymentStatus = (foundUser.paymentStatus !== undefined && foundUser.paymentStatus !== null && String(foundUser.paymentStatus).trim() !== "") ? String(foundUser.paymentStatus).trim() : ((foundUser.status !== undefined && foundUser.status !== null && String(foundUser.status).trim() !== "") ? String(foundUser.status).trim() : "Approved");
         const distStatus = (foundUser.status !== undefined && foundUser.status !== null && String(foundUser.status).trim() !== "") ? String(foundUser.status).trim() : "Active";
-        const approvalGranted = Boolean(foundUser.approvalGranted || foundUser.approved || foundUser.accessApproved || paymentStatus === 'Approved');
+        const approvalGranted = isDistributorAccessApproved(foundUser);
+
+        const expired = Number(foundUser.expiryTime) > 0 && Date.now() >= Number(foundUser.expiryTime);
+        if (expired && distStatus !== 'Stopped') {
+          showRenewalScreen(foundUser);
+          return;
+        }
 
         if (paymentStatus === "Pending" || distStatus === "Pending" || !approvalGranted) {
           errorMsg.innerText = "⚠️ आपका भुगतान और फॉर्म approval की प्रतीक्षा में है। एडमिन आपके स्क्रीनशॉट की समीक्षा करने के बाद ही लॉगिन मिलेगा।";
@@ -2673,13 +2777,12 @@
         }
 
         const distExpiry = Number(foundUser.expiryTime || (Number(foundUser.assignedTimestamp || Date.now()) + THIRTY_MS));
-        if (Date.now() <= distExpiry) {
+        if (Date.now() < distExpiry) {
           isAuthorized = true;
           isAdmin = false;
           loggedInDistributor = foundUser;
         } else {
-          errorMsg.innerText = "⚠️ इस डिस्ट्रीब्यूटर की 30 दिनों की वैधता समाप्त हो चुकी है!";
-          errorMsg.style.display = 'block';
+          showRenewalScreen(foundUser);
           return;
         }
       } else {
@@ -2690,6 +2793,8 @@
     }
 
     if (isAuthorized) {
+      activeDistributorSession = isAdmin ? null : loggedInDistributor;
+      renewalScreen.style.display = 'none';
       sessionStorage.setItem('isLoggedIn', 'true');
       loginScreen.style.display = 'none';
       changePwdScreen.style.display = 'none';
@@ -2725,6 +2830,15 @@
     }
   }
 
+  function enforceSessionExpiry() {
+    if (!activeDistributorSession) return;
+    const expiry = Number(activeDistributorSession.expiryTime || (Number(activeDistributorSession.assignedTimestamp) + THIRTY_MS));
+    if (!Number.isFinite(expiry) || Date.now() >= expiry) showRenewalScreen(activeDistributorSession);
+  }
+  setInterval(enforceSessionExpiry, 1000);
+  document.addEventListener('visibilitychange', enforceSessionExpiry);
+  window.addEventListener('focus', enforceSessionExpiry);
+
   function switchTabDirect(tabId) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -2735,8 +2849,10 @@
   loginPass.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
 
   logoutBtn.addEventListener('click', () => {
+    activeDistributorSession = null;
     sessionStorage.removeItem('isLoggedIn');
     mainApp.style.display = 'none';
+    renewalScreen.style.display = 'none';
     changePwdScreen.style.display = 'none';
     loginScreen.style.display = 'block';
     loginPass.value = '';
