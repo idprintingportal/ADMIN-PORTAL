@@ -837,6 +837,16 @@
   <input type="password" id="signUpPass" class="login-input" placeholder="पासवर्ड बनाएं">
   <input type="password" id="signUpConfirmPass" class="login-input" placeholder="पासवर्ड फिर से लिखें">
 
+  <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 12px; padding: 12px; margin: 12px 0; text-align: left; font-size: 12px; color: var(--text-muted);">
+    <div style="font-size: 11px; color: var(--accent-blue); font-weight: 700; margin-bottom: 6px;">💳 Payment Instructions</div>
+    <div style="margin-bottom: 6px;">Pay the required amount to this tax code / UPI:</div>
+    <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.35); padding: 8px 10px; border-radius: 8px; color: #f8fafc; font-weight: 600; word-break: break-all;">Tax Code / UPI: 1234567890@upi</div>
+  </div>
+
+  <input type="text" id="signUpTxnId" class="login-input" placeholder="Transaction ID / Reference Number">
+  <label style="display:block; width:100%; text-align:left; font-size:11px; color:var(--text-muted); margin-bottom:8px;">📸 Upload payment screenshot</label>
+  <input type="file" id="signUpPaymentScreenshot" accept="image/*" style="display:block; width:100%; background: rgba(15, 23, 42, 0.9); color:#fff; padding:10px; border-radius:10px; border:1px solid rgba(56, 189, 248, 0.3); margin-bottom:12px;">
+
   <button id="signUpBtn" class="login-btn" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">✅ Create Account</button>
   <div id="signUpStatusMsg" style="font-size:13px; margin-top:12px; display:none; font-weight:500;"></div>
 
@@ -1408,13 +1418,14 @@
               <th>Business / Name</th>
               <th>Login Email</th>
               <th>Password</th>
+              <th>Payment</th>
               <th>Validity / Timeline</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody id="distributorTableBody">
             <tr>
-              <td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">डेटा लोड हो रहा है...</td>
+              <td colspan="6" style="text-align:center; color:var(--text-muted); padding:15px;">डेटा लोड हो रहा है...</td>
             </tr>
           </tbody>
         </table>
@@ -1735,7 +1746,10 @@
       assignedTimestamp: assignedTimestamp,
       expiryTime: distExpiryTime,
       adminMessage: "",
-      status: "Active"
+      status: "Active",
+      paymentStatus: "Approved",
+      paymentTxnId: "Admin Assignment",
+      approvalNote: "Admin created account manually"
     };
 
     let success = await addDistributorCloud(newDistData);
@@ -1758,13 +1772,13 @@
 
   async function renderDistributorsTable() {
     const tbody = document.getElementById('distributorTableBody');
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">डेटा लोड हो रहा है...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:15px;">डेटा लोड हो रहा है...</td></tr>`;
 
     let dists = await getDistributorsListCloud();
     tbody.innerHTML = '';
 
     if (!dists.length) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर नहीं मिला।</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर नहीं मिला।</td></tr>`;
       return;
     }
 
@@ -1785,21 +1799,30 @@
       }
 
       const currentStatus = (d.status !== undefined && d.status !== null && String(d.status).trim() !== "") ? String(d.status).trim() : "Active";
-      const screenshotVal = d.distcreenshot || d.distscreenshot || d.dist_screenshot || d.screenshot || d.districtsx;
+      const paymentStatus = (d.paymentStatus !== undefined && d.paymentStatus !== null && String(d.paymentStatus).trim() !== "") ? String(d.paymentStatus).trim() : ((currentStatus === 'Pending' || currentStatus === 'Rejected') ? currentStatus : 'Approved');
+      const screenshotVal = d.paymentScreenshot || d.distcreenshot || d.distscreenshot || d.dist_screenshot || d.screenshot || d.districtsx;
+      const txnId = d.paymentTxnId || d.transactionId || d.txnId || 'N/A';
       const hasScreenshot = (screenshotVal && String(screenshotVal).trim() !== "");
+      const paymentColor = paymentStatus === 'Approved' ? '#34d399' : paymentStatus === 'Rejected' ? '#f87171' : '#fbbf24';
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><strong>${d.name || ''}</strong></td>
         <td>${d.email || ''}</td>
         <td><code style="background:#000; padding:3px 6px; border-radius:4px; color:#38bdf8;">${d.pass || ''}</code></td>
-        <td style="color: ${textColor}; font-weight:600;">⏳ ${timelineText} (<span style="color:${currentStatus === 'Active' ? '#34d399' : '#f87171'}">${currentStatus}</span>)</td>
+        <td>
+          <div style="color:${paymentColor}; font-weight:700; font-size:11px; margin-bottom:4px;">${paymentStatus}</div>
+          <div style="color:#94a3b8; font-size:10px;">Txn: ${txnId}</div>
+        </td>
+        <td style="color: ${textColor}; font-weight:600;">⏳ ${timelineText} (<span style="color:${currentStatus === 'Active' ? '#34d399' : currentStatus === 'Rejected' ? '#f87171' : '#fbbf24'}">${currentStatus}</span>)</td>
         <td>
           <button class="history-delete-btn" onclick="removeDistributor('${d.id}')">🗑️ Delete</button>
           <button class="history-msg-btn" onclick="openAdminMsgModal('${d.email}')">💬 Message</button>
           ${hasScreenshot ? `<button class="history-view-ss-btn" onclick="viewDistributorScreenshot('${encodeURIComponent(screenshotVal)}')">👁️ View Screenshot</button>` : ''}
-          <button class="btn-status-stop" onclick="toggleDistributorStatus('${d.email}', 'Stopped')">🛑 Stop</button>
-          <button class="btn-status-start" onclick="toggleDistributorStatus('${d.email}', 'Active')">▶️ Start</button>
+          <button class="btn-status-start" onclick="reviewDistributorPayment('${d.email}', true)">✅ Approve</button>
+          <button class="btn-status-stop" onclick="reviewDistributorPayment('${d.email}', false)">❌ Reject</button>
+          <button class="btn-status-stop" onclick="toggleDistributorStatus('${d.email}', 'Stopped')" style="margin-top:5px;">🛑 Stop</button>
+          <button class="btn-status-start" onclick="toggleDistributorStatus('${d.email}', 'Active')" style="margin-top:5px;">▶️ Start</button>
         </td>
       `;
       tbody.appendChild(tr);
@@ -1813,6 +1836,27 @@
 
   function closeViewScreenshotModal() {
     document.getElementById('viewScreenshotModal').style.display = 'none';
+  }
+
+  async function reviewDistributorPayment(email, approved) {
+    if (!confirm(approved ? 'क्या आप इस distributor का भुगतान approve करना चाहते हैं?' : 'क्या आप इस distributor का भुगतान reject करना चाहते हैं?')) return;
+
+    const action = approved ? 'Approved' : 'Rejected';
+    const statusValue = approved ? 'Active' : 'Rejected';
+
+    const payload = {
+      action: 'reviewDistributorPayment',
+      email: email,
+      approved: approved,
+      status: statusValue,
+      paymentStatus: action,
+      approvalNote: approved ? 'Payment approved by admin' : 'Payment rejected by admin'
+    };
+
+    const result = await callCloudPost(payload);
+    if (result) {
+      setTimeout(() => renderDistributorsTable(), 1500);
+    }
   }
 
   async function toggleDistributorStatus(email, newStatus) {
@@ -1937,6 +1981,8 @@
   const signUpEmail = document.getElementById('signUpEmail');
   const signUpPass = document.getElementById('signUpPass');
   const signUpConfirmPass = document.getElementById('signUpConfirmPass');
+  const signUpTxnId = document.getElementById('signUpTxnId');
+  const signUpPaymentScreenshot = document.getElementById('signUpPaymentScreenshot');
   const signUpBtn = document.getElementById('signUpBtn');
   const signUpStatusMsg = document.getElementById('signUpStatusMsg');
   const backToLoginFromSignUp = document.getElementById('backToLoginFromSignUp');
@@ -1994,14 +2040,32 @@
     errorMsg.style.display = 'none';
   });
 
+  function readFileAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result);
+      reader.onerror = () => reject(new Error('Unable to read file'));
+      reader.readAsDataURL(file);
+    });
+  }
+
   async function handleSignUp() {
     const name = signUpName.value.trim();
     const email = signUpEmail.value.trim().toLowerCase();
     const pass = signUpPass.value.trim();
     const confirmPass = signUpConfirmPass.value.trim();
+    const txnId = signUpTxnId.value.trim();
+    const paymentFile = signUpPaymentScreenshot.files[0];
 
-    if (!name || !email || !pass || !confirmPass) {
+    if (!name || !email || !pass || !confirmPass || !txnId) {
       signUpStatusMsg.innerText = '⚠️ कृपया सभी फ़ील्ड भरें!';
+      signUpStatusMsg.style.color = '#ef4444';
+      signUpStatusMsg.style.display = 'block';
+      return;
+    }
+
+    if (!paymentFile) {
+      signUpStatusMsg.innerText = '⚠️ कृपया भुगतान का स्क्रीनशॉट अपलोड करें!';
       signUpStatusMsg.style.color = '#ef4444';
       signUpStatusMsg.style.display = 'block';
       return;
@@ -2028,13 +2092,23 @@
       return;
     }
 
-    signUpStatusMsg.innerText = '⏳ अकाउंट बन रहा है, कृपया प्रतीक्षा करें...';
+    signUpStatusMsg.innerText = '⏳ भुगतान सत्यापन के लिए आवेदन भेजा जा रहा है...';
     signUpStatusMsg.style.color = '#fbbf24';
     signUpStatusMsg.style.display = 'block';
 
     let dists = await getDistributorsListCloud();
     if (dists.some(d => String(d.email).trim().toLowerCase() === email)) {
       signUpStatusMsg.innerText = '⚠️ यह ईमेल आईडी पहले से रजिस्टर है!';
+      signUpStatusMsg.style.color = '#ef4444';
+      signUpStatusMsg.style.display = 'block';
+      return;
+    }
+
+    let paymentScreenshot = '';
+    try {
+      paymentScreenshot = await readFileAsDataURL(paymentFile);
+    } catch (err) {
+      signUpStatusMsg.innerText = '⚠️ भुगतान स्क्रीनशॉट पढ़ने में समस्या हुई, कृपया पुनः प्रयास करें।';
       signUpStatusMsg.style.color = '#ef4444';
       signUpStatusMsg.style.display = 'block';
       return;
@@ -2051,13 +2125,17 @@
       assignedTimestamp: assignedTimestamp,
       expiryTime: distExpiryTime,
       adminMessage: '',
-      status: 'Active'
+      status: 'Pending',
+      paymentStatus: 'Pending',
+      paymentTxnId: txnId,
+      paymentScreenshot: paymentScreenshot,
+      approvalNote: 'Awaiting admin review'
     };
 
     const success = await addDistributorCloud(newDistData);
 
     if (success) {
-      signUpStatusMsg.innerText = '✅ आपका अकाउंट बन गया है! अब आप लॉगिन कर सकते हैं।';
+      signUpStatusMsg.innerText = '✅ आपका आवेदन सफलतापूर्वक भेज दिया गया है। एडमिन आपके भुगतान स्क्रीनशॉट की समीक्षा करेगा और फिर approval देगा।';
       signUpStatusMsg.style.color = '#34d399';
       signUpStatusMsg.style.display = 'block';
 
@@ -2070,8 +2148,10 @@
         signUpEmail.value = '';
         signUpPass.value = '';
         signUpConfirmPass.value = '';
+        signUpTxnId.value = '';
+        signUpPaymentScreenshot.value = '';
         signUpStatusMsg.style.display = 'none';
-      }, 1800);
+      }, 2200);
     } else {
       signUpStatusMsg.innerText = '⚠️ अकाउंट बनाने में समस्या हुई, कृपया फिर से प्रयास करें!';
       signUpStatusMsg.style.color = '#ef4444';
@@ -2180,6 +2260,19 @@
       if (foundUser) {
         if (String(foundUser.pass).trim() !== inputPass) {
           errorMsg.innerText = "⚠️ गलत ईमेल आईडी या पासवर्ड!";
+          errorMsg.style.display = 'block';
+          return;
+        }
+
+        const paymentStatus = (foundUser.paymentStatus !== undefined && foundUser.paymentStatus !== null && String(foundUser.paymentStatus).trim() !== "") ? String(foundUser.paymentStatus).trim() : ((foundUser.status !== undefined && foundUser.status !== null && String(foundUser.status).trim() !== "") ? String(foundUser.status).trim() : "Approved");
+        if (paymentStatus === "Pending") {
+          errorMsg.innerText = "⚠️ आपका भुगतान और फॉर्म approval की प्रतीक्षा में है। एडमिन आपके स्क्रीनशॉट की समीक्षा करने के बाद ही लॉगिन मिलेगा।";
+          errorMsg.style.display = 'block';
+          return;
+        }
+
+        if (paymentStatus === "Rejected") {
+          errorMsg.innerText = "⚠️ आपका भुगतान reject हो चुका है। कृपया सही भुगतान के बाद फिर से आवेदन करें या admin से संपर्क करें।";
           errorMsg.style.display = 'block';
           return;
         }
