@@ -919,6 +919,19 @@
   <button id="pendingBackBtn" class="login-btn">Back to Login</button>
 </div>
 
+
+<div id="adminUnlockModal" role="dialog" aria-modal="true" aria-labelledby="adminUnlockTitle" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.8);align-items:center;justify-content:center;">
+ <form id="adminUnlockForm" class="auth-box" style="margin:20px;max-width:400px;">
+  <h2 id="adminUnlockTitle">🔒 Unlock Admin Panel</h2>
+  <p>Admin Panel खोलने के लिए अपना मौजूदा admin login password दोबारा डालें।</p>
+  <input id="adminUnlockPassword" type="password" class="login-input" placeholder="Admin password" autocomplete="current-password" required maxlength="128" aria-label="Admin panel password">
+  <p id="adminUnlockError" role="alert" style="color:#f87171;"></p>
+  <button id="adminUnlockSubmit" type="submit" class="login-btn">Unlock Panel</button>
+  <button id="adminUnlockCancel" type="button" class="login-btn" style="background:#475569;">Cancel</button>
+  <p style="font-size:12px;">Panel छोड़ने पर या 5 मिनट बाद फिर lock होगा।</p>
+ </form>
+</div>
+
 <!-- 3. Change Password Screen -->
 <div id="changePwdScreen" class="auth-box" style="display:none;">
   <div class="badge">Security Settings</div>
@@ -1451,7 +1464,7 @@
 
     <!-- TAB 11: ADMIN PANEL -->
     <div id="tab-admin" class="tab-content">
-      <div class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">Master Administrator Panel</div>
+      <div class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">Master Administrator Panel <button id="lockAdminPanelBtn" type="button" class="login-btn">🔒 Lock Panel</button></div>
       <h1 style="color: #fbbf24;">Cloud Distributor Management</h1>
       <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। डिस्ट्रीब्यूटर की वैलिडिटी 30 दिनों की होगी और डेटा सुरक्षित रहेगा।</p>
 
@@ -1590,6 +1603,9 @@
   let authRole = '';
   let authEmail = '';
   let authExpires = 0;
+  let adminPanelUntil = 0;
+  let adminUnlockPending = null;
+  let adminLockRequest = Promise.resolve();
   let distributorMemoryCache = [];
   try { localStorage.removeItem('distributorLocalCache'); localStorage.removeItem('system_auth_pwd'); } catch (_) {}
 
@@ -1601,6 +1617,8 @@
     distributorMemoryCache=[];
   }
   function clearAuth() {
+    adminPanelUntil=0;
+    if(adminUnlockPending) finishAdminUnlock(false);
     authToken=''; authRole=''; authEmail=''; authExpires=0; distributorMemoryCache=[];
     activeDistributorSession=null; currentRenewalDistributor=null; currentLoggedDistributorEmail='';
     sessionStorage.removeItem('isLoggedIn');
@@ -1654,12 +1672,13 @@
     window.open(url,'_blank','noopener,noreferrer');
   }
   async function renderDistributorsTable() {
-    if(authRole!=='admin') return;
+    if(authRole!=='admin' || Date.now()>=adminPanelUntil) return;
     const tbody=document.getElementById('distributorTableBody');
     tbody.textContent='Loading…';
     let records;
     try { records=await getDistributorsListCloud(); }
     catch(error) { tbody.textContent=error.message; return; }
+    if(authRole!=='admin' || Date.now()>=adminPanelUntil) {tbody.replaceChildren();return;}
     tbody.replaceChildren();
     for(const d of records) {
       const tr=document.createElement('tr');
@@ -1687,6 +1706,76 @@
       button('🗑️ Delete',()=>removeDistributor(d.id));
       tbody.appendChild(tr);
     }
+  }
+  function finishAdminUnlock(success) {
+    const pending=adminUnlockPending;adminUnlockPending=null;
+    document.getElementById('adminUnlockModal').style.display='none';
+    document.getElementById('adminUnlockPassword').value='';
+    if(pending) pending.resolve(success);
+  }
+  function requestAdminUnlock() {
+    if(authRole!=='admin') return Promise.resolve(false);
+    if(adminUnlockPending) return adminUnlockPending.promise;
+    const modal=document.getElementById('adminUnlockModal');
+    document.getElementById('adminUnlockError').textContent='';
+    document.getElementById('adminUnlockPassword').value='';
+    document.getElementById('adminUnlockSubmit').disabled=false;
+    const promise=new Promise(resolve=>{adminUnlockPending={resolve};});
+    adminUnlockPending.promise=promise;
+    modal.style.display='flex';document.getElementById('adminUnlockPassword').focus();
+    return promise;
+  }
+  async function submitAdminUnlock(event) {
+    event.preventDefault();
+    const pending=adminUnlockPending;
+    if(!pending) return;
+    const button=document.getElementById('adminUnlockSubmit');
+    if(button.disabled) return;
+    button.disabled=true;
+    button.textContent='Verifying…';
+    try {
+      await adminLockRequest;
+      const result=await secureApi({action:'unlockAdminPanel',password:document.getElementById('adminUnlockPassword').value});
+      if(adminUnlockPending!==pending) {lockAdminPanel();return;}
+      adminPanelUntil=result.panelUntil;finishAdminUnlock(true);
+    } catch(error) {
+      if(adminUnlockPending===pending) document.getElementById('adminUnlockError').textContent=error.message;
+    } finally {
+      document.getElementById('adminUnlockPassword').value='';button.disabled=false;button.textContent='Unlock Panel';
+    }
+  }
+  function lockAdminPanel() {
+    adminPanelUntil=0;
+    distributorMemoryCache=[];
+    if(adminUnlockPending) finishAdminUnlock(false);
+    document.getElementById('distributorTableBody').replaceChildren();
+    document.getElementById('adminMsgModal').style.display='none';
+    document.getElementById('viewScreenshotModal').style.display='none';
+    if(authRole==='admin' && authToken) adminLockRequest=secureApi({action:'lockAdminPanel'}).catch(()=>{});
+    if(document.getElementById('tab-admin').classList.contains('active')) showPortalTab('tab-cards');
+  }
+  function showPortalTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn=>btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content=>content.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    document.querySelectorAll('.tab-btn').forEach(btn=>{if((btn.getAttribute('onclick')||'').includes("'"+tabId+"'"))btn.classList.add('active');});
+  }
+  async function switchTab(tabId) {
+    if(!authToken || (tabId==='tab-admin' && authRole!=='admin')) return;
+    if(tabId==='tab-admin') {
+      if(Date.now()>=adminPanelUntil && !(await requestAdminUnlock())) return;
+      if(authRole!=='admin' || Date.now()>=adminPanelUntil) return;
+      showPortalTab(tabId);await renderDistributorsTable();return;
+    }
+    if(adminPanelUntil || adminUnlockPending) lockAdminPanel();
+    showPortalTab(tabId);
+    if(tabId==='tab-history') renderHistoryTable();
+  }
+  function switchTabDirect(tabId) {
+    if (!authToken || (tabId === 'tab-admin' && authRole !== 'admin')) return;
+    if(!authToken || (tabId==='tab-admin' && (authRole!=='admin'||Date.now()>=adminPanelUntil))) return;
+    if(tabId!=='tab-admin' && adminPanelUntil) lockAdminPanel();
+    showPortalTab(tabId);
   }
   async function reviewDistributorPayment(email,approved) {
     if(!confirm(approved?'Approve this payment?':'Reject this payment?')) return;
@@ -2208,21 +2297,7 @@
     }
   }
 
-  function switchTab(tabId) {
-    if (!authToken || (tabId === 'tab-admin' && authRole !== 'admin')) return;
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-    
-    event.target.classList.add('active');
-    document.getElementById(tabId).classList.add('active');
 
-    if (tabId === 'tab-history') {
-      renderHistoryTable();
-    }
-    if (tabId === 'tab-admin') {
-      renderDistributorsTable();
-    }
-  }
 
   const loginScreen = document.getElementById('loginScreen');
   const signUpScreen = document.getElementById('signUpScreen');
@@ -2572,12 +2647,7 @@
   document.addEventListener('visibilitychange', enforceSessionExpiry);
   window.addEventListener('focus', enforceSessionExpiry);
 
-  function switchTabDirect(tabId) {
-    if (!authToken || (tabId === 'tab-admin' && authRole !== 'admin')) return;
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-  }
+
 
   document.getElementById('pendingUploadBtn').addEventListener('click', async () => {
     const button=document.getElementById('pendingUploadBtn');button.disabled=true;
@@ -2595,6 +2665,11 @@
     document.getElementById('pendingScreen').style.display='none';loginScreen.style.display='block';
   });
 
+  document.getElementById('adminUnlockForm').addEventListener('submit',submitAdminUnlock);
+  document.getElementById('adminUnlockCancel').addEventListener('click',()=>finishAdminUnlock(false));
+  document.getElementById('adminUnlockPassword').addEventListener('keydown',event=>{if(event.key==='Escape')finishAdminUnlock(false);});
+  document.getElementById('lockAdminPanelBtn').addEventListener('click',lockAdminPanel);
+  setInterval(()=>{if(adminPanelUntil && Date.now()>=adminPanelUntil)lockAdminPanel();},1000);
   authBtn.addEventListener('click', handleLogin);
   loginPass.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
 
