@@ -1695,39 +1695,19 @@
   }
 
   async function uploadScreenshotCloud(email, screenshotUrl) {
-    const cache = getDistributorCache();
-    const normalizedEmail = String(email || '').trim().toLowerCase();
-
-    if (normalizedEmail) {
-      const idx = cache.findIndex(item => String(item.email || '').trim().toLowerCase() === normalizedEmail);
-      if (idx >= 0) {
-        cache[idx].paymentScreenshot = screenshotUrl;
-        cache[idx].screenshot = screenshotUrl;
-        cache[idx].distScreenshot = screenshotUrl;
-        cache[idx].dist_screenshot = screenshotUrl;
-        cache[idx].paymentStatus = 'Pending';
-        cache[idx].status = 'Pending';
-        cache[idx].approvalGranted = false;
-        cache[idx].approved = false;
-        cache[idx].accessApproved = false;
-      } else {
-        cache.push({
-          email: email,
-          paymentScreenshot: screenshotUrl,
-          screenshot: screenshotUrl,
-          distScreenshot: screenshotUrl,
-          dist_screenshot: screenshotUrl,
-          paymentStatus: 'Pending',
-          status: 'Pending',
-          approvalGranted: false,
-          approved: false,
-          accessApproved: false
-        });
-      }
-      saveDistributorCache(cache);
+    try {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "uploadScreenshot", email: email, screenshotUrl: screenshotUrl })
+      });
+      await refreshDistributorCloudData();
+      return true;
+    } catch (err) {
+      console.error("Google Sheet screenshot error:", err);
+      return false;
     }
-
-    return await callCloudPost({ action: "uploadScreenshot", email: email, screenshotUrl: screenshotUrl });
   }
 
   async function toggleDistributorStatusCloud(email, newStatus) {
@@ -1991,6 +1971,7 @@
       const txnId = d.paymentTxnId || d.transactionId || d.txnId || 'N/A';
       const hasScreenshot = (screenshotVal && String(screenshotVal).trim() !== "");
       const paymentColor = paymentStatus === 'Approved' ? '#34d399' : paymentStatus === 'Rejected' ? '#f87171' : '#fbbf24';
+      const isNewPendingDistributor = paymentStatus.toLowerCase() === 'pending' || currentStatus.toLowerCase() === 'pending';
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -2014,8 +1995,10 @@
             ` : '<div style="color:#94a3b8; font-size:10px;">No screenshot</div>'}
             <button class="history-delete-btn" onclick="removeDistributor('${d.id}')">🗑️ Delete</button>
             <button class="history-msg-btn" onclick="openAdminMsgModal('${d.email}')">💬 Message</button>
-            <button class="btn-status-start" onclick="reviewDistributorPayment('${d.email}', true)">✅ Approve</button>
-            <button class="btn-status-stop" onclick="reviewDistributorPayment('${d.email}', false)">❌ Reject</button>
+            ${isNewPendingDistributor ? `
+              <button class="btn-status-start" onclick="reviewDistributorPayment('${d.email}', true)">✅ Approve</button>
+              <button class="btn-status-stop" onclick="reviewDistributorPayment('${d.email}', false)">❌ Reject</button>
+            ` : ''}
             <button class="btn-status-stop" onclick="toggleDistributorStatus('${d.email}', 'Stopped')" style="margin-top:5px;">🛑 Stop</button>
             <button class="btn-status-start" onclick="toggleDistributorStatus('${d.email}', 'Active')" style="margin-top:5px;">▶️ Start</button>
           </div>
