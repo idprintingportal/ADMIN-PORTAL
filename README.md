@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
@@ -1534,7 +1535,7 @@
   // ==========================================================
   // CLOUD API URL (POST JSON Method)
   // ==========================================================
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyzUzzHfPwHG4PgBAPOlHFUdYH5z22muWtXwRq-3dH1lb3IL8HmJh2UwKccxDUSLqlf/exec";
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzL_QE1rPV6fwgxHb7Mcobmrvxo-92ia3zRiCQNFKd2O2VkP_v1snn8qDzg1lcDPj0A/exec";
 
   function getDistributorCache() {
     try {
