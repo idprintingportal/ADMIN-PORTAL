@@ -1687,7 +1687,15 @@
       const response = await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`, {
         cache: 'no-store'
       });
-      return response.ok;
+      if (!response.ok) return false;
+      const text = await response.text();
+      if (!text || text.trim() === '') return true;
+      try {
+        const parsed = JSON.parse(text);
+        return parsed && typeof parsed === 'object' && (parsed.success === false || parsed.error) ? false : true;
+      } catch (err) {
+        return true;
+      }
     } catch (err) {
       console.error('Cloud GET error:', err);
       return false;
@@ -1730,27 +1738,32 @@
       success: it can hide a failed upload from both the distributor and the admin.
     */
     try {
-      const result = await callCloudPost({
-        action: 'uploadPaymentScreenshot',
-        email: String(email || '').trim().toLowerCase(),
-        imageData: screenshotData,
-        fileName,
-        // Kept for compatibility with an already-deployed older Apps Script.
-        screenshotUrl: screenshotData,
-        paymentScreenshot: screenshotData
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+        body: JSON.stringify({
+          action: 'uploadPaymentScreenshot',
+          email: String(email || '').trim().toLowerCase(),
+          imageData: screenshotData,
+          fileName,
+          // Kept for compatibility with an already-deployed older Apps Script.
+          screenshotUrl: screenshotData,
+          paymentScreenshot: screenshotData
+        })
       });
 
-      if (!result) return false;
-
-      // Confirm that the saved distributor row now exposes a screenshot URL.
-      // This is the same field read by the admin panel, so a green message means
-      // the admin will be able to view it after refresh.
-      await new Promise(resolve => setTimeout(resolve, 1200));
-      const latest = await refreshDistributorCloudData();
-      const savedRecord = (latest || []).find((dist) =>
-        String(dist.email || '').trim().toLowerCase() === String(email || '').trim().toLowerCase()
-      );
-      return Boolean(getDistributorScreenshotUrl(savedRecord));
+      // An Apps Script Web App's POST response can be opaque in browsers. Confirm
+      // the saved Drive URL by reading the Sheet data instead of trusting the POST.
+      for (let attempt = 0; attempt < 3; attempt++) {
+        await new Promise(resolve => setTimeout(resolve, 1200));
+        const latest = await refreshDistributorCloudData();
+        const savedRecord = (latest || []).find((dist) =>
+          String(dist.email || '').trim().toLowerCase() === String(email || '').trim().toLowerCase()
+        );
+        if (getDistributorScreenshotUrl(savedRecord)) return true;
+      }
+      return false;
     } catch (err) {
       console.error('Google Drive / Sheet screenshot error:', err);
       return false;
@@ -2084,6 +2097,9 @@
     if (result) {
       await refreshDistributorCloudData();
       renderDistributorsTable();
+      alert(approved ? '✅ Application approved और Google Sheet में sync हो गया।' : '✅ Application rejected और Google Sheet में sync हो गया।');
+    } else {
+      alert('⚠️ Approval update Google Sheet में save नहीं हुआ। Apps Script deployment और Sheet permissions जाँचें।');
     }
   }
 
