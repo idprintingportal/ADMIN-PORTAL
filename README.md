@@ -854,7 +854,7 @@
 
     <div id="paymentQrPlanText" style="margin-bottom: 8px; color: #f8fafc; font-weight: 600;">QR Code for 1 Month Plan (₹36):</div>
     <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 10px; padding: 12px; text-align: center;">
-      <img id="paymentQrImage" src="./assets/qr-1month-36.png" alt="Payment QR Code for ₹36" style="max-width: 220px; width: 100%; height: auto; display: block; visibility: visible; opacity: 1; margin: 0 auto; background: #fff; padding: 8px; border-radius: 10px; border: 1px solid rgba(15, 23, 42, 0.15); box-shadow: 0 4px 12px rgba(0,0,0,0.18);">
+      <img id="paymentQrImage" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAMgAQAAAADzCzvFAAAD5UlEQVR4nO3dUW7iMBDG8W82SOlbuIF7K0oGs5F9hT4Jb23Rr7F6wy0Wjup3kytJq0hBk6Ekrdll1mQ5u9Le3t4T3G0+Q6hLQOQeICu1Vcf7hYxPKvGohh3U1GJ7V2oZl+/Mw44rqfVnH8m8jP1L+Bc+zxg7yz6H+N5OBsrqJ69u1gncM6553I4zq7H1TZr53a2gMfdM5jW6oJ3H15IWd1x4eFihq4UkLdhvP8kP7sk8sLe6RZ0vR5Hd6s5pO+UxsV+1iOaV0HecZ2oHYJXqJ6Jq7n7cT4RdbQ2AAAEwqIY0FQAAABJRU5ErkJggg==" alt="Payment QR Code for ₹36" style="max-width: 220px; width: 100%; height: auto; display: block; visibility: visible; opacity: 1; margin: 0 auto; background: #fff; padding: 8px; border-radius: 10px; border: 1px solid rgba(15, 23, 42, 0.15); box-shadow: 0 4px 12px rgba(0,0,0,0.18);">
       <div id="paymentQrNote" style="margin-top: 8px; font-size: 11px; color: var(--text-muted);">This QR is for the ₹36 plan.</div>
     </div>
   </div>
@@ -1584,12 +1584,21 @@
 
   async function callCloudPost(payload) {
     try {
-      await fetch(GOOGLE_SCRIPT_URL, {
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        mode: "cors",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
+
+      if (!response.ok) {
+        console.error("Cloud POST failed:", response.status, response.statusText);
+        return false;
+      }
+
+      try {
+        await response.text();
+      } catch (err) {}
       return true;
     } catch(err) {
       console.error("Post error:", err);
@@ -1842,6 +1851,24 @@
     }
   }
 
+  let distributorRealtimeTimer = null;
+
+  function startDistributorRealtimeSync() {
+    if (distributorRealtimeTimer) clearInterval(distributorRealtimeTimer);
+
+    distributorRealtimeTimer = setInterval(async () => {
+      const tbody = document.getElementById('distributorTableBody');
+      if (!tbody) return;
+      const latest = await getDistributorsListCloud();
+      if (Array.isArray(latest)) {
+        saveDistributorCache(latest);
+        if (document.getElementById('adminTabBtn')?.style.display !== 'none') {
+          renderDistributorsTable();
+        }
+      }
+    }, 5000);
+  }
+
   async function renderDistributorsTable() {
     const tbody = document.getElementById('distributorTableBody');
     tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:15px;">डेटा लोड हो रहा है...</td></tr>`;
@@ -2036,6 +2063,10 @@
   function switchTab(tabId) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+    if (tabId === 'tab-admin') {
+      startDistributorRealtimeSync();
+    }
     
     event.target.classList.add('active');
     document.getElementById(tabId).classList.add('active');
@@ -2139,8 +2170,8 @@
   function updatePaymentPlanUi() {
     const selectedPlanValue = document.querySelector('input[name="planType"]:checked')?.value || '1month';
     const isYearly = selectedPlanValue === '1year';
-    const monthlyQr = './assets/qr-1month-36.png';
-    const yearlyQr = './assets/qr-1year-319.png';
+    const monthlyQr = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAMgAQAAAADzCzvFAAAD5UlEQVR4nO3dUW7iMBDG8W82SOlbuIF7K0oGs5F9hT4Jb23Rr7F6wy0Wjup3kytJq0hBk6Ekrdll1mQ5u9Le3t4T3G0+Q6hLQOQeICu1Vcf7hYxPKvGohh3U1GJ7V2oZl+/Mw44rqfVnH8m8jP1L+Bc+zxg7yz6H+N5OBsrqJ69u1gncM6553I4zq7H1TZr53a2gMfdM5jW6oJ3H15IWd1x4eFihq4UkLdhvP8kP7sk8sLe6RZ0vR5Hd6s5pO+UxsV+1iOaV0HecZ2oHYJXqJ6Jq7n7cT4RdbQ2AAAEwqIY0FQAAABJRU5ErkJggg==';
+    const yearlyQr = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUoAAAFKAQAAAABTUiuoAAAB8klEQVR4nO2awW3kMAxFPyMBe5Q7SCly5x3tG9KTIc47g7Z9f0k59uE7a3B3v5iCjmzVmaO2mFrt2uzc3Hls3aQ9k0v6S0M13uk9Q0v3u7K0RaM2R5d5zRYTOPxnaFDL3N+kHP8axRU5L0BQQQAAABJRU5ErkJggg==';
 
     paymentQrPlanText.innerText = isYearly ? 'QR Code for 1 Year Plan (₹319):' : 'QR Code for 1 Month Plan (₹36):';
     paymentQrImage.src = isYearly ? yearlyQr : monthlyQr;
@@ -2276,6 +2307,7 @@
 
   signUpBtn.addEventListener('click', handleSignUp);
   signUpConfirmPass.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSignUp(); });
+  startDistributorRealtimeSync();
 
   // ==========================================================
   // ISOLATED CHANGE PASSWORD HANDLER WITH PROFESSIONAL MESSAGES
