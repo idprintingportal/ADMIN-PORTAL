@@ -820,12 +820,32 @@
   <button id="authBtn" class="login-btn">लॉगिन करें</button>
   <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड!</div>
   
-  <div>
+  <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px;">
+    <span id="goToSignUp" class="auth-link">📝 Create Account</span>
     <span id="goToChangePwd" class="auth-link">🔑 Change Password?</span>
   </div>
 </div>
 
-<!-- 2. Change Password Screen -->
+<!-- 2. Sign Up Screen -->
+<div id="signUpScreen" class="auth-box" style="display:none;">
+  <div class="badge">New Registration</div>
+  <h2 style="font-size: 20px; margin-bottom: 6px; color: var(--accent-blue);">Sign Up</h2>
+  <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">अपने अकाउंट को बनाएं और पोर्टल में लॉगिन करें</p>
+
+  <input type="text" id="signUpName" class="login-input" placeholder="पूरा नाम लिखें">
+  <input type="email" id="signUpEmail" class="login-input" placeholder="ईमेल आईडी दर्ज करें">
+  <input type="password" id="signUpPass" class="login-input" placeholder="पासवर्ड बनाएं">
+  <input type="password" id="signUpConfirmPass" class="login-input" placeholder="पासवर्ड फिर से लिखें">
+
+  <button id="signUpBtn" class="login-btn" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">✅ Create Account</button>
+  <div id="signUpStatusMsg" style="font-size:13px; margin-top:12px; display:none; font-weight:500;"></div>
+
+  <div>
+    <span id="backToLoginFromSignUp" class="auth-link">⬅️ Already have account? Login</span>
+  </div>
+</div>
+
+<!-- 3. Change Password Screen -->
 <div id="changePwdScreen" class="auth-box" style="display:none;">
   <div class="badge">Security Settings</div>
   <h2 style="font-size: 20px; margin-bottom: 6px; color: var(--accent-blue);">🔑 Change Password</h2>
@@ -1765,7 +1785,7 @@
       }
 
       const currentStatus = (d.status !== undefined && d.status !== null && String(d.status).trim() !== "") ? String(d.status).trim() : "Active";
-      const screenshotVal = d.distscreenshot || d.distcreenshot || d.dist_screenshot || d.screenshot;
+      const screenshotVal = d.distcreenshot || d.distscreenshot || d.dist_screenshot || d.screenshot || d.districtsx;
       const hasScreenshot = (screenshotVal && String(screenshotVal).trim() !== "");
 
       const tr = document.createElement('tr');
@@ -1843,6 +1863,7 @@
     setTimeout(() => renderDistributorsTable(), 1500);
   }
 
+  // Active Logged-in Distributor Email storage
   let currentLoggedDistributorEmail = "";
 
   // Distributor Screenshot Upload Function
@@ -1863,15 +1884,15 @@
     const reader = new FileReader();
     reader.onload = async function(e) {
       const base64Img = e.target.result;
-      const loggedEmail = currentLoggedDistributorEmail || (loginEmail.value || "").trim().toLowerCase();
+      const targetEmail = currentLoggedDistributorEmail || (loginEmail.value || "").trim().toLowerCase();
       
-      if (!loggedEmail) {
+      if (!targetEmail) {
         statusDiv.innerText = '⚠️ Error: Login email not found!';
         statusDiv.style.color = '#ef4444';
         return;
       }
 
-      let success = await uploadScreenshotCloud(loggedEmail, base64Img);
+      let success = await uploadScreenshotCloud(targetEmail, base64Img);
       if (success) {
         statusDiv.innerText = '✅ Screenshot sent to admin successfully!';
         statusDiv.style.color = '#34d399';
@@ -1900,6 +1921,7 @@
   }
 
   const loginScreen = document.getElementById('loginScreen');
+  const signUpScreen = document.getElementById('signUpScreen');
   const changePwdScreen = document.getElementById('changePwdScreen');
   const mainApp = document.getElementById('mainApp');
   
@@ -1909,6 +1931,15 @@
   const errorMsg = document.getElementById('errorMsg');
   const logoutBtn = document.getElementById('logoutBtn');
   const adminTabBtn = document.getElementById('adminTabBtn');
+
+  const goToSignUp = document.getElementById('goToSignUp');
+  const signUpName = document.getElementById('signUpName');
+  const signUpEmail = document.getElementById('signUpEmail');
+  const signUpPass = document.getElementById('signUpPass');
+  const signUpConfirmPass = document.getElementById('signUpConfirmPass');
+  const signUpBtn = document.getElementById('signUpBtn');
+  const signUpStatusMsg = document.getElementById('signUpStatusMsg');
+  const backToLoginFromSignUp = document.getElementById('backToLoginFromSignUp');
 
   const goToChangePwd = document.getElementById('goToChangePwd');
   const backToLogin = document.getElementById('backToLogin');
@@ -1927,8 +1958,27 @@
   const curYear = today.getFullYear();
   document.getElementById('candDopInput').value = `DOP: ${curDay}/${curMonth}/${curYear}`;
 
+  goToSignUp.addEventListener('click', () => {
+    loginScreen.style.display = 'none';
+    signUpScreen.style.display = 'block';
+    changePwdScreen.style.display = 'none';
+    signUpStatusMsg.style.display = 'none';
+    signUpName.value = '';
+    signUpEmail.value = '';
+    signUpPass.value = '';
+    signUpConfirmPass.value = '';
+  });
+
+  backToLoginFromSignUp.addEventListener('click', () => {
+    signUpScreen.style.display = 'none';
+    loginScreen.style.display = 'block';
+    errorMsg.style.display = 'none';
+    signUpStatusMsg.style.display = 'none';
+  });
+
   goToChangePwd.addEventListener('click', () => {
     loginScreen.style.display = 'none';
+    signUpScreen.style.display = 'none';
     changePwdScreen.style.display = 'block';
     pwdEmailInput.value = '';
     oldPassInput.value = '';
@@ -1939,9 +1989,98 @@
 
   backToLogin.addEventListener('click', () => {
     changePwdScreen.style.display = 'none';
+    signUpScreen.style.display = 'none';
     loginScreen.style.display = 'block';
     errorMsg.style.display = 'none';
   });
+
+  async function handleSignUp() {
+    const name = signUpName.value.trim();
+    const email = signUpEmail.value.trim().toLowerCase();
+    const pass = signUpPass.value.trim();
+    const confirmPass = signUpConfirmPass.value.trim();
+
+    if (!name || !email || !pass || !confirmPass) {
+      signUpStatusMsg.innerText = '⚠️ कृपया सभी फ़ील्ड भरें!';
+      signUpStatusMsg.style.color = '#ef4444';
+      signUpStatusMsg.style.display = 'block';
+      return;
+    }
+
+    if (email === ADMIN_EMAIL.toLowerCase()) {
+      signUpStatusMsg.innerText = '⚠️ यह एडमिन ईमेल है, कृपया दूसरा ईमेल चुनें!';
+      signUpStatusMsg.style.color = '#ef4444';
+      signUpStatusMsg.style.display = 'block';
+      return;
+    }
+
+    if (pass.length < 4) {
+      signUpStatusMsg.innerText = '❌ पासवर्ड कम से कम 4 अक्षर का होना चाहिए!';
+      signUpStatusMsg.style.color = '#ef4444';
+      signUpStatusMsg.style.display = 'block';
+      return;
+    }
+
+    if (pass !== confirmPass) {
+      signUpStatusMsg.innerText = '❌ पासवर्ड और कन्फर्म पासवर्ड मेल नहीं खा रहे हैं!';
+      signUpStatusMsg.style.color = '#ef4444';
+      signUpStatusMsg.style.display = 'block';
+      return;
+    }
+
+    signUpStatusMsg.innerText = '⏳ अकाउंट बन रहा है, कृपया प्रतीक्षा करें...';
+    signUpStatusMsg.style.color = '#fbbf24';
+    signUpStatusMsg.style.display = 'block';
+
+    let dists = await getDistributorsListCloud();
+    if (dists.some(d => String(d.email).trim().toLowerCase() === email)) {
+      signUpStatusMsg.innerText = '⚠️ यह ईमेल आईडी पहले से रजिस्टर है!';
+      signUpStatusMsg.style.color = '#ef4444';
+      signUpStatusMsg.style.display = 'block';
+      return;
+    }
+
+    const assignedTimestamp = Date.now();
+    const distExpiryTime = assignedTimestamp + THIRTY_MS;
+
+    const newDistData = {
+      id: Date.now(),
+      name: name,
+      email: email,
+      pass: pass,
+      assignedTimestamp: assignedTimestamp,
+      expiryTime: distExpiryTime,
+      adminMessage: '',
+      status: 'Active'
+    };
+
+    const success = await addDistributorCloud(newDistData);
+
+    if (success) {
+      signUpStatusMsg.innerText = '✅ आपका अकाउंट बन गया है! अब आप लॉगिन कर सकते हैं।';
+      signUpStatusMsg.style.color = '#34d399';
+      signUpStatusMsg.style.display = 'block';
+
+      setTimeout(() => {
+        signUpScreen.style.display = 'none';
+        loginScreen.style.display = 'block';
+        loginEmail.value = email;
+        loginPass.value = '';
+        signUpName.value = '';
+        signUpEmail.value = '';
+        signUpPass.value = '';
+        signUpConfirmPass.value = '';
+        signUpStatusMsg.style.display = 'none';
+      }, 1800);
+    } else {
+      signUpStatusMsg.innerText = '⚠️ अकाउंट बनाने में समस्या हुई, कृपया फिर से प्रयास करें!';
+      signUpStatusMsg.style.color = '#ef4444';
+      signUpStatusMsg.style.display = 'block';
+    }
+  }
+
+  signUpBtn.addEventListener('click', handleSignUp);
+  signUpConfirmPass.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSignUp(); });
 
   // ==========================================================
   // ISOLATED CHANGE PASSWORD HANDLER WITH PROFESSIONAL MESSAGES
@@ -2086,7 +2225,7 @@
         adminTabBtn.style.display = 'none';
         switchTabDirect('tab-cards');
         
-        // Save current logged in distributor email safely
+        // Save current logged in distributor email for screenshot replies
         currentLoggedDistributorEmail = inputEmail;
 
         // Show Distributor Notice (Text + Image Banner)
