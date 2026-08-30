@@ -854,7 +854,7 @@
 
     <div id="paymentQrPlanText" style="margin-bottom: 8px; color: #f8fafc; font-weight: 600;">QR Code for 1 Month Plan (₹36):</div>
     <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 10px; padding: 12px; text-align: center;">
-      <img id="paymentQrImage" src="assets/qr-1month-36.png" alt="Payment QR Code for ₹36" style="max-width: 220px; width: 100%; height: auto; display: block; margin: 0 auto; background: #fff; padding: 8px; border-radius: 10px; border: 1px solid rgba(15, 23, 42, 0.15); box-shadow: 0 4px 12px rgba(0,0,0,0.18);">
+      <img id="paymentQrImage" src="./assets/qr-1month-36.png" alt="Payment QR Code for ₹36" style="max-width: 220px; width: 100%; height: auto; display: block; visibility: visible; opacity: 1; margin: 0 auto; background: #fff; padding: 8px; border-radius: 10px; border: 1px solid rgba(15, 23, 42, 0.15); box-shadow: 0 4px 12px rgba(0,0,0,0.18);">
       <div id="paymentQrNote" style="margin-top: 8px; font-size: 11px; color: var(--text-muted);">This QR is for the ₹36 plan.</div>
     </div>
   </div>
@@ -1537,14 +1537,48 @@
   // ==========================================================
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyzUzzHfPwHG4PgBAPOlHFUdYH5z22muWtXwRq-3dH1lb3IL8HmJh2UwKccxDUSLqlf/exec";
 
+  function getDistributorCache() {
+    try {
+      const saved = localStorage.getItem('distributorLocalCache');
+      return saved ? JSON.parse(saved) : [];
+    } catch (err) {
+      return [];
+    }
+  }
+
+  function saveDistributorCache(list) {
+    try {
+      localStorage.setItem('distributorLocalCache', JSON.stringify(list || []));
+    } catch (err) {}
+  }
+
+  function mergeDistributorCache(remoteList) {
+    const cache = getDistributorCache();
+    const merged = Array.isArray(remoteList) ? [...remoteList] : [];
+
+    cache.forEach(cached => {
+      const idx = merged.findIndex(item => String(item.email || '').trim().toLowerCase() === String(cached.email || '').trim().toLowerCase());
+      if (idx >= 0) {
+        merged[idx] = { ...merged[idx], ...cached };
+      } else {
+        merged.push(cached);
+      }
+    });
+
+    saveDistributorCache(merged);
+    return merged;
+  }
+
   async function getDistributorsListCloud() {
     try {
       const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getDistributors`, { cache: "no-store" });
       const data = await response.json();
-      return Array.isArray(data) ? data : [];
+      const list = Array.isArray(data) ? data : [];
+      const merged = mergeDistributorCache(list);
+      return merged;
     } catch(err) {
       console.error("Fetch error:", err);
-      return [];
+      return getDistributorCache();
     }
   }
 
@@ -1576,6 +1610,22 @@
   }
 
   async function uploadScreenshotCloud(email, screenshotUrl) {
+    const cache = getDistributorCache();
+    const normalizedEmail = String(email || '').trim().toLowerCase();
+
+    if (normalizedEmail) {
+      const idx = cache.findIndex(item => String(item.email || '').trim().toLowerCase() === normalizedEmail);
+      if (idx >= 0) {
+        cache[idx].paymentScreenshot = screenshotUrl;
+        cache[idx].screenshot = screenshotUrl;
+        cache[idx].distScreenshot = screenshotUrl;
+        cache[idx].paymentStatus = 'Pending';
+      } else {
+        cache.push({ email: email, paymentScreenshot: screenshotUrl, screenshot: screenshotUrl, distScreenshot: screenshotUrl, paymentStatus: 'Pending' });
+      }
+      saveDistributorCache(cache);
+    }
+
     return await callCloudPost({ action: "uploadScreenshot", email: email, screenshotUrl: screenshotUrl });
   }
 
@@ -2089,11 +2139,14 @@
   function updatePaymentPlanUi() {
     const selectedPlanValue = document.querySelector('input[name="planType"]:checked')?.value || '1month';
     const isYearly = selectedPlanValue === '1year';
-    const monthlyQr = 'assets/qr-1month-36.png';
-    const yearlyQr = 'assets/qr-1year-319.png';
+    const monthlyQr = './assets/qr-1month-36.png';
+    const yearlyQr = './assets/qr-1year-319.png';
 
     paymentQrPlanText.innerText = isYearly ? 'QR Code for 1 Year Plan (₹319):' : 'QR Code for 1 Month Plan (₹36):';
     paymentQrImage.src = isYearly ? yearlyQr : monthlyQr;
+    paymentQrImage.style.display = 'block';
+    paymentQrImage.style.visibility = 'visible';
+    paymentQrImage.style.opacity = '1';
     paymentQrImage.alt = isYearly ? 'Payment QR Code for ₹319' : 'Payment QR Code for ₹36';
     paymentQrNote.innerText = isYearly
       ? 'This QR is for the ₹319 plan.'
