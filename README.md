@@ -1682,16 +1682,45 @@
     }
   }
 
+  async function callCloudGet(params) {
+    try {
+      const response = await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`, {
+        cache: 'no-store'
+      });
+      return response.ok;
+    } catch (err) {
+      console.error('Cloud GET error:', err);
+      return false;
+    }
+  }
+
   async function addDistributorCloud(distData) {
-    return await callCloudPost({ action: "addDistributor", data: distData });
+    const params = new URLSearchParams({
+      action: 'addDistributor',
+      id: distData.id,
+      name: distData.name,
+      email: distData.email,
+      pass: distData.pass,
+      assignedTimestamp: distData.assignedTimestamp,
+      expiryTime: distData.expiryTime,
+      status: distData.status || 'Pending',
+      paymentStatus: distData.paymentStatus || 'Pending',
+      paymentPlan: distData.paymentPlan || '',
+      paymentAmount: distData.paymentAmount || '',
+      paymentTxnId: distData.paymentTxnId || '',
+      approvalGranted: distData.approvalGranted ? 'true' : 'false',
+      accessApproved: distData.accessApproved ? 'true' : 'false',
+      approved: distData.approved ? 'true' : 'false'
+    });
+    return await callCloudGet(params);
   }
 
   async function deleteDistributorCloud(distId) {
-    return await callCloudPost({ action: "deleteDistributor", id: distId });
+    return await callCloudGet(new URLSearchParams({ action: 'deleteDistributor', id: distId }));
   }
 
   async function sendAdminMsgCloud(email, message, imageUrl) {
-    return await callCloudPost({ action: "messageDistributor", email: email, message: message, imageUrl: imageUrl });
+    return await callCloudPost({ action: "messageDistributor", email, message, imageUrl });
   }
 
   async function uploadScreenshotCloud(email, screenshotUrl) {
@@ -1712,18 +1741,11 @@
 
   async function toggleDistributorStatusCloud(email, newStatus) {
     const normalizedStatus = String(newStatus || 'Active').trim();
-    const payload = {
-      action: "toggleStatus",
-      email: email,
-      status: normalizedStatus,
-      newStatus: normalizedStatus,
-      updatedStatus: normalizedStatus,
-      paymentStatus: normalizedStatus === 'Stopped' ? 'Stopped' : 'Approved',
-      approvalGranted: normalizedStatus === 'Active',
-      accessApproved: normalizedStatus === 'Active',
-      approved: normalizedStatus === 'Active'
-    };
-    return await callCloudPost(payload);
+    return await callCloudGet(new URLSearchParams({
+      action: 'toggleStatus',
+      email,
+      status: normalizedStatus
+    }));
   }
 
   async function updateDistributorPasswordCloud(email, newPass) {
@@ -2029,22 +2051,18 @@
     const planMs = plan.toLowerCase().includes('year') ? ONE_YEAR_MS : THIRTY_MS;
     const expiryTime = approved ? Date.now() + planMs : (Number(dist?.expiryTime || Date.now()) || Date.now());
 
-    const payload = {
+    const result = await callCloudGet(new URLSearchParams({
       action: 'reviewDistributorPayment',
-      email: email,
-      approved: approved,
-      approvalGranted: approved,
-      accessApproved: approved,
+      email,
+      approved: approved ? 'true' : 'false',
+      approvalGranted: approved ? 'true' : 'false',
+      accessApproved: approved ? 'true' : 'false',
       status: statusValue,
-      newStatus: statusValue,
-      updatedStatus: statusValue,
       paymentStatus: action,
       paymentPlan: plan,
-      expiryTime: expiryTime,
+      expiryTime,
       approvalNote: approved ? 'Payment approved by admin' : 'Payment rejected by admin'
-    };
-
-    const result = await callCloudPost(payload);
+    }));
     if (result) {
       await refreshDistributorCloudData();
       renderDistributorsTable();
@@ -2427,6 +2445,14 @@
     const success = await addDistributorCloud(newDistData);
 
     if (success) {
+      const screenshotSent = await uploadScreenshotCloud(email, paymentScreenshot);
+      if (!screenshotSent) {
+        signUpStatusMsg.innerText = '⚠️ अकाउंट बन गया है, लेकिन भुगतान screenshot भेजने में समस्या हुई। कृपया दोबारा प्रयास करें।';
+        signUpStatusMsg.style.color = '#ef4444';
+        signUpStatusMsg.style.display = 'block';
+        return;
+      }
+
       signUpStatusMsg.innerText = '✅ आपका आवेदन सफलतापूर्वक भेज दिया गया है। एडमिन आपके भुगतान screenshot की समीक्षा करेगा और तभी login approved होगा।';
       signUpStatusMsg.style.color = '#34d399';
       signUpStatusMsg.style.display = 'block';
