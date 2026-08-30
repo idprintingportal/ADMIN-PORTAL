@@ -838,9 +838,25 @@
   <input type="password" id="signUpConfirmPass" class="login-input" placeholder="पासवर्ड फिर से लिखें">
 
   <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 12px; padding: 12px; margin: 12px 0; text-align: left; font-size: 12px; color: var(--text-muted);">
-    <div style="font-size: 11px; color: var(--accent-blue); font-weight: 700; margin-bottom: 6px;">💳 Payment Instructions</div>
-    <div style="margin-bottom: 6px;">Pay the required amount to this tax code / UPI:</div>
-    <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.35); padding: 8px 10px; border-radius: 8px; color: #f8fafc; font-weight: 600; word-break: break-all;">Tax Code / UPI: 1234567890@upi</div>
+    <div style="font-size: 11px; color: var(--accent-blue); font-weight: 700; margin-bottom: 6px;">💳 QR Payment Instructions</div>
+    <div style="margin-bottom: 8px;">Please pay only through the QR code below and upload the proof after payment.</div>
+
+    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
+      <label style="display:flex; align-items:center; gap:8px; color:#f8fafc;">
+        <input type="radio" name="planType" value="1month" checked>
+        <span>1 Month Plan — ₹36</span>
+      </label>
+      <label style="display:flex; align-items:center; gap:8px; color:#f8fafc;">
+        <input type="radio" name="planType" value="1year">
+        <span>1 Year Plan — ₹319</span>
+      </label>
+    </div>
+
+    <div id="paymentQrPlanText" style="margin-bottom: 8px; color: #f8fafc; font-weight: 600;">QR Code for 1 Month Plan (₹36):</div>
+    <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 10px; padding: 12px; text-align: center;">
+      <img id="paymentQrImage" src="assets/qr-1month-36.png" alt="Payment QR Code for ₹36" style="max-width: 180px; width: 100%; display: block; margin: 0 auto; background: #fff; border-radius: 8px;">
+      <div id="paymentQrNote" style="margin-top: 8px; font-size: 11px; color: var(--text-muted);">This QR is for the ₹36 plan.</div>
+    </div>
   </div>
 
   <input type="text" id="signUpTxnId" class="login-input" placeholder="Transaction ID / Reference Number">
@@ -1691,6 +1707,12 @@
   const EXPIRED_PASS = "Harshal@6195";
   const THIRTY_DAYS = 30;
   const THIRTY_MS = THIRTY_DAYS * 24 * 60 * 60 * 1000;
+  const ONE_YEAR_DAYS = 365;
+  const ONE_YEAR_MS = ONE_YEAR_DAYS * 24 * 60 * 60 * 1000;
+  const PAYMENT_PLAN_OPTIONS = {
+    '1month': { label: '1 Month', amount: 36, ms: THIRTY_MS },
+    '1year': { label: '1 Year', amount: 319, ms: ONE_YEAR_MS }
+  };
 
   function getStoredPassword() {
     return localStorage.getItem('system_auth_pwd') || INITIAL_PASS;
@@ -1800,6 +1822,8 @@
 
       const currentStatus = (d.status !== undefined && d.status !== null && String(d.status).trim() !== "") ? String(d.status).trim() : "Active";
       const paymentStatus = (d.paymentStatus !== undefined && d.paymentStatus !== null && String(d.paymentStatus).trim() !== "") ? String(d.paymentStatus).trim() : ((currentStatus === 'Pending' || currentStatus === 'Rejected') ? currentStatus : 'Approved');
+      const paymentPlan = d.paymentPlan || d.plan || '1 Month';
+      const paymentAmount = d.paymentAmount || (paymentPlan.toLowerCase().includes('year') ? '₹319' : '₹36');
       const screenshotVal = d.paymentScreenshot || d.distcreenshot || d.distscreenshot || d.dist_screenshot || d.screenshot || d.districtsx;
       const txnId = d.paymentTxnId || d.transactionId || d.txnId || 'N/A';
       const hasScreenshot = (screenshotVal && String(screenshotVal).trim() !== "");
@@ -1812,6 +1836,8 @@
         <td><code style="background:#000; padding:3px 6px; border-radius:4px; color:#38bdf8;">${d.pass || ''}</code></td>
         <td>
           <div style="color:${paymentColor}; font-weight:700; font-size:11px; margin-bottom:4px;">${paymentStatus}</div>
+          <div style="color:#94a3b8; font-size:10px;">Plan: ${paymentPlan}</div>
+          <div style="color:#94a3b8; font-size:10px;">Amount: ${paymentAmount}</div>
           <div style="color:#94a3b8; font-size:10px;">Txn: ${txnId}</div>
         </td>
         <td style="color: ${textColor}; font-weight:600;">⏳ ${timelineText} (<span style="color:${currentStatus === 'Active' ? '#34d399' : currentStatus === 'Rejected' ? '#f87171' : '#fbbf24'}">${currentStatus}</span>)</td>
@@ -1844,12 +1870,20 @@
     const action = approved ? 'Approved' : 'Rejected';
     const statusValue = approved ? 'Active' : 'Rejected';
 
+    const dists = await getDistributorsListCloud();
+    const dist = dists.find(d => String(d.email).trim().toLowerCase() === String(email).trim().toLowerCase());
+    const plan = (dist && (dist.paymentPlan || dist.plan)) || '1 Month';
+    const planMs = plan.toLowerCase().includes('year') ? ONE_YEAR_MS : THIRTY_MS;
+    const expiryTime = approved ? Date.now() + planMs : (Number(dist?.expiryTime || Date.now()) || Date.now());
+
     const payload = {
       action: 'reviewDistributorPayment',
       email: email,
       approved: approved,
       status: statusValue,
       paymentStatus: action,
+      paymentPlan: plan,
+      expiryTime: expiryTime,
       approvalNote: approved ? 'Payment approved by admin' : 'Payment rejected by admin'
     };
 
@@ -1983,6 +2017,9 @@
   const signUpConfirmPass = document.getElementById('signUpConfirmPass');
   const signUpTxnId = document.getElementById('signUpTxnId');
   const signUpPaymentScreenshot = document.getElementById('signUpPaymentScreenshot');
+  const paymentQrImage = document.getElementById('paymentQrImage');
+  const paymentQrPlanText = document.getElementById('paymentQrPlanText');
+  const paymentQrNote = document.getElementById('paymentQrNote');
   const signUpBtn = document.getElementById('signUpBtn');
   const signUpStatusMsg = document.getElementById('signUpStatusMsg');
   const backToLoginFromSignUp = document.getElementById('backToLoginFromSignUp');
@@ -2049,6 +2086,26 @@
     });
   }
 
+  function updatePaymentPlanUi() {
+    const selectedPlanValue = document.querySelector('input[name="planType"]:checked')?.value || '1month';
+    const isYearly = selectedPlanValue === '1year';
+    const monthlyQr = 'assets/qr-1month-36.png';
+    const yearlyQr = 'assets/qr-1year-319.png';
+
+    paymentQrPlanText.innerText = isYearly ? 'QR Code for 1 Year Plan (₹319):' : 'QR Code for 1 Month Plan (₹36):';
+    paymentQrImage.src = isYearly ? yearlyQr : monthlyQr;
+    paymentQrImage.alt = isYearly ? 'Payment QR Code for ₹319' : 'Payment QR Code for ₹36';
+    paymentQrNote.innerText = isYearly
+      ? 'This QR is for the ₹319 plan.'
+      : 'This QR is for the ₹36 plan.';
+  }
+
+  document.querySelectorAll('input[name="planType"]').forEach((radio) => {
+    radio.addEventListener('change', updatePaymentPlanUi);
+  });
+
+  updatePaymentPlanUi();
+
   async function handleSignUp() {
     const name = signUpName.value.trim();
     const email = signUpEmail.value.trim().toLowerCase();
@@ -2056,6 +2113,8 @@
     const confirmPass = signUpConfirmPass.value.trim();
     const txnId = signUpTxnId.value.trim();
     const paymentFile = signUpPaymentScreenshot.files[0];
+    const selectedPlanValue = document.querySelector('input[name="planType"]:checked')?.value || '1month';
+    const selectedPlan = PAYMENT_PLAN_OPTIONS[selectedPlanValue] || PAYMENT_PLAN_OPTIONS['1month'];
 
     if (!name || !email || !pass || !confirmPass || !txnId) {
       signUpStatusMsg.innerText = '⚠️ कृपया सभी फ़ील्ड भरें!';
@@ -2115,7 +2174,7 @@
     }
 
     const assignedTimestamp = Date.now();
-    const distExpiryTime = assignedTimestamp + THIRTY_MS;
+    const distExpiryTime = assignedTimestamp + selectedPlan.ms;
 
     const newDistData = {
       id: Date.now(),
@@ -2127,6 +2186,8 @@
       adminMessage: '',
       status: 'Pending',
       paymentStatus: 'Pending',
+      paymentPlan: selectedPlan.label,
+      paymentAmount: selectedPlan.amount,
       paymentTxnId: txnId,
       paymentScreenshot: paymentScreenshot,
       approvalNote: 'Awaiting admin review'
@@ -2135,7 +2196,7 @@
     const success = await addDistributorCloud(newDistData);
 
     if (success) {
-      signUpStatusMsg.innerText = '✅ आपका आवेदन सफलतापूर्वक भेज दिया गया है। एडमिन आपके भुगतान स्क्रीनशॉट की समीक्षा करेगा और फिर approval देगा।';
+      signUpStatusMsg.innerText = '✅ आपका आवेदन सफलतापूर्वक भेज दिया गया है। एडमिन आपके भुगतान screenshot की समीक्षा करेगा और तभी login approved होगा।';
       signUpStatusMsg.style.color = '#34d399';
       signUpStatusMsg.style.display = 'block';
 
@@ -2150,6 +2211,7 @@
         signUpConfirmPass.value = '';
         signUpTxnId.value = '';
         signUpPaymentScreenshot.value = '';
+        document.querySelector('input[name="planType"][value="1month"]').checked = true;
         signUpStatusMsg.style.display = 'none';
       }, 2200);
     } else {
