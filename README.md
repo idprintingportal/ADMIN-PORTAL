@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
+<meta name="referrer" content="no-referrer">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ID CARD PRINT & CONVERTER PORTAL</title>
@@ -908,6 +909,16 @@
   <div><span id="backToLoginFromRenewal" class="auth-link">⬅️ Back to Login</span></div>
 </div>
 
+
+<div id="pendingScreen" class="auth-box" style="display:none;">
+  <h2>Payment Review</h2>
+  <p id="pendingStatus"></p>
+  <p>Your portal remains locked until admin approval. If your signup screenshot failed, upload it here.</p>
+  <input id="pendingScreenshot" type="file" accept="image/jpeg,image/png,image/webp">
+  <button id="pendingUploadBtn" class="login-btn">Upload Signup Screenshot</button>
+  <button id="pendingBackBtn" class="login-btn">Back to Login</button>
+</div>
+
 <!-- 3. Change Password Screen -->
 <div id="changePwdScreen" class="auth-box" style="display:none;">
   <div class="badge">Security Settings</div>
@@ -1471,7 +1482,7 @@
             <tr>
               <th>Business / Name</th>
               <th>Login Email</th>
-              <th>Password</th>
+              <th>Account Security</th>
               <th>Payment / Screenshot Link</th>
               <th>Validity / Timeline</th>
               <th>Action</th>
@@ -1575,37 +1586,191 @@
   // ==========================================================
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby9cny7fS1FyccdcdwE5MGEL_ob6UQTl8cOS9D19D90azYpChm-u6io8I8w2yDQHCAy/exec";
 
-  function getDistributorCache() {
+  let authToken = '';
+  let authRole = '';
+  let authEmail = '';
+  let authExpires = 0;
+  let distributorMemoryCache = [];
+  try { localStorage.removeItem('distributorLocalCache'); localStorage.removeItem('system_auth_pwd'); } catch (_) {}
+
+  function getDistributorCache() { return distributorMemoryCache; }
+  function saveDistributorCache(list) { distributorMemoryCache = Array.isArray(list) ? list : []; }
+  function mergeDistributorCache(list) { saveDistributorCache(list); return distributorMemoryCache; }
+  function acceptSession(result, email) {
+    authToken=result.token; authRole=result.role; authEmail=email; authExpires=result.expires;
+    distributorMemoryCache=[];
+  }
+  function clearAuth() {
+    authToken=''; authRole=''; authEmail=''; authExpires=0; distributorMemoryCache=[];
+    activeDistributorSession=null; currentRenewalDistributor=null; currentLoggedDistributorEmail='';
+    sessionStorage.removeItem('isLoggedIn');
+    document.getElementById('distributorTableBody').replaceChildren();
+    document.getElementById('historyTableBody').replaceChildren();
+  }
+  async function secureApi(payload) {
+    const requestToken=authToken;
+    const response=await fetch(GOOGLE_SCRIPT_URL, {method:'POST', cache:'no-store', credentials:'omit',
+      headers:{'Content-Type':'text/plain;charset=UTF-8'}, body:JSON.stringify({...payload, token:requestToken})});
+    if(!response.ok) throw new Error('Server unavailable. Please retry.');
+    const result=await response.json();
+    if(!['login','register'].includes(payload.action) && requestToken!==authToken) throw new Error('Account changed. Please retry.');
+    if(!result || result.success!==true) throw new Error(result?.error || 'Server did not confirm the action.');
+    return result;
+  }
+  async function getDistributorsListCloud() {
+    if(!authToken) return [];
+    const result=await secureApi({action:authRole==='admin'?'getDistributors':'getMe'});
+    const list=authRole==='admin'?result.records:(result.record?[result.record]:[]);
+    saveDistributorCache(list); return list;
+  }
+  async function callRenewalPost(payload) { return secureApi(payload); }
+  async function callCloudPost(payload) {
+    try { return await secureApi(payload); }
+    catch(error) { alert(error.message); return false; }
+  }
+  async function callCloudGet(params) { return callCloudPost(Object.fromEntries(params.entries())); }
+  async function addDistributorCloud(record) {
+    const result=await callCloudPost({...record,action:authRole==='admin'?'addDistributor':'register'});
+    if(result?.token) acceptSession(result,record.email);
+    return result;
+  }
+  async function uploadScreenshotCloud(email,imageData,fileName) {
+    try { return await secureApi({action:'uploadPaymentScreenshot',email,imageData,fileName}); }
+    catch(error) { return {success:false,error:error.message}; }
+  }
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function safeImageUrl(value) {
     try {
-      const saved = localStorage.getItem('distributorLocalCache');
-      return saved ? JSON.parse(saved) : [];
-    } catch (err) {
-      return [];
+      const url=new URL(String(value || ''));
+      // Existing Drive screenshots and current ImgBB uploads are the only supported external images.
+      return url.protocol==='https:' && !url.username && !url.password && ['i.ibb.co','ibb.co','drive.google.com','lh3.googleusercontent.com'].includes(url.hostname) ? url.href : '';
+    } catch(_) { return ''; }
+  }
+  function openDistributorScreenshot(value) {
+    const url=safeImageUrl(value);
+    if(!url) return alert('Screenshot URL is invalid or unsupported.');
+    window.open(url,'_blank','noopener,noreferrer');
+  }
+  async function renderDistributorsTable() {
+    if(authRole!=='admin') return;
+    const tbody=document.getElementById('distributorTableBody');
+    tbody.textContent='Loading…';
+    let records;
+    try { records=await getDistributorsListCloud(); }
+    catch(error) { tbody.textContent=error.message; return; }
+    tbody.replaceChildren();
+    for(const d of records) {
+      const tr=document.createElement('tr');
+      const cell=text=>{const td=document.createElement('td');td.textContent=String(text ?? '');tr.appendChild(td);return td;};
+      cell(d.name);cell(d.email);cell('Password protected');
+      const renewal=String(d.renewalRequested).toLowerCase()==='true';
+      const payment=cell(`${d.paymentStatus || ''}\n${renewal?'🔄 Renewal Request\n':''}${renewal?d.renewalPlan:d.paymentPlan} | ${renewal?d.renewalAmount:d.paymentAmount}\nTxn: ${renewal?d.renewalTxnId:d.paymentTxnId}`);
+      payment.style.whiteSpace='pre-line';
+      const days=Math.max(0,Math.ceil((Number(d.expiryTime)-Date.now())/86400000));
+      cell(`${days} Days Left | ${d.status}`);
+      const actions=cell('');
+      const button=(label,fn)=>{const b=document.createElement('button');b.type='button';b.className='history-msg-btn';b.textContent=label;b.style.margin='3px';b.addEventListener('click',async()=>{b.disabled=true;try{await fn();}catch(error){alert(error.message);}finally{b.disabled=false;}});actions.appendChild(b);};
+      const image=safeImageUrl(renewal?d.renewalScreenshot:d.paymentScreenshot);
+      if(image) button('🔗 Open Screenshot',()=>openDistributorScreenshot(image));
+      if(d.distributorMessage) {const text=document.createElement('div');text.textContent=d.distributorMessage;actions.appendChild(text);}
+      const reply=safeImageUrl(d.distributorReplyImage);
+      if(reply) button('🔗 Open Reply Image',()=>openDistributorScreenshot(reply));
+      button('💬 Message',()=>openAdminMsgModal(d.email));
+      if(String(d.paymentStatus).toLowerCase()==='pending') {
+        button('✅ Approve',()=>reviewDistributorPayment(d.email,true));
+        button('❌ Reject',()=>reviewDistributorPayment(d.email,false));
+      }
+      button('🛑 Stop',()=>toggleDistributorStatus(d.email,'Stopped'));
+      button('▶️ Start',()=>toggleDistributorStatus(d.email,'Active'));
+      button('🗑️ Delete',()=>removeDistributor(d.id));
+      tbody.appendChild(tr);
     }
   }
-
-  function saveDistributorCache(list) {
+  async function reviewDistributorPayment(email,approved) {
+    if(!confirm(approved?'Approve this payment?':'Reject this payment?')) return;
+    await secureApi({action:'reviewDistributorPayment',email,approved:String(approved)});
+    await renderDistributorsTable();
+    alert(approved?'✅ Approved. Validity saved by the server.':'✅ Rejected. Access remains closed.');
+  }
+  function showPendingScreen(record,state) {
+    activeDistributorSession=null;
+    mainApp.style.display='none';loginScreen.style.display='none';renewalScreen.style.display='none';signUpScreen.style.display='none';changePwdScreen.style.display='none';
+    document.getElementById('pendingScreen').style.display='block';
+    document.getElementById('pendingStatus').textContent=state==='rejected'?'Payment rejected. Contact admin or upload corrected proof.':'Your application is awaiting admin approval.';
+  }
+  async function handleLogin() {
+    const email=loginEmail.value.trim().toLowerCase(), password=loginPass.value;
+    authBtn.disabled=true;
     try {
-      localStorage.setItem('distributorLocalCache', JSON.stringify(list || []));
-    } catch (err) {}
-  }
-
-  function mergeDistributorCache(remoteList) {
-    const cache = getDistributorCache();
-    const merged = Array.isArray(remoteList) ? [...remoteList] : [];
-
-    cache.forEach(cached => {
-      const idx = merged.findIndex(item => String(item.email || '').trim().toLowerCase() === String(cached.email || '').trim().toLowerCase());
-      if (idx >= 0) {
-        merged[idx] = { ...merged[idx], ...cached };
-      } else {
-        merged.push(cached);
+      const previousToken=authToken;
+      if(previousToken) { try {await secureApi({action:'logout'});} catch(_) {} }
+      clearAuth();
+      const result=await secureApi({action:'login',email,password});
+      acceptSession(result,email);
+      loginPass.value=''; errorMsg.style.display='none';
+      document.getElementById('pendingScreen').style.display='none';
+      if(result.role==='distributor') {
+        if(result.state==='renewal'||result.state==='renewal_pending') {showRenewalScreen(result.record);return;}
+        if(result.state==='pending'||result.state==='rejected') {showPendingScreen(result.record,result.state);return;}
+        if(result.state!=='active') throw new Error('Your account is stopped. Please contact admin.');
       }
-    });
-
-    saveDistributorCache(merged);
-    return merged;
+      activeDistributorSession=result.record;
+      loginScreen.style.display='none';changePwdScreen.style.display='none';renewalScreen.style.display='none';mainApp.style.display='block';
+      document.getElementById('topNavRegistrationBox').style.display='none';
+      adminTabBtn.style.display=result.role==='admin'?'inline-block':'none';
+      if(result.role==='admin') {updateValidityDisplay();switchTabDirect('tab-cards');}
+      else {
+        currentLoggedDistributorEmail=email;renderDistributorNotice(result.record);switchTabDirect('tab-cards');
+        const days=Math.max(0,Math.ceil((Number(result.record.expiryTime)-Date.now())/86400000));
+        document.getElementById('validityCounterBadge').textContent=`👤 ${result.record.name} | Validity: ${days} Days Left`;
+      }
+      initAllCanvases();
+    } catch(error) {
+      clearAuth();mainApp.style.display='none';loginScreen.style.display='block';
+      errorMsg.textContent=error.message;errorMsg.style.display='block';
+    } finally {authBtn.disabled=false;}
   }
+  async function changePasswordFromForm() {
+    const newPass=newPassInput.value;
+    pwdStatusMsg.style.display='block';
+    if(newPass!==confirmPassInput.value) {pwdStatusMsg.textContent='Passwords do not match.';return;}
+    saveNewPwdBtn.disabled=true;
+    try {
+      await secureApi({action:'updatePassword',email:pwdEmailInput.value.trim().toLowerCase(),oldPass:oldPassInput.value,newPass});
+      clearAuth();oldPassInput.value='';newPassInput.value='';confirmPassInput.value='';
+      pwdStatusMsg.textContent='Password updated. All old sessions are invalid. Please login again.';
+      setTimeout(()=>location.reload(),2000);
+    } catch(error) {pwdStatusMsg.textContent=error.message;}
+    finally {saveNewPwdBtn.disabled=false;}
+  }
+  let checkingSession=false;
+  async function checkServerSession() {
+    if(!authToken || checkingSession) return;
+    checkingSession=true;
+    try {
+      if(Date.now()>=authExpires) throw new Error('Session expired. Please login again.');
+      const result=await secureApi({action:'getMe'});
+      if(result.role==='distributor') {
+        if(result.state==='renewal'||result.state==='renewal_pending') {
+          if(mainApp.style.display!=='none') showRenewalScreen(result.record);
+        } else if(result.state==='pending'||result.state==='rejected') showPendingScreen(result.record,result.state);
+        else if(result.state!=='active') throw new Error('Account stopped. Contact admin.');
+        else {activeDistributorSession=result.record;renderDistributorNotice(result.record);}
+      }
+    } catch(error) {
+      clearAuth();mainApp.style.display='none';renewalScreen.style.display='none';document.getElementById('pendingScreen').style.display='none';loginScreen.style.display='block';
+      errorMsg.textContent=error.message;errorMsg.style.display='block';
+    } finally {checkingSession=false;}
+  }
+
+
+
+
+
+
+
 
   function getDistributorScreenshotUrl(record) {
     if (!record || typeof record !== 'object') return '';
@@ -1637,65 +1802,11 @@
     return approvalGranted && paymentStatus === 'approved' && distStatus === 'active';
   }
 
-  async function getDistributorsListCloud() {
-    try {
-      const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getDistributors`, { cache: "no-store" });
-      const data = await response.json();
-      const list = Array.isArray(data) ? data : [];
-      saveDistributorCache(list);
-      return list;
-    } catch(err) {
-      console.error("Fetch error:", err);
-      return getDistributorCache();
-    }
-  }
 
-  async function callRenewalPost(payload) {
-    const response = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', cache: 'no-store', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify(payload) });
-    if (!response.ok) throw new Error('Server HTTP ' + response.status);
-    const result = await response.json();
-    if (result.success !== true) throw new Error(result.error || 'Server did not confirm renewal.');
-    return result;
-  }
 
-  async function callCloudPost(payload) {
-    try {
-      const response = await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "cors",
-        cache: "no-store",
-        credentials: "omit",
-        headers: { "Content-Type": "text/plain;charset=UTF-8" },
-        body: JSON.stringify(payload)
-      });
 
-      if (response.type === 'opaque') return true;
 
-      if (!response.ok) {
-        console.error("Cloud POST failed:", response.status, response.statusText);
-        return false;
-      }
 
-      try {
-        const text = await response.text();
-        if (!text || text.trim() === '') return true;
-        try {
-          const parsed = JSON.parse(text);
-          if (parsed && typeof parsed === 'object') {
-            return parsed.success === false || parsed.error ? false : parsed;
-          }
-          return Boolean(parsed);
-        } catch (err) {
-          return Boolean(text.trim());
-        }
-      } catch (err) {
-        return true;
-      }
-    } catch(err) {
-      console.error("Post error:", err);
-      return false;
-    }
-  }
 
   async function refreshDistributorCloudData() {
     try {
@@ -1710,46 +1821,9 @@
     }
   }
 
-  async function callCloudGet(params) {
-    try {
-      const response = await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`, {
-        cache: 'no-store'
-      });
-      if (!response.ok) return false;
-      const text = await response.text();
-      if (!text || text.trim() === '') return true;
-      try {
-        const parsed = JSON.parse(text);
-        return parsed && typeof parsed === 'object' && (parsed.success === false || parsed.error) ? false : true;
-      } catch (err) {
-        return true;
-      }
-    } catch (err) {
-      console.error('Cloud GET error:', err);
-      return false;
-    }
-  }
 
-  async function addDistributorCloud(distData) {
-    const params = new URLSearchParams({
-      action: 'addDistributor',
-      id: distData.id,
-      name: distData.name,
-      email: distData.email,
-      pass: distData.pass,
-      assignedTimestamp: distData.assignedTimestamp,
-      expiryTime: distData.expiryTime,
-      status: distData.status || 'Pending',
-      paymentStatus: distData.paymentStatus || 'Pending',
-      paymentPlan: distData.paymentPlan || '',
-      paymentAmount: distData.paymentAmount || '',
-      paymentTxnId: distData.paymentTxnId || '',
-      approvalGranted: distData.approvalGranted ? 'true' : 'false',
-      accessApproved: distData.accessApproved ? 'true' : 'false',
-      approved: distData.approved ? 'true' : 'false'
-    });
-    return await callCloudGet(params);
-  }
+
+
 
   async function deleteDistributorCloud(distId) {
     return await callCloudGet(new URLSearchParams({ action: 'deleteDistributor', id: distId }));
@@ -1759,60 +1833,7 @@
     return await callCloudPost({ action: "messageDistributor", email, message, imageUrl });
   }
 
-  async function uploadScreenshotCloud(email, screenshotData, fileName = 'payment-screenshot.jpg') {
-    /*
-      Apps Script uploads the screenshot to ImgBB, then writes its hosted image URL
-      to the distributor row. Read the server response so a failed upload is shown
-      clearly to both the distributor and the admin.
-    */
-    try {
-      const response = await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'cors',
-        cache: 'no-store',
-        credentials: 'omit',
-        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
-        body: JSON.stringify({
-          action: 'uploadPaymentScreenshot',
-          email: String(email || '').trim().toLowerCase(),
-          imageData: screenshotData,
-          fileName,
-          // Kept for compatibility with an already-deployed older Apps Script.
-          screenshotUrl: screenshotData,
-          paymentScreenshot: screenshotData
-        })
-      });
 
-      if (!response.ok) {
-        return { success: false, error: `Apps Script returned HTTP ${response.status}.` };
-      }
-      const responseText = await response.text();
-      let uploadResponse = {};
-      try { uploadResponse = responseText ? JSON.parse(responseText) : {}; } catch (err) {}
-      if (uploadResponse.success === false || uploadResponse.error) {
-        return { success: false, error: uploadResponse.error || 'Apps Script rejected the screenshot.' };
-      }
-
-      // Confirm the saved hosted-image URL by reading the Sheet data.
-      let lastUploadStatus = '';
-      for (let attempt = 0; attempt < 10; attempt++) {
-        await new Promise(resolve => setTimeout(resolve, 1200));
-        const latest = await refreshDistributorCloudData();
-        const savedRecord = (latest || []).find((dist) =>
-          String(dist.email || '').trim().toLowerCase() === String(email || '').trim().toLowerCase()
-        );
-        if (getDistributorScreenshotUrl(savedRecord)) return { success: true };
-        lastUploadStatus = String(savedRecord?.screenshotStatus || '').trim();
-        if (lastUploadStatus.toLowerCase().startsWith('error:')) {
-          return { success: false, error: lastUploadStatus.replace(/^error:\s*/i, '') };
-        }
-      }
-      return { success: false, error: lastUploadStatus || 'Screenshot link could not be confirmed. Please check the Apps Script deployment.' };
-    } catch (err) {
-      console.error('ImgBB / Sheet screenshot error:', err);
-      return { success: false, error: String(err?.message || err) };
-    }
-  }
 
   async function toggleDistributorStatusCloud(email, newStatus) {
     const normalizedStatus = String(newStatus || 'Active').trim();
@@ -1830,12 +1851,13 @@
   // ==========================================================
   // INDEXEDDB HISTORY STORAGE ENGINE
   // ==========================================================
-  const DB_NAME = 'PrintPortalPersistentDB';
+  const DB_NAME = 'PrintPortalPrivateHistory-v4:';
   const DB_STORE = 'print_records';
 
   function openHistoryDB() {
+    if (!authToken || !authEmail) return Promise.reject(new Error('Login required.'));
     return new Promise((resolve, reject) => {
-      const request = indexedDB.open(DB_NAME, 1);
+      const request = indexedDB.open(DB_NAME + authEmail, 1);
       request.onupgradeneeded = function(e) {
         const db = e.target.result;
         if (!db.objectStoreNames.contains(DB_STORE)) {
@@ -1886,12 +1908,12 @@
         records.reverse().forEach(rec => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td><strong style="color:var(--accent-blue);">${rec.feature}</strong></td>
-            <td>${rec.fileName}</td>
-            <td style="color:#94a3b8; font-size:11px;">${rec.dateFormatted}</td>
+            <td><strong style="color:var(--accent-blue);">${escapeHtml(rec.feature)}</strong></td>
+            <td>${escapeHtml(rec.fileName)}</td>
+            <td style="color:#94a3b8; font-size:11px;">${escapeHtml(rec.dateFormatted)}</td>
             <td>
-              <button class="history-download-btn" onclick="reDownloadHistoryFile(${rec.id})">📥 Download</button>
-              <button class="history-delete-btn" onclick="deleteHistoryRecord(${rec.id})" style="margin-left: 5px;">🗑️ Delete</button>
+              <button class="history-download-btn" onclick="reDownloadHistoryFile(${Number(rec.id)})">📥 Download</button>
+              <button class="history-delete-btn" onclick="deleteHistoryRecord(${Number(rec.id)})" style="margin-left: 5px;">🗑️ Delete</button>
             </td>
           `;
           tbody.appendChild(tr);
@@ -1943,8 +1965,6 @@
   }
 
   const ADMIN_EMAIL = "oneplus777000@gmail.com";
-  const INITIAL_PASS = "Pass@123";
-  const EXPIRED_PASS = "Harshal@6195";
   const THIRTY_DAYS = 30;
   const THIRTY_MS = THIRTY_DAYS * 24 * 60 * 60 * 1000;
   const ONE_YEAR_DAYS = 365;
@@ -1954,9 +1974,7 @@
     '1year': { label: '1 Year', amount: 319, ms: ONE_YEAR_MS }
   };
 
-  function getStoredPassword() {
-    return localStorage.getItem('system_auth_pwd') || INITIAL_PASS;
-  }
+
 
   function updateValidityDisplay() {
     const badge = document.getElementById('validityCounterBadge');
@@ -1972,7 +1990,7 @@
   async function addNewDistributor() {
     const name = document.getElementById('newDistName').value.trim();
     const email = document.getElementById('newDistEmail').value.trim().toLowerCase();
-    const pass = document.getElementById('newDistPass').value.trim();
+    const pass = document.getElementById('newDistPass').value;
     const msg = document.getElementById('distMsg');
 
     if (!name || !email || !pass) {
@@ -2032,112 +2050,20 @@
     }
   }
 
-  async function renderDistributorsTable() {
-    const tbody = document.getElementById('distributorTableBody');
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:15px;">डेटा लोड हो रहा है...</td></tr>`;
 
-    let dists = await getDistributorsListCloud();
-    tbody.innerHTML = '';
-
-    if (!dists.length) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:15px;">कोई डिस्ट्रीब्यूटर नहीं मिला।</td></tr>`;
-      return;
-    }
-
-    const now = Date.now();
-
-    dists.forEach((d) => {
-      const expiry = Number(d.expiryTime || (Number(d.assignedTimestamp || now) + THIRTY_MS));
-      const remainingMs = expiry - now;
-      const daysLeft = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
-
-      let timelineText = "";
-      let textColor = "#34d399";
-      if (daysLeft > 0) {
-        timelineText = `${daysLeft} Days Left`;
-      } else {
-        timelineText = `Expired (0 Days)`;
-        textColor = "#f87171";
-      }
-
-      const currentStatus = (d.status !== undefined && d.status !== null && String(d.status).trim() !== "") ? String(d.status).trim() : "Active";
-      const paymentStatus = (d.paymentStatus !== undefined && d.paymentStatus !== null && String(d.paymentStatus).trim() !== "") ? String(d.paymentStatus).trim() : ((currentStatus === 'Pending' || currentStatus === 'Rejected') ? currentStatus : 'Approved');
-      const isRenewalRequest = String(d.renewalRequested || '').toLowerCase() === 'true';
-      const paymentPlan = (isRenewalRequest ? d.renewalPlan : '') || d.paymentPlan || d.plan || '1 Month';
-      const paymentAmount = (isRenewalRequest ? d.renewalAmount : '') || d.paymentAmount || (paymentPlan.toLowerCase().includes('year') ? '₹319' : '₹36');
-      const screenshotVal = getDistributorScreenshotUrl(d);
-      const txnId = d.paymentTxnId || d.transactionId || d.txnId || 'N/A';
-      const distributorReply = d.distributorMessage || d.distributorReply || '';
-      const distributorReplyImage = d.distributorReplyImage || d.replyImage || '';
-      const hasScreenshot = (screenshotVal && String(screenshotVal).trim() !== "");
-      const hasDistributorReply = String(distributorReply).trim() !== '' || String(distributorReplyImage).trim() !== '';
-      const paymentColor = paymentStatus === 'Approved' ? '#34d399' : paymentStatus === 'Rejected' ? '#f87171' : '#fbbf24';
-      const isNewPendingDistributor = paymentStatus.toLowerCase() === 'pending' || currentStatus.toLowerCase() === 'pending';
-
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><strong>${d.name || ''}</strong></td>
-        <td>${d.email || ''}</td>
-        <td><code style="background:#000; padding:3px 6px; border-radius:4px; color:#38bdf8;">${d.pass || ''}</code></td>
-        <td>
-          <div style="color:${paymentColor}; font-weight:700; font-size:11px; margin-bottom:4px;">${paymentStatus}</div>
-          <div style="color:#94a3b8; font-size:10px;">Plan: ${paymentPlan}</div>
-          <div style="color:#94a3b8; font-size:10px;">Amount: ${paymentAmount}</div>
-          <div style="color:#94a3b8; font-size:10px;">Txn: ${txnId}</div>
-          ${isRenewalRequest ? '<div style="color:#fbbf24; font-size:10px; font-weight:700;">🔄 Renewal Request</div>' : ''}
-        </td>
-        <td style="color: ${textColor}; font-weight:600;">⏳ ${timelineText} (<span style="color:${currentStatus === 'Active' ? '#34d399' : currentStatus === 'Rejected' ? '#f87171' : '#fbbf24'}">${currentStatus}</span>)</td>
-        <td>
-          <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-start;">
-            ${hasScreenshot
-              ? `<button class="history-view-ss-btn" onclick="openDistributorScreenshot('${encodeURIComponent(screenshotVal)}')">🔗 Open Screenshot</button>`
-              : '<div style="color:#94a3b8; font-size:10px;">No screenshot link</div>'}
-            ${hasDistributorReply ? `
-              <div style="max-width:180px; color:#f8fafc; font-size:10px; line-height:1.4; background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.25); border-radius:6px; padding:6px;">💬 ${distributorReply || 'Image reply received'}</div>
-              ${distributorReplyImage ? `<button class="history-view-ss-btn" onclick="openDistributorScreenshot('${encodeURIComponent(distributorReplyImage)}')">🔗 Open Reply Image</button>` : ''}
-            ` : ''}
-            <button class="history-delete-btn" onclick="removeDistributor('${d.id}')">🗑️ Delete</button>
-            <button class="history-msg-btn" onclick="openAdminMsgModal('${d.email}')">💬 Message</button>
-            ${isNewPendingDistributor ? `
-              <button class="btn-status-start" onclick="reviewDistributorPayment('${d.email}', true)">✅ Approve</button>
-              <button class="btn-status-stop" onclick="reviewDistributorPayment('${d.email}', false)">❌ Reject</button>
-            ` : ''}
-            <button class="btn-status-stop" onclick="toggleDistributorStatus('${d.email}', 'Stopped')" style="margin-top:5px;">🛑 Stop</button>
-            <button class="btn-status-start" onclick="toggleDistributorStatus('${d.email}', 'Active')" style="margin-top:5px;">▶️ Start</button>
-          </div>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
 
   function viewDistributorScreenshot(ssUrl) {
-    document.getElementById('adminViewScreenshotImg').src = decodeURIComponent(ssUrl);
+    document.getElementById('adminViewScreenshotImg').src = safeImageUrl(decodeURIComponent(ssUrl));
     document.getElementById('viewScreenshotModal').style.display = 'flex';
   }
 
-  function openDistributorScreenshot(encodedUrl) {
-    const url = decodeURIComponent(encodedUrl);
-    const popup = window.open(url, '_blank', 'noopener,noreferrer');
-    if (!popup) alert('⚠️ Screenshot खोलने के लिए browser popup allow करें।');
-  }
+
 
   function closeViewScreenshotModal() {
     document.getElementById('viewScreenshotModal').style.display = 'none';
   }
 
-  async function reviewDistributorPayment(email, approved) {
-    if (!confirm(approved ? 'क्या आप इस distributor का भुगतान approve करना चाहते हैं?' : 'क्या आप इस distributor का भुगतान reject करना चाहते हैं?')) return;
 
-    const adminReviewKey = prompt('Admin approval key डालें (Apps Script की ADMIN_REVIEW_KEY):');
-    if (!adminReviewKey) return;
-    try {
-      await callRenewalPost({ action: 'reviewDistributorPayment', email, approved: String(approved), adminReviewKey });
-      await refreshDistributorCloudData();
-      renderDistributorsTable();
-      alert(approved ? '✅ Approved: नई validity Google Sheet में save हो गई।' : '✅ Rejected: access बंद रहेगा।');
-    } catch (error) { alert('⚠️ ' + error.message); }
-  }
 
   async function toggleDistributorStatus(email, newStatus) {
     if (!confirm(`क्या आप इस डिस्ट्रीब्यूटर की सर्विस को ${newStatus === 'Stopped' ? '🛑 Stop (रोकना)' : '▶️ Start (चालू करना)'} चाहते हैं?`)) return;
@@ -2181,11 +2107,7 @@
 
     let imageUrl = "";
     if (imgFile) {
-      imageUrl = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target.result);
-        reader.readAsDataURL(imgFile);
-      });
+      imageUrl = await preparePaymentScreenshot(imgFile);
     }
 
     const result = await sendAdminMsgCloud(email, msgText, imageUrl);
@@ -2213,11 +2135,11 @@
     const noticeText = record?.adminmessage || record?.adminMessage || '';
     const noticeImg = record?.adminimage || record?.adminImage || '';
     const hasText = String(noticeText).trim() !== '';
-    const hasImage = String(noticeImg).trim() !== '';
+    const hasImage = Boolean(safeImageUrl(noticeImg));
 
     txtSpan.innerText = hasText ? noticeText : '';
     if (hasImage) {
-      imgElem.src = noticeImg;
+      imgElem.src = safeImageUrl(noticeImg);
       imgBox.style.display = 'block';
     } else {
       imgElem.removeAttribute('src');
@@ -2234,7 +2156,8 @@
     renderDistributorNotice(record);
   }
 
-  window.addEventListener('focus', refreshDistributorNotice);
+  window.addEventListener('focus', checkServerSession);
+  setInterval(checkServerSession, 60000);
 
   // Distributor reply: text is saved in the Sheet and any attached image is hosted on ImgBB.
   async function sendDistributorReply() {
@@ -2286,6 +2209,7 @@
   }
 
   function switchTab(tabId) {
+    if (!authToken || (tabId === 'tab-admin' && authRole !== 'admin')) return;
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
     
@@ -2402,6 +2326,7 @@
     signUpScreen.style.display = 'none';
     changePwdScreen.style.display = 'none';
     mainApp.style.display = 'none';
+    document.getElementById('pendingScreen').style.display='none';
     renewalScreen.style.display = 'block';
   }
 
@@ -2474,8 +2399,8 @@
         reject(new Error('Only JPG, PNG, or WEBP screenshots are supported'));
         return;
       }
-      if (file.size > 10 * 1024 * 1024) {
-        reject(new Error('Screenshot must be smaller than 10 MB'));
+      if (file.size > 5 * 1024 * 1024) {
+        reject(new Error('Screenshot must be smaller than 5 MB'));
         return;
       }
       // Send the original file directly. This avoids canvas/image decoding errors
@@ -2508,10 +2433,12 @@
   updatePaymentPlanUi();
 
   async function handleSignUp() {
+    if (authRole === 'admin') { alert('Logout before public signup.'); return; }
+    clearAuth();
     const name = signUpName.value.trim();
     const email = signUpEmail.value.trim().toLowerCase();
-    const pass = signUpPass.value.trim();
-    const confirmPass = signUpConfirmPass.value.trim();
+    const pass = signUpPass.value;
+    const confirmPass = signUpConfirmPass.value;
     const txnId = signUpTxnId.value.trim();
     const paymentFile = signUpPaymentScreenshot.files[0];
     const selectedPlanValue = document.querySelector('input[name="planType"]:checked')?.value || '1month';
@@ -2538,8 +2465,8 @@
       return;
     }
 
-    if (pass.length < 4) {
-      signUpStatusMsg.innerText = '❌ पासवर्ड कम से कम 4 अक्षर का होना चाहिए!';
+    if (pass.length < 12) {
+      signUpStatusMsg.innerText = '❌ पासवर्ड कम से कम 12 अक्षर का होना चाहिए!';
       signUpStatusMsg.style.color = '#ef4444';
       signUpStatusMsg.style.display = 'block';
       return;
@@ -2555,14 +2482,6 @@
     signUpStatusMsg.innerText = '⏳ भुगतान सत्यापन के लिए आवेदन भेजा जा रहा है...';
     signUpStatusMsg.style.color = '#fbbf24';
     signUpStatusMsg.style.display = 'block';
-
-    let dists = await getDistributorsListCloud();
-    if (dists.some(d => String(d.email).trim().toLowerCase() === email)) {
-      signUpStatusMsg.innerText = '⚠️ यह ईमेल आईडी पहले से रजिस्टर है!';
-      signUpStatusMsg.style.color = '#ef4444';
-      signUpStatusMsg.style.display = 'block';
-      return;
-    }
 
     let paymentScreenshot = '';
     try {
@@ -2639,199 +2558,13 @@
   // ==========================================================
   // ISOLATED CHANGE PASSWORD HANDLER WITH PROFESSIONAL MESSAGES
   // ==========================================================
-  saveNewPwdBtn.addEventListener('click', async () => {
-    const inputEmailForPwd = pwdEmailInput.value.trim().toLowerCase();
-    const oldP = oldPassInput.value.trim();
-    const newP = newPassInput.value.trim();
-    const confP = confirmPassInput.value.trim();
+  saveNewPwdBtn.addEventListener('click', changePasswordFromForm);
 
-    if (!inputEmailForPwd || !oldP || !newP || !confP) {
-      pwdStatusMsg.innerText = "⚠️ Please fill in all required fields!";
-      pwdStatusMsg.style.color = "#ef4444";
-      pwdStatusMsg.style.display = "block";
-      return;
-    }
 
-    if (newP.length < 4) {
-      pwdStatusMsg.innerText = "❌ New password must be at least 4 characters long!";
-      pwdStatusMsg.style.color = "#ef4444";
-      pwdStatusMsg.style.display = "block";
-      return;
-    }
-
-    if (newP !== confP) {
-      pwdStatusMsg.innerText = "❌ New password and confirmation do not match!";
-      pwdStatusMsg.style.color = "#ef4444";
-      pwdStatusMsg.style.display = "block";
-      return;
-    }
-
-    // 1. STRICT ADMIN ISOLATION
-    if (inputEmailForPwd === ADMIN_EMAIL.toLowerCase()) {
-      const adminActivePass = getStoredPassword().trim();
-      if (oldP !== adminActivePass && oldP !== INITIAL_PASS && oldP !== EXPIRED_PASS) {
-        pwdStatusMsg.innerText = "❌ Invalid old password!";
-        pwdStatusMsg.style.color = "#ef4444";
-        pwdStatusMsg.style.display = "block";
-        return;
-      }
-      localStorage.setItem('system_auth_pwd', newP);
-      pwdStatusMsg.innerText = "✅ Password updated successfully! Please login with your new password.";
-      pwdStatusMsg.style.color = "#34d399";
-      pwdStatusMsg.style.display = "block";
-    } else {
-      // 2. DISTRIBUTOR PASSWORD CHANGE WITH PROFESSIONAL MESSAGES
-      pwdStatusMsg.innerText = "⏳ Please wait, checking your details...";
-      pwdStatusMsg.style.color = "#fbbf24";
-      pwdStatusMsg.style.display = "block";
-
-      let dists = await getDistributorsListCloud();
-      let foundDist = dists.find(d => String(d.email).trim().toLowerCase() === inputEmailForPwd);
-
-      if (!foundDist || String(foundDist.pass).trim() !== oldP) {
-        pwdStatusMsg.innerText = "❌ Invalid email ID or old password!";
-        pwdStatusMsg.style.color = "#ef4444";
-        pwdStatusMsg.style.display = "block";
-        return;
-      }
-
-      pwdStatusMsg.innerText = "⏳ Please wait, changing your password...";
-      let success = await updateDistributorPasswordCloud(inputEmailForPwd, newP);
-      
-      if (success) {
-        pwdStatusMsg.innerText = "✅ Please wait, your password has been updated successfully!";
-        pwdStatusMsg.style.color = "#34d399";
-      } else {
-        pwdStatusMsg.innerText = "⚠️ Error updating password. Please try again!";
-        pwdStatusMsg.style.color = "#ef4444";
-      }
-    }
-
-    setTimeout(() => {
-      changePwdScreen.style.display = 'none';
-      loginScreen.style.display = 'block';
-    }, 2000);
-  });
-
-  async function handleLogin() {
-    const inputEmail = loginEmail.value.trim().toLowerCase();
-    const inputPass = loginPass.value.trim();
-    const adminActivePass = getStoredPassword().trim();
-
-    let isAuthorized = false;
-    let isAdmin = false;
-    let loggedInDistributor = null;
-
-    // 1. Check Admin (Lifetime Access)
-    if (inputEmail === ADMIN_EMAIL.toLowerCase() && inputPass === adminActivePass) {
-      isAuthorized = true;
-      isAdmin = true;
-    } else {
-      // 2. Check Cloud Distributors with 30 Days Expiry & Status Enforcement
-      let dists;
-      try {
-        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getDistributors`, { cache: 'no-store' });
-        if (!response.ok) throw new Error('Cloud unavailable');
-        dists = await response.json();
-        if (!Array.isArray(dists)) throw new Error('Invalid response');
-      } catch (error) {
-        errorMsg.innerText = '⚠️ Login verify नहीं हुआ। Internet जाँचकर फिर कोशिश करें।';
-        errorMsg.style.display = 'block';
-        return;
-      }
-      let foundUser = dists.find(d => String(d.email).trim().toLowerCase() === inputEmail);
-      
-      if (foundUser) {
-        if (String(foundUser.pass).trim() !== inputPass) {
-          errorMsg.innerText = "⚠️ गलत ईमेल आईडी या पासवर्ड!";
-          errorMsg.style.display = 'block';
-          return;
-        }
-
-        const paymentStatus = (foundUser.paymentStatus !== undefined && foundUser.paymentStatus !== null && String(foundUser.paymentStatus).trim() !== "") ? String(foundUser.paymentStatus).trim() : ((foundUser.status !== undefined && foundUser.status !== null && String(foundUser.status).trim() !== "") ? String(foundUser.status).trim() : "Approved");
-        const distStatus = (foundUser.status !== undefined && foundUser.status !== null && String(foundUser.status).trim() !== "") ? String(foundUser.status).trim() : "Active";
-        const approvalGranted = isDistributorAccessApproved(foundUser);
-
-        const expired = Number(foundUser.expiryTime) > 0 && Date.now() >= Number(foundUser.expiryTime);
-        if (expired && distStatus !== 'Stopped') {
-          showRenewalScreen(foundUser);
-          return;
-        }
-
-        if (paymentStatus === "Pending" || distStatus === "Pending" || !approvalGranted) {
-          errorMsg.innerText = "⚠️ आपका भुगतान और फॉर्म approval की प्रतीक्षा में है। एडमिन आपके स्क्रीनशॉट की समीक्षा करने के बाद ही लॉगिन मिलेगा।";
-          errorMsg.style.display = 'block';
-          return;
-        }
-
-        if (paymentStatus === "Rejected" || distStatus === "Rejected") {
-          errorMsg.innerText = "⚠️ आपका भुगतान reject हो चुका है। कृपया सही भुगतान के बाद फिर से आवेदन करें या admin से संपर्क करें।";
-          errorMsg.style.display = 'block';
-          return;
-        }
-
-        if (distStatus === "Stopped") {
-          errorMsg.innerText = "⚠️ आपकी सर्विस एडमिन द्वारा रोक दी गई है। अपनी सेवाएं बिना किसी रुकावट के अगले 30 दिनों (पूरा 1 महीना) तक लगातार चालू रखने के लिए कृपया केवल ₹36 का भुगतान करें और भुगतान का स्क्रीनशॉट हमारे WhatsApp (+91 7887575671) पर भेज दें। आपका पोर्टल 30 मिनट के भीतर पुनः चालू कर दिया जाएगा!";
-          errorMsg.style.display = 'block';
-          return;
-        }
-
-        const distExpiry = Number(foundUser.expiryTime || (Number(foundUser.assignedTimestamp || Date.now()) + THIRTY_MS));
-        if (Date.now() < distExpiry) {
-          isAuthorized = true;
-          isAdmin = false;
-          loggedInDistributor = foundUser;
-        } else {
-          showRenewalScreen(foundUser);
-          return;
-        }
-      } else {
-        errorMsg.innerText = "⚠️ गलत ईमेल आईडी या पासवर्ड!";
-        errorMsg.style.display = 'block';
-        return;
-      }
-    }
-
-    if (isAuthorized) {
-      activeDistributorSession = isAdmin ? null : loggedInDistributor;
-      renewalScreen.style.display = 'none';
-      sessionStorage.setItem('isLoggedIn', 'true');
-      loginScreen.style.display = 'none';
-      changePwdScreen.style.display = 'none';
-      errorMsg.style.display = 'none';
-      mainApp.style.display = 'block';
-      
-      const topNavReg = document.getElementById('topNavRegistrationBox');
-      if (topNavReg) topNavReg.style.display = 'none';
-
-      if (isAdmin) {
-        adminTabBtn.style.display = 'inline-block';
-        updateValidityDisplay();
-      } else {
-        adminTabBtn.style.display = 'none';
-        switchTabDirect('tab-cards');
-        
-        // Save current logged in distributor email for screenshot replies
-        currentLoggedDistributorEmail = inputEmail;
-
-        // Show the latest cloud notice and its payment screenshot reply control.
-        renderDistributorNotice(loggedInDistributor);
-        
-        const now = Date.now();
-        const distExpiry = Number(loggedInDistributor.expiryTime || (Number(loggedInDistributor.assignedTimestamp || now) + THIRTY_MS));
-        const distDays = Math.ceil((distExpiry - now) / (24 * 60 * 60 * 1000));
-        document.getElementById('validityCounterBadge').innerHTML = `👤 ${loggedInDistributor.name} | ⏳ Validity: <strong style="color:#fbbf24;">${distDays} Days Left</strong>`;
-      }
-
-      initAllCanvases();
-    } else {
-      errorMsg.innerText = "⚠️ गलत ईमेल आईडी या पासवर्ड!";
-      errorMsg.style.display = 'block';
-    }
-  }
 
   function enforceSessionExpiry() {
     if (!activeDistributorSession) return;
+    if (Date.now() >= authExpires) { checkServerSession(); return; }
     const expiry = Number(activeDistributorSession.expiryTime || (Number(activeDistributorSession.assignedTimestamp) + THIRTY_MS));
     if (!Number.isFinite(expiry) || Date.now() >= expiry) showRenewalScreen(activeDistributorSession);
   }
@@ -2840,16 +2573,36 @@
   window.addEventListener('focus', enforceSessionExpiry);
 
   function switchTabDirect(tabId) {
+    if (!authToken || (tabId === 'tab-admin' && authRole !== 'admin')) return;
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
   }
 
+  document.getElementById('pendingUploadBtn').addEventListener('click', async () => {
+    const button=document.getElementById('pendingUploadBtn');button.disabled=true;
+    try {
+      const file=document.getElementById('pendingScreenshot').files[0];
+      if(!file) throw new Error('Choose a screenshot.');
+      const imageData=await preparePaymentScreenshot(file);
+      await secureApi({action:'uploadPaymentScreenshot',imageData});
+      document.getElementById('pendingStatus').textContent='Screenshot saved. Awaiting admin approval.';
+    } catch(error) {document.getElementById('pendingStatus').textContent=error.message;}
+    finally {button.disabled=false;}
+  });
+  document.getElementById('pendingBackBtn').addEventListener('click', () => {
+    secureApi({action:'logout'}).catch(()=>{});clearAuth();
+    document.getElementById('pendingScreen').style.display='none';loginScreen.style.display='block';
+  });
+
   authBtn.addEventListener('click', handleLogin);
   loginPass.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
 
   logoutBtn.addEventListener('click', () => {
-    activeDistributorSession = null;
+    setTimeout(() => location.reload(), 100);
+    secureApi({action:'logout'}).catch(() => {});
+    clearAuth();
+    document.getElementById('pendingScreen').style.display='none';
     sessionStorage.removeItem('isLoggedIn');
     mainApp.style.display = 'none';
     renewalScreen.style.display = 'none';
@@ -3552,7 +3305,7 @@
 
     for (const file of files) {
       const arrayBuffer = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+      const pdf = await pdfjsLib.getDocument({ isEvalSupported: false, enableScripting: false, data: new Uint8Array(arrayBuffer) }).promise;
 
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
@@ -4040,7 +3793,7 @@
     document.getElementById('pdfToJpgStatus').innerText = `✅ ${file.name}`;
     const arrayBuffer = await file.arrayBuffer();
 
-    pdfToJpgDoc = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+    pdfToJpgDoc = await pdfjsLib.getDocument({ isEvalSupported: false, enableScripting: false, data: new Uint8Array(arrayBuffer) }).promise;
     document.getElementById('pdfToJpgControls').style.display = 'block';
   });
 
@@ -4120,7 +3873,7 @@
     document.getElementById('origFileSizeDisplay').innerText = formatBytes(file.size);
 
     const arrayBuffer = await file.arrayBuffer();
-    compressPdfDoc = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+    compressPdfDoc = await pdfjsLib.getDocument({ isEvalSupported: false, enableScripting: false, data: new Uint8Array(arrayBuffer) }).promise;
 
     document.getElementById('compressorControlsArea').style.display = 'block';
     onCompressSliderChange(document.getElementById('compressQualitySlider').value);
@@ -4208,8 +3961,8 @@
     ctx4x6.textAlign = 'center';
     ctx4x6.fillText('4×6 Photo Preview', 1200 / 2, 1800 / 2);
 
-    a4_4x6_SheetCanvas.fillStyle = '#ffffff';
-    a4_4x6_SheetCanvas.fillRect(0, 0, 2480, 3508);
+    a4_4x6_SheetCtx.fillStyle = '#ffffff';
+    a4_4x6_SheetCtx.fillRect(0, 0, 2480, 3508);
   }
 </script>
 
