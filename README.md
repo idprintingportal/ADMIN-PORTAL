@@ -1554,7 +1554,7 @@
   // ==========================================================
   // CLOUD API URL (POST JSON Method)
   // ==========================================================
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzL_QE1rPV6fwgxHb7Mcobmrvxo-92ia3zRiCQNFKd2O2VkP_v1snn8qDzg1lcDPj0A/exec";
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzeXA-1hpvrJnflK-ETeVWOqwyftXy7Ab76kSoQv-y6cpln6PyzcMZdbeAGc-VgCEHt/exec";
 
   function getDistributorCache() {
     try {
@@ -1723,18 +1723,36 @@
     return await callCloudPost({ action: "messageDistributor", email, message, imageUrl });
   }
 
-  async function uploadScreenshotCloud(email, screenshotUrl) {
+  async function uploadScreenshotCloud(email, screenshotData, fileName = 'payment-screenshot.jpg') {
+    /*
+      A screenshot must be stored in Google Drive by Apps Script, then its Drive URL
+      must be written to the distributor row.  Do not treat a no-cors response as
+      success: it can hide a failed upload from both the distributor and the admin.
+    */
     try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "uploadScreenshot", email: email, screenshotUrl: screenshotUrl })
+      const result = await callCloudPost({
+        action: 'uploadPaymentScreenshot',
+        email: String(email || '').trim().toLowerCase(),
+        imageData: screenshotData,
+        fileName,
+        // Kept for compatibility with an already-deployed older Apps Script.
+        screenshotUrl: screenshotData,
+        paymentScreenshot: screenshotData
       });
-      await refreshDistributorCloudData();
-      return true;
+
+      if (!result) return false;
+
+      // Confirm that the saved distributor row now exposes a screenshot URL.
+      // This is the same field read by the admin panel, so a green message means
+      // the admin will be able to view it after refresh.
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      const latest = await refreshDistributorCloudData();
+      const savedRecord = (latest || []).find((dist) =>
+        String(dist.email || '').trim().toLowerCase() === String(email || '').trim().toLowerCase()
+      );
+      return Boolean(getDistributorScreenshotUrl(savedRecord));
     } catch (err) {
-      console.error("Google Sheet screenshot error:", err);
+      console.error('Google Drive / Sheet screenshot error:', err);
       return false;
     }
   }
@@ -2191,7 +2209,7 @@
         return;
       }
 
-      let success = await uploadScreenshotCloud(targetEmail, base64Img);
+      let success = await uploadScreenshotCloud(targetEmail, base64Img, file.name);
       if (success) {
         statusDiv.innerText = '✅ Screenshot sent to admin successfully!';
         statusDiv.style.color = '#34d399';
@@ -2445,7 +2463,7 @@
     const success = await addDistributorCloud(newDistData);
 
     if (success) {
-      const screenshotSent = await uploadScreenshotCloud(email, paymentScreenshot);
+      const screenshotSent = await uploadScreenshotCloud(email, paymentScreenshot, paymentFile.name);
       if (!screenshotSent) {
         signUpStatusMsg.innerText = '⚠️ अकाउंट बन गया है, लेकिन भुगतान screenshot भेजने में समस्या हुई। कृपया दोबारा प्रयास करें।';
         signUpStatusMsg.style.color = '#ef4444';
