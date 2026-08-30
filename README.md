@@ -1651,9 +1651,17 @@
         if (!text || text.trim() === '') return true;
         try {
           const parsed = JSON.parse(text);
-          return parsed;
+          if (parsed && typeof parsed === 'object') {
+            return parsed.success === false || parsed.error ? false : parsed;
+          }
+          return Boolean(parsed);
         } catch (err) {
-          return text;
+          const normalizedText = text.trim().toLowerCase();
+          if (normalizedText.includes('<html') || normalizedText.includes('error')) {
+            console.error('Cloud POST response:', text);
+            return false;
+          }
+          return Boolean(text.trim());
         }
       } catch (err) {
         return true;
@@ -2112,14 +2120,53 @@
       });
     }
 
-    await sendAdminMsgCloud(email, msgText, imageUrl);
+    const result = await sendAdminMsgCloud(email, msgText, imageUrl);
+    if (!result) {
+      alert('⚠️ मैसेज भेजने में समस्या हुई। कृपया पुनः प्रयास करें।');
+      return;
+    }
+
     alert('✅ मैसेज और QR कोड सफलतापूर्वक भेज दिया गया है!');
     closeAdminMsgModal();
-    setTimeout(() => renderDistributorsTable(), 1500);
+    await refreshDistributorCloudData();
+    renderDistributorsTable();
   }
 
   // Active Logged-in Distributor Email storage
   let currentLoggedDistributorEmail = "";
+
+  function renderDistributorNotice(record) {
+    const banner = document.getElementById('distributorNoticeBanner');
+    const txtSpan = document.getElementById('distributorNoticeText');
+    const imgBox = document.getElementById('distributorNoticeImgBox');
+    const imgElem = document.getElementById('distributorNoticeImg');
+    if (!banner || !txtSpan || !imgBox || !imgElem) return;
+
+    const noticeText = record?.adminmessage || record?.adminMessage || '';
+    const noticeImg = record?.adminimage || record?.adminImage || '';
+    const hasText = String(noticeText).trim() !== '';
+    const hasImage = String(noticeImg).trim() !== '';
+
+    txtSpan.innerText = hasText ? noticeText : '';
+    if (hasImage) {
+      imgElem.src = noticeImg;
+      imgBox.style.display = 'block';
+    } else {
+      imgElem.removeAttribute('src');
+      imgBox.style.display = 'none';
+    }
+
+    banner.style.display = hasText || hasImage ? 'block' : 'none';
+  }
+
+  async function refreshDistributorNotice() {
+    if (!currentLoggedDistributorEmail) return;
+    const dists = await getDistributorsListCloud();
+    const record = dists.find((dist) => String(dist.email || '').trim().toLowerCase() === currentLoggedDistributorEmail);
+    renderDistributorNotice(record);
+  }
+
+  window.addEventListener('focus', refreshDistributorNotice);
 
   // Distributor Screenshot Upload Function
   async function uploadDistributorScreenshot() {
@@ -2136,9 +2183,8 @@
     statusDiv.style.color = '#fbbf24';
     statusDiv.style.display = 'block';
 
-    const reader = new FileReader();
-    reader.onload = async function(e) {
-      const base64Img = e.target.result;
+    try {
+      const base64Img = await preparePaymentScreenshot(file);
       const targetEmail = currentLoggedDistributorEmail || (loginEmail.value || "").trim().toLowerCase();
       
       if (!targetEmail) {
@@ -2156,8 +2202,10 @@
         statusDiv.innerText = '⚠️ Error sending screenshot!';
         statusDiv.style.color = '#ef4444';
       }
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+      statusDiv.innerText = '⚠️ Screenshot could not be prepared!';
+      statusDiv.style.color = '#ef4444';
+    }
   }
 
   function switchTab(tabId) {
@@ -2264,6 +2312,28 @@
     });
   }
 
+  function preparePaymentScreenshot(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const image = new Image();
+        image.onload = () => {
+          const maxDimension = 1400;
+          const scale = Math.min(1, maxDimension / Math.max(image.width, image.height));
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.max(1, Math.round(image.width * scale));
+          canvas.height = Math.max(1, Math.round(image.height * scale));
+          canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/jpeg', 0.78));
+        };
+        image.onerror = () => reject(new Error('Unable to decode screenshot'));
+        image.src = event.target.result;
+      };
+      reader.onerror = () => reject(new Error('Unable to read screenshot'));
+      reader.readAsDataURL(file);
+    });
+  }
+
   function updatePaymentPlanUi() {
     const selectedPlanValue = document.querySelector('input[name="planType"]:checked')?.value || '1month';
     const isYearly = selectedPlanValue === '1year';
@@ -2343,7 +2413,7 @@
 
     let paymentScreenshot = '';
     try {
-      paymentScreenshot = await readFileAsDataURL(paymentFile);
+      paymentScreenshot = await preparePaymentScreenshot(paymentFile);
     } catch (err) {
       signUpStatusMsg.innerText = '⚠️ भुगतान स्क्रीनशॉट पढ़ने में समस्या हुई, कृपया पुनः प्रयास करें।';
       signUpStatusMsg.style.color = '#ef4444';
@@ -2566,34 +2636,8 @@
         // Save current logged in distributor email for screenshot replies
         currentLoggedDistributorEmail = inputEmail;
 
-        // Show Distributor Notice (Text + Image Banner)
-        if (loggedInDistributor) {
-          let hasNotice = false;
-          const banner = document.getElementById('distributorNoticeBanner');
-          const txtSpan = document.getElementById('distributorNoticeText');
-          const imgBox = document.getElementById('distributorNoticeImgBox');
-          const imgElem = document.getElementById('distributorNoticeImg');
-
-          const noticeText = loggedInDistributor.adminmessage || loggedInDistributor.adminMessage;
-          const noticeImg = loggedInDistributor.adminimage || loggedInDistributor.adminImage;
-
-          if (noticeText && String(noticeText).trim() !== "") {
-            txtSpan.innerText = noticeText;
-            hasNotice = true;
-          } else {
-            txtSpan.innerText = "";
-          }
-
-          if (noticeImg && String(noticeImg).trim() !== "") {
-            imgElem.src = noticeImg;
-            imgBox.style.display = 'block';
-            hasNotice = true;
-          } else {
-            imgBox.style.display = 'none';
-          }
-
-          banner.style.display = hasNotice ? 'block' : 'none';
-        }
+        // Show the latest cloud notice and its payment screenshot reply control.
+        renderDistributorNotice(loggedInDistributor);
         
         const now = Date.now();
         const distExpiry = Number(loggedInDistributor.expiryTime || (Number(loggedInDistributor.assignedTimestamp || now) + THIRTY_MS));
