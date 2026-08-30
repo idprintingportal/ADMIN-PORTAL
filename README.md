@@ -1453,7 +1453,7 @@
               <th>Business / Name</th>
               <th>Login Email</th>
               <th>Password</th>
-              <th>Payment</th>
+              <th>Payment / Screenshot Link</th>
               <th>Validity / Timeline</th>
               <th>Action</th>
             </tr>
@@ -2040,12 +2040,9 @@
         <td style="color: ${textColor}; font-weight:600;">⏳ ${timelineText} (<span style="color:${currentStatus === 'Active' ? '#34d399' : currentStatus === 'Rejected' ? '#f87171' : '#fbbf24'}">${currentStatus}</span>)</td>
         <td>
           <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-start;">
-            ${hasScreenshot ? `
-              <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.35); border-radius:8px; padding:6px; width:120px; text-align:center;">
-                <img src="${screenshotVal}" alt="Payment Screenshot" style="max-width:100%; max-height:80px; border-radius:6px; display:block; margin:0 auto; background:#fff;" />
-              </div>
-              <button class="history-view-ss-btn" onclick="viewDistributorScreenshot('${encodeURIComponent(screenshotVal)}')">👁️ View Screenshot</button>
-            ` : '<div style="color:#94a3b8; font-size:10px;">No screenshot</div>'}
+            ${hasScreenshot
+              ? `<button class="history-view-ss-btn" onclick="openDistributorScreenshot('${encodeURIComponent(screenshotVal)}')">🔗 Open Screenshot</button>`
+              : '<div style="color:#94a3b8; font-size:10px;">No screenshot link</div>'}
             <button class="history-delete-btn" onclick="removeDistributor('${d.id}')">🗑️ Delete</button>
             <button class="history-msg-btn" onclick="openAdminMsgModal('${d.email}')">💬 Message</button>
             ${isNewPendingDistributor ? `
@@ -2064,6 +2061,12 @@
   function viewDistributorScreenshot(ssUrl) {
     document.getElementById('adminViewScreenshotImg').src = decodeURIComponent(ssUrl);
     document.getElementById('viewScreenshotModal').style.display = 'flex';
+  }
+
+  function openDistributorScreenshot(encodedUrl) {
+    const url = decodeURIComponent(encodedUrl);
+    const popup = window.open(url, '_blank', 'noopener,noreferrer');
+    if (!popup) alert('⚠️ Screenshot खोलने के लिए browser popup allow करें।');
   }
 
   function closeViewScreenshotModal() {
@@ -2350,22 +2353,14 @@
         reject(new Error('Only JPG, PNG, or WEBP screenshots are supported'));
         return;
       }
+      if (file.size > 10 * 1024 * 1024) {
+        reject(new Error('Screenshot must be smaller than 10 MB'));
+        return;
+      }
+      // Send the original file directly. This avoids canvas/image decoding errors
+      // on mobile screenshots and lets Apps Script convert it to a Drive link.
       const reader = new FileReader();
-      reader.onload = (event) => {
-        const image = new Image();
-        image.onload = () => {
-          // Smaller image data uploads faster and reliably stays within Apps Script limits.
-          const maxDimension = 1000;
-          const scale = Math.min(1, maxDimension / Math.max(image.width, image.height));
-          const canvas = document.createElement('canvas');
-          canvas.width = Math.max(1, Math.round(image.width * scale));
-          canvas.height = Math.max(1, Math.round(image.height * scale));
-          canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
-          resolve(canvas.toDataURL('image/jpeg', 0.68));
-        };
-        image.onerror = () => reject(new Error('Unable to decode screenshot'));
-        image.src = event.target.result;
-      };
+      reader.onload = (event) => resolve(event.target.result);
       reader.onerror = () => reject(new Error('Unable to read screenshot'));
       reader.readAsDataURL(file);
     });
