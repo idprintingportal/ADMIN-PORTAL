@@ -854,7 +854,7 @@
 
     <div id="paymentQrPlanText" style="margin-bottom: 8px; color: #f8fafc; font-weight: 600;">QR Code for 1 Month Plan (₹36):</div>
     <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 10px; padding: 12px; text-align: center;">
-      <img id="paymentQrImage" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAMgAQAAAADzCzvFAAAD5UlEQVR4nO3dUW7iMBDG8W82SOlbuIF7K0oGs5F9hT4Jb23Rr7F6wy0Wjup3kytJq0hBk6Ekrdll1mQ5u9Le3t4T3G0+Q6hLQOQeICu1Vcf7hYxPKvGohh3U1GJ7V2oZl+/Mw44rqfVnH8m8jP1L+Bc+zxg7yz6H+N5OBsrqJ69u1gncM6553I4zq7H1TZr53a2gMfdM5jW6oJ3H15IWd1x4eFihq4UkLdhvP8kP7sk8sLe6RZ0vR5Hd6s5pO+UxsV+1iOaV0HecZ2oHYJXqJ6Jq7n7cT4RdbQ2AAAEwqIY0FQAAABJRU5ErkJggg==" alt="Payment QR Code for ₹36" style="max-width: 220px; width: 100%; height: auto; display: block; visibility: visible; opacity: 1; margin: 0 auto; background: #fff; padding: 8px; border-radius: 10px; border: 1px solid rgba(15, 23, 42, 0.15); box-shadow: 0 4px 12px rgba(0,0,0,0.18);">
+      <img id="paymentQrImage" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAMgAQAAAADzCzvFAAAD5UlEQVR4nO3dUW7iMBDG8W82SOlbuIF7E3qzwM3Ym8ANyFuRoLMPxlk7BJalZZdG/3lAqWv4SX4aTTy2uR4fP/6BAQICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAnJHeBbLsQnB3d036WEnSWrc3yVJdXoYhOW/O53lAgEBAQEBAQH5MqT1ItaSpK3Za5rQpNSrdveUdFXltz7+gDwkQEBAQEBAQEC+HbKyU7ylkeC+kbZmc6kzC+47aW9mZi9pzjF9a+QXJ71cICAgICAgICBPhMxunBdckjorBuvR95jnMZ3lAgEBAQEBAQF5LBJfZsaiWh+1e5cV1T6NfDZAQEBAQEBAQJ4bGal3te1wJLi2puDq5mp2v8fr7PjY6spRstNZLhAQEBAQEBCQ++OWpslN+ow79+NnbJekaRIEBAQEBAQE5IkQ+6trlWJRrZtLt+8g05SWCwQEBAQEBATka5CV2VJamb1JP9Pnq6TyUIw+9mVnZnwx6ufNmRNdLhAQEBAQEBCQu5HW3cyW2cjCfZP92bgPtvDHczFmUuV+kI6ciAECAgICAgICciHKs1tH9pGFMvWK0WR7x+JRsIdyApvIQEBAQEBAQED+AzJM7mJ+t0gH+y+y9oCQDvZXSu76JoFDdsL/xyCzI7kDAQEBAQEBAZF01pnZptuUFukhZBN2UpMeznsyL6Ze01kuEBAQEBAQEJD7Y/Rl5iIb2UjK7hBvyvmD6yz7V5rkXSAgICAgICAgV5CVndKldRqJTZMhZV+N+07qsv37fdUrXmdZp3rXZeRRAQICAgICAgICMlZUa9PLzHXWmZnnd3k5rW8PqPxyTGe5QEBAQEBAQEDuj/Oka5lt3o8R0ub9/H3m+QGwbCIDAQEBAQEBAbkSV8pUfWwkjTVNKtW7+pLXQTLyLhAQEBAQEBCQsRjUu84jZKlXjCZLwOImsur6eRXTWS4QEBAQEBAQkO+FtGU5bZ3GQ3ZXeVee8F+XZ8y6WTVoEpjucoGAgICAgICAfAZZ2Sne0sjWzMwW7luzfitZLKft0+TZlRstJ71cICAgICAgICBfiISxm5X2Zk22g0zZJjKn3gUCAgICAgICMozZLZO2r6eHxiWpm58e9qb6XZIq13EmSceZ7EP+Q5YnXtNZLhAQEBAQEBCQ50ZGkru2HY4El6StSVKzS5ndy+m/8aHy06ebzMvvT2e5QEBAQEBAQEDuj1s6MzfpuSlvVnrPTsToI1bT6MwEAQEBAQEBASljWJp6SExnuUBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQKaF/ALDGkmmOVEHeQAAAABJRU5ErkJggg==" alt="Payment QR Code for ₹36" style="max-width: 220px; width: 100%; height: auto; display: block; visibility: visible; opacity: 1; margin: 0 auto; background: #fff; padding: 8px; border-radius: 10px; border: 1px solid rgba(15, 23, 42, 0.15); box-shadow: 0 4px 12px rgba(0,0,0,0.18);">
       <div id="paymentQrNote" style="margin-top: 8px; font-size: 11px; color: var(--text-muted);">This QR is for the ₹36 plan.</div>
     </div>
   </div>
@@ -1853,8 +1853,15 @@
 
   let distributorRealtimeTimer = null;
 
+  function stopDistributorRealtimeSync() {
+    if (distributorRealtimeTimer) {
+      clearInterval(distributorRealtimeTimer);
+      distributorRealtimeTimer = null;
+    }
+  }
+
   function startDistributorRealtimeSync() {
-    if (distributorRealtimeTimer) clearInterval(distributorRealtimeTimer);
+    if (distributorRealtimeTimer) return;
 
     distributorRealtimeTimer = setInterval(async () => {
       const tbody = document.getElementById('distributorTableBody');
@@ -1866,7 +1873,7 @@
           renderDistributorsTable();
         }
       }
-    }, 5000);
+    }, 15000);
   }
 
   async function renderDistributorsTable() {
@@ -2066,6 +2073,8 @@
 
     if (tabId === 'tab-admin') {
       startDistributorRealtimeSync();
+    } else {
+      stopDistributorRealtimeSync();
     }
     
     event.target.classList.add('active');
@@ -2307,7 +2316,6 @@
 
   signUpBtn.addEventListener('click', handleSignUp);
   signUpConfirmPass.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSignUp(); });
-  startDistributorRealtimeSync();
 
   // ==========================================================
   // ISOLATED CHANGE PASSWORD HANDLER WITH PROFESSIONAL MESSAGES
