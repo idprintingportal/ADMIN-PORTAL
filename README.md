@@ -1554,7 +1554,7 @@
   // ==========================================================
   // CLOUD API URL (POST JSON Method)
   // ==========================================================
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyDSreLLWNTlTlNUxXxgoCtrDQg08QZ5hUtpeJPLUVoCnVeMpzMAibFRjiHWXoOQss/exec";
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby9cny7fS1FyccdcdwE5MGEL_ob6UQTl8cOS9D19D90azYpChm-u6io8I8w2yDQHCAy/exec";
 
   function getDistributorCache() {
     try {
@@ -1734,13 +1734,15 @@
   async function uploadScreenshotCloud(email, screenshotData, fileName = 'payment-screenshot.jpg') {
     /*
       Apps Script uploads the screenshot to ImgBB, then writes its hosted image URL
-      to the distributor row. Do not treat a no-cors response as
-      success: it can hide a failed upload from both the distributor and the admin.
+      to the distributor row. Read the server response so a failed upload is shown
+      clearly to both the distributor and the admin.
     */
     try {
-      await fetch(GOOGLE_SCRIPT_URL, {
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
-        mode: 'no-cors',
+        mode: 'cors',
+        cache: 'no-store',
+        credentials: 'omit',
         headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
         body: JSON.stringify({
           action: 'uploadPaymentScreenshot',
@@ -1753,8 +1755,17 @@
         })
       });
 
-      // An Apps Script Web App's POST response can be opaque in browsers. Confirm
-      // the saved hosted-image URL by reading the Sheet data instead of trusting the POST.
+      if (!response.ok) {
+        return { success: false, error: `Apps Script returned HTTP ${response.status}.` };
+      }
+      const responseText = await response.text();
+      let uploadResponse = {};
+      try { uploadResponse = responseText ? JSON.parse(responseText) : {}; } catch (err) {}
+      if (uploadResponse.success === false || uploadResponse.error) {
+        return { success: false, error: uploadResponse.error || 'Apps Script rejected the screenshot.' };
+      }
+
+      // Confirm the saved hosted-image URL by reading the Sheet data.
       let lastUploadStatus = '';
       for (let attempt = 0; attempt < 10; attempt++) {
         await new Promise(resolve => setTimeout(resolve, 1200));
