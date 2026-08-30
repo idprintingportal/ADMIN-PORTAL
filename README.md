@@ -945,11 +945,12 @@
           </div>
         </div>
 
-        <!-- Reply Payment Screenshot Box for Distributor -->
+        <!-- Reply Message & Screenshot Box for Distributor -->
         <div style="background: rgba(15,23,42,0.85); border: 1px solid rgba(56,189,248,0.4); padding: 12px; border-radius: 10px; min-width: 220px; text-align: center;">
-          <div style="font-size: 11px; color: var(--accent-blue); margin-bottom: 6px; font-weight: 600;">💳 Reply Your Payment Screenshot</div>
+          <div style="font-size: 11px; color: var(--accent-blue); margin-bottom: 6px; font-weight: 600;">💬 Reply to Admin</div>
+          <textarea id="distReplyMessage" placeholder="अपना जवाब लिखें..." style="display:block; width:100%; min-height:58px; resize:vertical; background:#0f172a; color:#fff; padding:7px; font-size:11px; border-radius:6px; border:1px solid rgba(56,189,248,0.4); margin-bottom:8px;"></textarea>
           <input type="file" id="distScreenshotInput" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:block; width:100%; background:#334155; color:#fff; padding:6px; font-size:11px; border-radius:6px; border:1px solid rgba(56,189,248,0.4); margin-bottom:8px; cursor:pointer;">
-          <button onclick="uploadDistributorScreenshot()" class="action-btn btn-download" style="padding: 6px 12px; font-size: 11px; width: 100%;">📤 Send Screenshot</button>
+          <button onclick="sendDistributorReply()" class="action-btn btn-download" style="padding: 6px 12px; font-size: 11px; width: 100%;">📤 Send Reply</button>
           <div id="screenshotUploadStatus" style="font-size:10px; margin-top:4px; display:none;"></div>
         </div>
       </div>
@@ -2038,7 +2039,10 @@
       const paymentAmount = d.paymentAmount || (paymentPlan.toLowerCase().includes('year') ? '₹319' : '₹36');
       const screenshotVal = getDistributorScreenshotUrl(d);
       const txnId = d.paymentTxnId || d.transactionId || d.txnId || 'N/A';
+      const distributorReply = d.distributorMessage || d.distributorReply || '';
+      const distributorReplyImage = d.distributorReplyImage || d.replyImage || '';
       const hasScreenshot = (screenshotVal && String(screenshotVal).trim() !== "");
+      const hasDistributorReply = String(distributorReply).trim() !== '' || String(distributorReplyImage).trim() !== '';
       const paymentColor = paymentStatus === 'Approved' ? '#34d399' : paymentStatus === 'Rejected' ? '#f87171' : '#fbbf24';
       const isNewPendingDistributor = paymentStatus.toLowerCase() === 'pending' || currentStatus.toLowerCase() === 'pending';
 
@@ -2059,6 +2063,10 @@
             ${hasScreenshot
               ? `<button class="history-view-ss-btn" onclick="openDistributorScreenshot('${encodeURIComponent(screenshotVal)}')">🔗 Open Screenshot</button>`
               : '<div style="color:#94a3b8; font-size:10px;">No screenshot link</div>'}
+            ${hasDistributorReply ? `
+              <div style="max-width:180px; color:#f8fafc; font-size:10px; line-height:1.4; background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.25); border-radius:6px; padding:6px;">💬 ${distributorReply || 'Image reply received'}</div>
+              ${distributorReplyImage ? `<button class="history-view-ss-btn" onclick="openDistributorScreenshot('${encodeURIComponent(distributorReplyImage)}')">🔗 Open Reply Image</button>` : ''}
+            ` : ''}
             <button class="history-delete-btn" onclick="removeDistributor('${d.id}')">🗑️ Delete</button>
             <button class="history-msg-btn" onclick="openAdminMsgModal('${d.email}')">💬 Message</button>
             ${isNewPendingDistributor ? `
@@ -2219,42 +2227,51 @@
 
   window.addEventListener('focus', refreshDistributorNotice);
 
-  // Distributor Screenshot Upload Function
-  async function uploadDistributorScreenshot() {
+  // Distributor reply: text is saved in the Sheet and any attached image is hosted on ImgBB.
+  async function sendDistributorReply() {
     const fileInput = document.getElementById('distScreenshotInput');
+    const messageInput = document.getElementById('distReplyMessage');
     const statusDiv = document.getElementById('screenshotUploadStatus');
     const file = fileInput.files[0];
+    const replyMessage = messageInput.value.trim();
 
-    if (!file) {
-      alert('कृपया पहले पेमेंट का स्क्रीनशॉट सेलेक्ट करें!');
+    if (!file && !replyMessage) {
+      alert('कृपया मैसेज लिखें या इमेज/स्क्रीनशॉट सेलेक्ट करें!');
       return;
     }
 
-    statusDiv.innerText = '⏳ Uploading screenshot...';
+    statusDiv.innerText = '⏳ Reply भेजा जा रहा है...';
     statusDiv.style.color = '#fbbf24';
     statusDiv.style.display = 'block';
 
     try {
-      const base64Img = await preparePaymentScreenshot(file);
       const targetEmail = currentLoggedDistributorEmail || (loginEmail.value || "").trim().toLowerCase();
-      
       if (!targetEmail) {
         statusDiv.innerText = '⚠️ Error: Login email not found!';
         statusDiv.style.color = '#ef4444';
         return;
       }
 
-      const uploadResult = await uploadScreenshotCloud(targetEmail, base64Img, file.name);
-      if (uploadResult.success) {
-        statusDiv.innerText = '✅ Screenshot sent to admin successfully!';
+      const imageData = file ? await preparePaymentScreenshot(file) : '';
+      const result = await callCloudPost({
+        action: 'replyToAdmin',
+        email: targetEmail,
+        message: replyMessage,
+        imageData,
+        fileName: file?.name || ''
+      });
+
+      if (result) {
+        statusDiv.innerText = '✅ आपका reply admin को भेज दिया गया है!';
         statusDiv.style.color = '#34d399';
         fileInput.value = '';
+        messageInput.value = '';
       } else {
-        statusDiv.innerText = `⚠️ Screenshot upload failed: ${uploadResult.error || 'Unknown error'}`;
+        statusDiv.innerText = '⚠️ Reply भेजने में समस्या हुई। कृपया पुनः प्रयास करें।';
         statusDiv.style.color = '#ef4444';
       }
     } catch (err) {
-      statusDiv.innerText = '⚠️ Screenshot could not be prepared!';
+      statusDiv.innerText = `⚠️ Reply भेजने में समस्या हुई: ${err?.message || err}`;
       statusDiv.style.color = '#ef4444';
     }
   }
