@@ -1733,8 +1733,8 @@
 
   async function uploadScreenshotCloud(email, screenshotData, fileName = 'payment-screenshot.jpg') {
     /*
-      A screenshot must be stored in Google Drive by Apps Script, then its Drive URL
-      must be written to the distributor row.  Do not treat a no-cors response as
+      Apps Script uploads the screenshot to ImgBB, then writes its hosted image URL
+      to the distributor row. Do not treat a no-cors response as
       success: it can hide a failed upload from both the distributor and the admin.
     */
     try {
@@ -1754,7 +1754,7 @@
       });
 
       // An Apps Script Web App's POST response can be opaque in browsers. Confirm
-      // the saved Drive URL by reading the Sheet data instead of trusting the POST.
+      // the saved hosted-image URL by reading the Sheet data instead of trusting the POST.
       for (let attempt = 0; attempt < 10; attempt++) {
         await new Promise(resolve => setTimeout(resolve, 1200));
         const latest = await refreshDistributorCloudData();
