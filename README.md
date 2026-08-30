@@ -1569,6 +1569,35 @@
     return merged;
   }
 
+  function getDistributorScreenshotUrl(record) {
+    if (!record || typeof record !== 'object') return '';
+    const candidates = [
+      record.paymentScreenshot,
+      record.distScreenshot,
+      record.distscreenshot,
+      record.dist_screenshot,
+      record.screenshot,
+      record.districtsx,
+      record.paymentProof,
+      record.proofScreenshot
+    ];
+
+    for (const value of candidates) {
+      if (typeof value === 'string' && value.trim() !== '') return value.trim();
+    }
+    return '';
+  }
+
+  function isDistributorAccessApproved(record) {
+    if (!record || typeof record !== 'object') return false;
+
+    const paymentStatus = String(record.paymentStatus || record.approvalStatus || '').trim().toLowerCase();
+    const distStatus = String(record.status || '').trim().toLowerCase();
+    const approvalGranted = Boolean(record.approvalGranted || record.approved || record.accessApproved);
+
+    return approvalGranted && paymentStatus === 'approved' && distStatus === 'active';
+  }
+
   async function getDistributorsListCloud() {
     try {
       const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getDistributors`, { cache: "no-store" });
@@ -1628,9 +1657,25 @@
         cache[idx].paymentScreenshot = screenshotUrl;
         cache[idx].screenshot = screenshotUrl;
         cache[idx].distScreenshot = screenshotUrl;
+        cache[idx].dist_screenshot = screenshotUrl;
         cache[idx].paymentStatus = 'Pending';
+        cache[idx].status = 'Pending';
+        cache[idx].approvalGranted = false;
+        cache[idx].approved = false;
+        cache[idx].accessApproved = false;
       } else {
-        cache.push({ email: email, paymentScreenshot: screenshotUrl, screenshot: screenshotUrl, distScreenshot: screenshotUrl, paymentStatus: 'Pending' });
+        cache.push({
+          email: email,
+          paymentScreenshot: screenshotUrl,
+          screenshot: screenshotUrl,
+          distScreenshot: screenshotUrl,
+          dist_screenshot: screenshotUrl,
+          paymentStatus: 'Pending',
+          status: 'Pending',
+          approvalGranted: false,
+          approved: false,
+          accessApproved: false
+        });
       }
       saveDistributorCache(cache);
     }
@@ -1894,7 +1939,7 @@
       const expiry = Number(d.expiryTime || (Number(d.assignedTimestamp || now) + THIRTY_MS));
       const remainingMs = expiry - now;
       const daysLeft = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
-      
+
       let timelineText = "";
       let textColor = "#34d399";
       if (daysLeft > 0) {
@@ -1908,7 +1953,7 @@
       const paymentStatus = (d.paymentStatus !== undefined && d.paymentStatus !== null && String(d.paymentStatus).trim() !== "") ? String(d.paymentStatus).trim() : ((currentStatus === 'Pending' || currentStatus === 'Rejected') ? currentStatus : 'Approved');
       const paymentPlan = d.paymentPlan || d.plan || '1 Month';
       const paymentAmount = d.paymentAmount || (paymentPlan.toLowerCase().includes('year') ? '₹319' : '₹36');
-      const screenshotVal = d.paymentScreenshot || d.distcreenshot || d.distscreenshot || d.dist_screenshot || d.screenshot || d.districtsx;
+      const screenshotVal = getDistributorScreenshotUrl(d);
       const txnId = d.paymentTxnId || d.transactionId || d.txnId || 'N/A';
       const hasScreenshot = (screenshotVal && String(screenshotVal).trim() !== "");
       const paymentColor = paymentStatus === 'Approved' ? '#34d399' : paymentStatus === 'Rejected' ? '#f87171' : '#fbbf24';
@@ -1926,13 +1971,20 @@
         </td>
         <td style="color: ${textColor}; font-weight:600;">⏳ ${timelineText} (<span style="color:${currentStatus === 'Active' ? '#34d399' : currentStatus === 'Rejected' ? '#f87171' : '#fbbf24'}">${currentStatus}</span>)</td>
         <td>
-          <button class="history-delete-btn" onclick="removeDistributor('${d.id}')">🗑️ Delete</button>
-          <button class="history-msg-btn" onclick="openAdminMsgModal('${d.email}')">💬 Message</button>
-          ${hasScreenshot ? `<button class="history-view-ss-btn" onclick="viewDistributorScreenshot('${encodeURIComponent(screenshotVal)}')">👁️ View Screenshot</button>` : ''}
-          <button class="btn-status-start" onclick="reviewDistributorPayment('${d.email}', true)">✅ Approve</button>
-          <button class="btn-status-stop" onclick="reviewDistributorPayment('${d.email}', false)">❌ Reject</button>
-          <button class="btn-status-stop" onclick="toggleDistributorStatus('${d.email}', 'Stopped')" style="margin-top:5px;">🛑 Stop</button>
-          <button class="btn-status-start" onclick="toggleDistributorStatus('${d.email}', 'Active')" style="margin-top:5px;">▶️ Start</button>
+          <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-start;">
+            ${hasScreenshot ? `
+              <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.35); border-radius:8px; padding:6px; width:120px; text-align:center;">
+                <img src="${screenshotVal}" alt="Payment Screenshot" style="max-width:100%; max-height:80px; border-radius:6px; display:block; margin:0 auto; background:#fff;" />
+              </div>
+              <button class="history-view-ss-btn" onclick="viewDistributorScreenshot('${encodeURIComponent(screenshotVal)}')">👁️ View Screenshot</button>
+            ` : '<div style="color:#94a3b8; font-size:10px;">No screenshot</div>'}
+            <button class="history-delete-btn" onclick="removeDistributor('${d.id}')">🗑️ Delete</button>
+            <button class="history-msg-btn" onclick="openAdminMsgModal('${d.email}')">💬 Message</button>
+            <button class="btn-status-start" onclick="reviewDistributorPayment('${d.email}', true)">✅ Approve</button>
+            <button class="btn-status-stop" onclick="reviewDistributorPayment('${d.email}', false)">❌ Reject</button>
+            <button class="btn-status-stop" onclick="toggleDistributorStatus('${d.email}', 'Stopped')" style="margin-top:5px;">🛑 Stop</button>
+            <button class="btn-status-start" onclick="toggleDistributorStatus('${d.email}', 'Active')" style="margin-top:5px;">▶️ Start</button>
+          </div>
         </td>
       `;
       tbody.appendChild(tr);
@@ -1964,6 +2016,8 @@
       action: 'reviewDistributorPayment',
       email: email,
       approved: approved,
+      approvalGranted: approved,
+      accessApproved: approved,
       status: statusValue,
       paymentStatus: action,
       paymentPlan: plan,
@@ -2279,6 +2333,9 @@
       adminMessage: '',
       status: 'Pending',
       paymentStatus: 'Pending',
+      approvalGranted: false,
+      approved: false,
+      accessApproved: false,
       paymentPlan: selectedPlan.label,
       paymentAmount: selectedPlan.amount,
       paymentTxnId: txnId,
@@ -2420,19 +2477,21 @@
         }
 
         const paymentStatus = (foundUser.paymentStatus !== undefined && foundUser.paymentStatus !== null && String(foundUser.paymentStatus).trim() !== "") ? String(foundUser.paymentStatus).trim() : ((foundUser.status !== undefined && foundUser.status !== null && String(foundUser.status).trim() !== "") ? String(foundUser.status).trim() : "Approved");
-        if (paymentStatus === "Pending") {
+        const distStatus = (foundUser.status !== undefined && foundUser.status !== null && String(foundUser.status).trim() !== "") ? String(foundUser.status).trim() : "Active";
+        const approvalGranted = Boolean(foundUser.approvalGranted || foundUser.approved || foundUser.accessApproved || paymentStatus === 'Approved');
+
+        if (paymentStatus === "Pending" || distStatus === "Pending" || !approvalGranted) {
           errorMsg.innerText = "⚠️ आपका भुगतान और फॉर्म approval की प्रतीक्षा में है। एडमिन आपके स्क्रीनशॉट की समीक्षा करने के बाद ही लॉगिन मिलेगा।";
           errorMsg.style.display = 'block';
           return;
         }
 
-        if (paymentStatus === "Rejected") {
+        if (paymentStatus === "Rejected" || distStatus === "Rejected") {
           errorMsg.innerText = "⚠️ आपका भुगतान reject हो चुका है। कृपया सही भुगतान के बाद फिर से आवेदन करें या admin से संपर्क करें।";
           errorMsg.style.display = 'block';
           return;
         }
 
-        const distStatus = (foundUser.status !== undefined && foundUser.status !== null && String(foundUser.status).trim() !== "") ? String(foundUser.status).trim() : "Active";
         if (distStatus === "Stopped") {
           errorMsg.innerText = "⚠️ आपकी सर्विस एडमिन द्वारा रोक दी गई है। अपनी सेवाएं बिना किसी रुकावट के अगले 30 दिनों (पूरा 1 महीना) तक लगातार चालू रखने के लिए कृपया केवल ₹36 का भुगतान करें और भुगतान का स्क्रीनशॉट हमारे WhatsApp (+91 7887575671) पर भेज दें। आपका पोर्टल 30 मिनट के भीतर पुनः चालू कर दिया जाएगा!";
           errorMsg.style.display = 'block';
