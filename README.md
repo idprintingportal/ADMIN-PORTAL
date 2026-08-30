@@ -1755,18 +1755,23 @@
 
       // An Apps Script Web App's POST response can be opaque in browsers. Confirm
       // the saved hosted-image URL by reading the Sheet data instead of trusting the POST.
+      let lastUploadStatus = '';
       for (let attempt = 0; attempt < 10; attempt++) {
         await new Promise(resolve => setTimeout(resolve, 1200));
         const latest = await refreshDistributorCloudData();
         const savedRecord = (latest || []).find((dist) =>
           String(dist.email || '').trim().toLowerCase() === String(email || '').trim().toLowerCase()
         );
-        if (getDistributorScreenshotUrl(savedRecord)) return true;
+        if (getDistributorScreenshotUrl(savedRecord)) return { success: true };
+        lastUploadStatus = String(savedRecord?.screenshotStatus || '').trim();
+        if (lastUploadStatus.toLowerCase().startsWith('error:')) {
+          return { success: false, error: lastUploadStatus.replace(/^error:\s*/i, '') };
+        }
       }
-      return false;
+      return { success: false, error: lastUploadStatus || 'Screenshot link could not be confirmed. Please check the Apps Script deployment.' };
     } catch (err) {
-      console.error('Google Drive / Sheet screenshot error:', err);
-      return false;
+      console.error('ImgBB / Sheet screenshot error:', err);
+      return { success: false, error: String(err?.message || err) };
     }
   }
 
@@ -2228,13 +2233,13 @@
         return;
       }
 
-      let success = await uploadScreenshotCloud(targetEmail, base64Img, file.name);
-      if (success) {
+      const uploadResult = await uploadScreenshotCloud(targetEmail, base64Img, file.name);
+      if (uploadResult.success) {
         statusDiv.innerText = '✅ Screenshot sent to admin successfully!';
         statusDiv.style.color = '#34d399';
         fileInput.value = '';
       } else {
-        statusDiv.innerText = '⚠️ Error sending screenshot!';
+        statusDiv.innerText = `⚠️ Screenshot upload failed: ${uploadResult.error || 'Unknown error'}`;
         statusDiv.style.color = '#ef4444';
       }
     } catch (err) {
@@ -2479,9 +2484,9 @@
     const success = await addDistributorCloud(newDistData);
 
     if (success) {
-      const screenshotSent = await uploadScreenshotCloud(email, paymentScreenshot, paymentFile.name);
-      if (!screenshotSent) {
-        signUpStatusMsg.innerText = '⚠️ अकाउंट बन गया है, लेकिन भुगतान screenshot भेजने में समस्या हुई। कृपया दोबारा प्रयास करें।';
+      const screenshotUploadResult = await uploadScreenshotCloud(email, paymentScreenshot, paymentFile.name);
+      if (!screenshotUploadResult.success) {
+        signUpStatusMsg.innerText = `⚠️ अकाउंट बन गया है, लेकिन भुगतान screenshot upload नहीं हुआ: ${screenshotUploadResult.error || 'Unknown error'}`;
         signUpStatusMsg.style.color = '#ef4444';
         signUpStatusMsg.style.display = 'block';
         return;
