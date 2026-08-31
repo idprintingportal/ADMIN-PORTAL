@@ -868,9 +868,9 @@
 #tab-pdf-editor .pe-pagination{padding:10px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;background:#1b293e;font-size:12px}
 #tab-pdf-editor #pe-scroll{background:#0a1220;overflow:auto;height:660px;padding:22px;position:relative}
 #tab-pdf-editor #pe-page-wrap{position:relative;margin:0 auto;box-shadow:0 8px 30px #0006;flex-shrink:0}
-#tab-pdf-editor #pe-page-wrap canvas{display:block;max-width:none!important;max-height:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;margin:0!important}
-#tab-pdf-editor #pe-base{background:white}
-#tab-pdf-editor #pe-overlay{position:absolute;left:0;top:0;touch-action:none;cursor:crosshair}
+#tab-pdf-editor #pe-page-wrap canvas{display:block;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;margin:0!important}
+#tab-pdf-editor #pe-base{background:#fff!important}
+#tab-pdf-editor #pe-overlay{position:absolute;left:0;top:0;z-index:1;background:transparent!important;touch-action:none;cursor:crosshair}
 #tab-pdf-editor #pe-empty{text-align:center;padding:100px 10px;color:#dce8f8}
 #tab-pdf-editor #pe-empty span{font-size:62px;color:#42bdd0}
 #tab-pdf-editor #pe-empty h2{font-size:20px;margin:15px 0}
@@ -1330,6 +1330,7 @@
  <section class="pe-shell" aria-label="PDF Editor">
   <header class="pe-heading"><div><span class="pe-eyebrow">DOCUMENT TOOLS</span><h1>PDF Editor</h1><p>Text, signatures और images जोड़ें — आपकी PDF इसी browser में रहती है।</p></div><button id="pe-download" class="pe-primary" disabled>↓ Download PDF</button></header>
   <div class="pe-filebar"><button id="pe-open" class="pe-primary">＋ Open PDF</button><input id="pe-file" type="file" accept="application/pdf,.pdf" hidden><span id="pe-filename">कोई PDF नहीं चुनी है · अधिकतम 50 MB / 150 pages</span><button id="pe-close" disabled>Close document</button></div>
+<div id="pe-status" role="status" aria-live="polite">Ready · PDF libraries लोड करने के लिए internet चाहिए।</div>
   <p class="pe-notice">यह annotation editor है। पुराने text को बदलने के लिए Whiteout + Text लगाएँ। <strong>Whiteout सुरक्षित redaction नहीं है:</strong> मूल text PDF में रहता है। OCR / मूल text editing उपलब्ध नहीं है।</p>
   <fieldset id="pe-controls" disabled>
    <div class="pe-toolbar" role="toolbar" aria-label="Editing tools">
@@ -1341,7 +1342,7 @@
     <div class="pe-document"><div class="pe-pagination"><button id="pe-prev" aria-label="Previous page">←</button><label>Page <select id="pe-page" aria-label="Page"></select></label><span id="pe-count">/ 0</span><button id="pe-next" aria-label="Next page">→</button><label>Zoom <select id="pe-zoom"><option value="0.75">75%</option><option value="1" selected>100%</option><option value="1.25">125%</option><option value="1.5">150%</option></select></label></div><div id="pe-scroll"><div id="pe-empty"><span>▤</span><h2>Your PDF workspace</h2><p>Open PDF दबाएँ और editing शुरू करें।<br>कोई file server पर upload नहीं होगी।</p></div><div id="pe-page-wrap" hidden><canvas id="pe-base"></canvas><canvas id="pe-overlay" aria-label="PDF editing canvas"></canvas></div></div></div>
    </div>
   </fieldset>
-  <div id="pe-status" role="status" aria-live="polite">Ready · PDF libraries लोड करने के लिए internet चाहिए।</div>
+  
  </section>
 </div>
 
