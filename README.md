@@ -5264,6 +5264,26 @@ try {
       return {doc,ptr};
     }
     close(h){this.e.FPDF_CloseDocument(h.doc);this.m.wasmExports.free(h.ptr);}
+    matrix(obj){const p=this.m.wasmExports.malloc(24);try{if(!this.e.FPDFPageObj_GetMatrix(obj,p))throw new Error('Unsupported PDF transform.');return Array.from({length:6},(_,j)=>this.m.getValue(p+j*4,'float'));}finally{this.m.wasmExports.free(p);}}
+    multiply(a,b){return [a[0]*b[0]+a[2]*b[1],a[1]*b[0]+a[3]*b[1],a[0]*b[2]+a[2]*b[3],a[1]*b[2]+a[3]*b[3],a[0]*b[4]+a[2]*b[5]+a[4],a[1]*b[4]+a[3]*b[5]+a[5]];}
+    walk(container,callback,path=[],parent=[1,0,0,1,0,0],budget={left:20000}){
+      if(path.length>12)throw new Error('PDF groups बहुत गहरे हैं; यह page अभी supported नहीं है।');
+      const count=path.length?this.e.FPDFFormObj_CountObjects(container):this.e.FPDFPage_CountObjects(container);
+      for(let i=0;i<count;i++){
+        if(--budget.left<0)throw new Error('Page बहुत complex है।');
+        const obj=path.length?this.e.FPDFFormObj_GetObject(container,i):this.e.FPDFPage_GetObject(container,i),type=this.e.FPDFPageObj_GetType(obj),next=path.concat(i);
+        if(type===5)this.walk(obj,callback,next,this.multiply(parent,this.matrix(obj)),budget);
+        else if(type===1)callback(obj,next,parent);
+      }
+    }
+    inventory(doc){
+      const all=[];
+      for(let i=0;i<this.e.FPDF_GetPageCount(doc);i++){
+        const page=this.e.FPDF_LoadPage(doc,i);if(!page)throw new Error('Page verification failed.');let tp=0;
+        try{tp=this.e.FPDFText_LoadPage(page);const texts=[];this.walk(page,(obj,path)=>texts.push({path:path.join('/'),text:this.text(obj,tp)}));all.push(texts);}
+        finally{if(tp)this.e.FPDFText_ClosePage(tp);this.e.FPDF_ClosePage(page);}
+      }return all;
+    }
     text(obj,textPage){
       const size=this.e.FPDFTextObj_GetText(obj,textPage,0,0);
       if(size<2||size>200000)return '';
@@ -5278,19 +5298,17 @@ try {
         tp=this.e.FPDFText_LoadPage(page);
         const p=this.m.wasmExports.malloc(64);
         try{
-          for(let i=0;i<this.e.FPDFPage_CountObjects(page);i++){
-            const obj=this.e.FPDFPage_GetObject(page,i);
-            // Nested forms, clipped/outlined and skewed text are intentionally not offered.
-            if(this.e.FPDFPageObj_GetType(obj)!==1)continue;
+          this.walk(page,(obj,path,parent)=>{
             const mode=this.e.FPDFTextObj_GetTextRenderMode(obj);
-            if(![0,2].includes(mode))continue;
-            const text=this.text(obj,tp);if(!text.trim())continue;
-            if(!this.e.FPDFPageObj_GetMatrix(obj,p))continue;
-            const matrix=Array.from({length:6},(_,j)=>this.m.getValue(p+j*4,'float'));
-            if(Math.abs(matrix[1])>.001||Math.abs(matrix[2])>.001||matrix[0]<=0||matrix[3]<=0)continue;
-            if(!this.e.FPDFPageObj_GetBounds(obj,p,p+4,p+8,p+12))continue;
-            const bounds=Array.from({length:4},(_,j)=>this.m.getValue(p+j*4,'float'));
-            if(!bounds.every(Number.isFinite))continue;
+            if(![0,2].includes(mode))return;
+            const text=this.text(obj,tp);if(!text.trim())return;
+            const matrix=this.multiply(parent,this.matrix(obj));
+            if(Math.abs(matrix[1])>.001||Math.abs(matrix[2])>.001||matrix[0]<=0||matrix[3]<=0)return;
+            if(!this.e.FPDFPageObj_GetBounds(obj,p,p+4,p+8,p+12))return;
+            const local=Array.from({length:4},(_,j)=>this.m.getValue(p+j*4,'float'));
+            const corners=[[local[0],local[1]],[local[0],local[3]],[local[2],local[1]],[local[2],local[3]]].map(([x,y])=>[parent[0]*x+parent[2]*y+parent[4],parent[1]*x+parent[3]*y+parent[5]]);
+            const bounds=[Math.min(...corners.map(p=>p[0])),Math.min(...corners.map(p=>p[1])),Math.max(...corners.map(p=>p[0])),Math.max(...corners.map(p=>p[1]))];
+            if(!bounds.every(Number.isFinite))return;
             this.e.FPDFTextObj_GetFontSize(obj,p);
             const size=this.m.getValue(p,'float')*matrix[3];
             let color='#111827';
@@ -5301,8 +5319,8 @@ try {
               const stroke=this.m.getValue(p,'float')*matrix[3];
               boldLevel=Math.max(1,Math.min(5,1+Math.round(stroke/(size*.015))));
             }
-            result.push({index:i,text,bounds,matrix,size,color,boldLevel});
-          }
+            result.push({index:path.join('/'),path,text,bounds,matrix,size,color,boldLevel});
+          });
         }finally{this.m.wasmExports.free(p);}
         return result;
       }finally{if(tp)this.e.FPDFText_ClosePage(tp);if(page)this.e.FPDF_ClosePage(page);this.close(h);}
@@ -5331,15 +5349,32 @@ try {
     remove(bytes,pageIndex,selected){
       const h=this.open(bytes);let page=0,tp=0;
       try{
+        const path=selected.path||[Number(selected.index)];
+        if(!path.length||!path.every(n=>Number.isInteger(n)&&n>=0))throw new Error('Invalid text selection.');
+        const expected=this.inventory(h.doc);
+        expected[pageIndex]=expected[pageIndex].filter(entry=>entry.path!==path.join('/'));
         page=this.e.FPDF_LoadPage(h.doc,pageIndex);tp=this.e.FPDFText_LoadPage(page);
-        const obj=this.e.FPDFPage_GetObject(page,selected.index);
+        let container=page,obj=0;const parents=[];
+        for(let depth=0;depth<path.length;depth++){
+          obj=depth?this.e.FPDFFormObj_GetObject(container,path[depth]):this.e.FPDFPage_GetObject(container,path[depth]);
+          if(depth<path.length-1){if(!obj||this.e.FPDFPageObj_GetType(obj)!==5)throw new Error('PDF group बदल गया है। फिर से चुनें।');container=obj;parents.push(obj);}
+        }
         if(!obj||this.e.FPDFPageObj_GetType(obj)!==1||this.text(obj,tp)!==selected.text)
           throw new Error('Text selection बदल गई है। फिर से चुनें।');
         this.e.FPDFText_ClosePage(tp);tp=0;
-        if(!this.e.FPDFPage_RemoveObject(page,obj))throw new Error('मूल text remove नहीं हुआ। कोई edit save नहीं हुई।');
+        const removed=path.length>1?this.e.FPDFFormObj_RemoveObject(container,obj):this.e.FPDFPage_RemoveObject(page,obj);
+        if(!removed)throw new Error('मूल text remove नहीं हुआ। कोई edit save नहीं हुई।');
         this.e.FPDFPageObj_Destroy(obj);
+        // Mark containing forms dirty so nested stream changes are serialized too.
+        parents.reverse().forEach(form=>this.e.FPDFPageObj_Transform(form,1,0,0,1,0,0));
         if(!this.e.FPDFPage_GenerateContent(page))throw new Error('Updated page generate नहीं हुई।');
-        return this.save(h.doc);
+        const saved=this.save(h.doc),check=this.open(saved);
+        try{
+          const actual=this.inventory(check.doc);
+          const texts=list=>list.map(entries=>entries.map(entry=>entry.text));
+          if(JSON.stringify(texts(actual))!==JSON.stringify(texts(expected)))throw new Error('Shared PDF group या nested content सुरक्षित save नहीं हुआ। Edit रोक दी गई; original नहीं बदला।');
+        }finally{this.close(check);}
+        return saved;
       }finally{if(tp)this.e.FPDFText_ClosePage(tp);if(page)this.e.FPDF_ClosePage(page);this.close(h);}
     }
   }
@@ -5411,7 +5446,7 @@ try {
    const c=$('canvas');c.width=temp.width;c.height=temp.height;c.getContext('2d').drawImage(temp,0,0);
    const g=$('gesture');g.width=temp.width;g.height=temp.height;
    $('wrap').style.width=viewport.width+'px';$('wrap').style.height=viewport.height+'px';$('wrap').hidden=false;$('empty').hidden=true;
-   $('page-label').textContent=`${page+1} / ${pdf.numPages}`;$('selection').textContent=`${objects.length} editable text blocks · Nested/outlined/scanned text नहीं दिख सकता।`;
+   $('page-label').textContent=`${page+1} / ${pdf.numPages}`;$('selection').textContent=`${objects.length} editable text blocks · Grouped text supported; outlined/scanned/complex text नहीं दिख सकता।`;
    hits();buttons();
   }catch(err){if(pdf!==current)await current.destroy();throw err;}
  }
