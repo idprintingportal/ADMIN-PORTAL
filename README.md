@@ -865,6 +865,21 @@
 #np-editor #np-text[hidden]{display:none!important}
 #np-editor #np-inline{position:absolute;z-index:20;display:block;margin:0;padding:2px;min-height:24px;max-width:none;border:1px solid #087e8b;border-radius:0;background:#fff;color:#111;resize:both;overflow:auto;line-height:1.15;font-family:Arial,'Noto Sans Devanagari',sans-serif;box-shadow:0 0 0 2px #087e8b22;touch-action:auto;white-space:pre-wrap}
 #np-editor #np-inline[hidden]{display:none!important}
+/* Compact PDF workspace */
+#pdf-premium-card[hidden],#np-save-edit[hidden],#np-cancel-edit[hidden],#np-download-link[hidden]{display:none!important}
+#np-download-link{color:#087e8b;font-size:12px;padding:8px}
+#premium-legacy-editor{display:none!important}
+#np-editor .np-tag,#np-editor .np-head p,#np-editor .np-inline-help,#np-editor .np-help,#np-editor .np-notice,#np-bold-help,#np-selection,#np-empty p{display:none!important}
+#np-editor .np-head{padding:14px 18px;flex-wrap:wrap;gap:8px}
+#np-editor .np-head>div{flex:1}#np-editor h2{font-size:22px;margin:0}
+#np-editor .np-panel{padding:12px;gap:8px}
+#np-editor .np-body{grid-template-columns:195px minmax(0,1fr)}
+#np-editor #np-scroll{height:calc(100dvh - 205px)}
+#np-editor #np-hits{z-index:2}#np-editor #np-gesture{z-index:1}
+#np-editor #np-inline{border:0;border-bottom:1px solid #087e8b;border-radius:0;box-shadow:none;resize:none;outline:0!important;padding:0 1px;background:#fff}
+#np-editor .np-view-actions span{display:none}
+#np-editor .np-limit-help{font-size:11px;padding:6px 12px;background:#f8fafc;color:#475569}
+@media(max-width:740px){#np-editor .np-body{grid-template-columns:1fr}#np-editor .np-panel{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center}#np-editor .np-panel hr{display:none}#np-editor #np-results{width:100%}}
 </style>
 <style>
 #tab-pdf-editor .pe-shell{background:#111b2d;border:1px solid #34435c;border-radius:16px;overflow:hidden;text-align:left;color:#e8eef8}
@@ -1381,7 +1396,7 @@
  <button id="premium-submit" class="action-btn btn-download" type="submit">Submit for premium approval</button></form>
 </section>
 <section hidden id="np-editor" aria-label="PDF text editor">
- <header class="np-head"><div><span class="np-tag">PDF WORKSPACE · NO PAID SDK</span><h2>PDF Text Editor <small>Beta</small></h2><p>मूल text बदलें · नया text, signature और highlights जोड़ें</p></div><button id="np-save" class="np-primary" disabled>↓ Download PDF</button></header>
+ <header class="np-head"><div><span class="np-tag">PDF WORKSPACE · NO PAID SDK</span><h2>PDF Editor</h2><p>मूल text बदलें · नया text, signature और highlights जोड़ें</p></div><button id="np-save-edit" class="np-primary" hidden>✓ Save edit</button><button id="np-cancel-edit" hidden>Cancel edit</button><button id="np-save" class="np-primary" disabled>↓ Download PDF</button><a id="np-download-link" hidden>Download again</a></header>
  <div class="np-filebar"><button id="np-open" class="np-primary">＋ Open PDF</button><input id="np-file" type="file" accept="application/pdf,.pdf" hidden><span id="np-name">PDF चुनें · अधिकतम 25 MB / 100 pages</span><button id="np-close" disabled>Close</button></div>
  <p class="np-notice">English · हिन्दी · मराठी: नया font इस्तेमाल होगा; मूल formatting बदल सकती है। Hindi/Marathi shaping और copy/search experimental हैं। Scans/OCR और सभी प्रकार के text blocks समर्थित नहीं हैं।</p>
  <fieldset id="np-controls" disabled>
@@ -1390,12 +1405,12 @@
  </div>
  <div class="np-body"><aside class="np-panel">
   <textarea id="np-text" hidden aria-hidden="true" tabindex="-1" maxlength="2000"></textarea><p class="np-inline-help">नाम/text पर double-click या double-tap करें और सीधे वहीं लिखें। Enter या बाहर click करने पर save होगा।</p>
-  <label for="np-language">Text language (Unicode keyboard चुनें)</label><select id="np-language"><option value="auto">Auto · Noto fonts</option><option value="en">English</option><option value="hi">हिन्दी · Experimental</option><option value="mr">मराठी · Experimental</option></select>
+  <label for="np-language">Language</label><select id="np-language"><option value="auto">Auto · Noto fonts</option><option value="en">English</option><option value="hi">हिन्दी · Experimental</option><option value="mr">मराठी · Experimental</option></select>
   <div class="np-fields"><label>Size <input id="np-size" type="number" min="6" max="120" value="18"></label><label>Color <input id="np-color" type="color" value="#111827"></label></div>
   <label for="np-bold">Bold level <output id="np-bold-value" for="np-bold">1 / 5 · Normal</output></label>
   <input id="np-bold" type="range" min="1" max="5" step="1" value="1" aria-describedby="np-bold-help" aria-valuetext="Level 1: Normal">
   <p id="np-bold-help">1 Normal → 5 Extra bold · मोटाई बदलकर Apply दबाएँ। यह synthetic bold है।</p>
-  <button id="np-apply" class="np-primary" disabled>Apply style / Retry</button><button id="np-delete" disabled>Delete selected text</button>
+  <button id="np-apply" class="np-primary" disabled>Apply style</button><button id="np-delete" disabled>Delete selected text</button>
   <p id="np-selection">Edit original text चुनकर नीले box पर click करें।</p>
   <hr><label for="np-find">Find on this page</label><input id="np-find" placeholder="Search text…"><div id="np-results" aria-label="Matching text blocks"></div>
   <p class="np-help">Add text: लिखें, फिर page पर click करें। Highlight / Whiteout: drag करें। Image: PNG/JPG चुनें, फिर click करें। Draw: page पर signature बनाएँ।<br><br>Whiteout secure redaction नहीं है। Digital signatures edits के बाद invalid हो सकती हैं।</p>
@@ -1403,7 +1418,7 @@
   <div class="np-view-actions"><button type="button" id="np-fullscreen" aria-pressed="false">⛶ Full screen</button><span>Esc से वापस आएँ</span></div><div id="np-scroll"><div id="np-empty"><div>▤</div><h3>अपनी PDF यहाँ खोलें</h3><p>PDF इसी browser में process होती है।<br>Engine लोड करने के लिए internet चाहिए।</p></div><div id="np-wrap" hidden><canvas id="np-canvas"></canvas><div id="np-hits"></div><canvas id="np-gesture"></canvas></div></div>
  </div></div></fieldset>
  <input id="np-image-file" type="file" accept="image/png,image/jpeg" hidden>
- <div id="np-status" role="status" aria-live="polite">Ready · Original file नहीं बदलेगी।</div>
+ <details class="np-limit-help"><summary>Help</summary>Double-click text to edit. Enter saves; Esc cancels. Scanned/outlined text needs OCR. Replacement fonts may differ; review the downloaded PDF. Whiteout is not secure redaction.</details><div id="np-status" role="status" aria-live="polite">Ready · Original file नहीं बदलेगी।</div>
  <dialog id="np-password-dialog"><form id="np-password-form"><h3>🔒 PDF password</h3><p id="np-password-message">PDF खोलने के लिए password डालें।</p><input id="np-password" type="password" autocomplete="off" aria-label="PDF password"><p>यह session में ही उपयोग होगा। Download unlocked copy होगी।</p><div><button id="np-password-cancel" type="button">Cancel</button><button class="np-primary" type="submit">Open PDF</button></div></form></dialog>
 </section>
 
@@ -1869,16 +1884,17 @@
   function hidePremiumEditor(){premiumAllowed=false;document.getElementById('np-editor').hidden=true;document.getElementById('premium-legacy-editor').hidden=true;const expanded=document.querySelector('.np-document.np-expanded');if(expanded){expanded.classList.remove('np-expanded');document.body.style.overflow='';const b=document.getElementById('np-fullscreen');b.textContent='⛶ Full screen';b.setAttribute('aria-pressed','false');}}
   async function refreshPdfPremium(){
     const status=document.getElementById('premium-status'),form=document.getElementById('premium-form');
-    hidePremiumEditor();form.hidden=true;status.textContent='Premium status जाँच रहे हैं…';
+    hidePremiumEditor();document.getElementById('pdf-premium-card').hidden=true;form.hidden=true;status.textContent='Premium status जाँच रहे हैं…';
     try{
-      const info=await secureApi({action:'getPdfPremium'});
+      const info=await secureApi({action:'getPdfPremium'},{timeoutMs:30000});
       premiumAllowed=info.allowed===true;document.getElementById('np-editor').hidden=!premiumAllowed;document.getElementById('premium-legacy-editor').hidden=!premiumAllowed;
+      document.getElementById('pdf-premium-card').hidden=premiumAllowed||info.state==='active';
       form.hidden=premiumAllowed||info.state==='pending';
       status.textContent=premiumAllowed?'✅ Premium active'+(info.expiry?' · Valid until '+new Date(info.expiry).toLocaleDateString():' · Admin access'):info.state==='pending'?'⏳ Payment screenshot भेज दिया है। Admin approval बाकी है।':info.state==='rejected'?'❌ Request rejected. सही payment proof के साथ फिर submit करें।':'🔒 PDF Editor के लिए ₹159 / 1 Year premium लें।';
       clearTimeout(premiumTimer);if(premiumAllowed&&info.expiry)premiumTimer=setTimeout(refreshPdfPremium,Math.min(2147483647,Math.max(0,info.expiry-Date.now())));
-    }catch(e){status.textContent=e.message;}
+    }catch(e){document.getElementById('pdf-premium-card').hidden=false;status.textContent=e.message;}
   }
-  window.requirePdfPremium=async()=>{const info=await secureApi({action:'getPdfPremium'});if(info.allowed!==true){hidePremiumEditor();throw new Error('PDF Premium approval / active membership required.');}return info;};
+  window.requirePdfPremium=async()=>{const info=await secureApi({action:'getPdfPremium'},{timeoutMs:30000});if(info.allowed!==true){hidePremiumEditor();document.getElementById('pdf-premium-card').hidden=false;throw new Error('PDF Premium approval / active membership required.');}return info;};
   document.getElementById('premium-refresh').onclick=refreshPdfPremium;
   let premiumUploadBusy=false;
   function premiumUploadError(error){
@@ -5494,15 +5510,16 @@ try {
  const cleanText=text=>String(text).replace(/\r\n?/g,'\n').replace(/\t/g,'    ').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g,'');
  async function ensureFontkit(){
   if(window.fontkit)return;
-  if(!fontkitPromise)fontkitPromise=new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js';s.onload=()=>window.fontkit?resolve():reject(new Error('Font engine unavailable.'));s.onerror=()=>{s.remove();reject(new Error('Font engine load नहीं हुआ।'));};document.head.append(s);}).catch(e=>{fontkitPromise=null;throw e;});
+  if(!fontkitPromise)fontkitPromise=new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js';const timeout=setTimeout(()=>{s.remove();reject(new Error('Font load timed out. Retry करें।'));},30000);s.onload=()=>{clearTimeout(timeout);window.fontkit?resolve():reject(new Error('Font engine unavailable.'));};s.onerror=()=>{clearTimeout(timeout);s.remove();reject(new Error('Font engine load नहीं हुआ।'));};document.head.append(s);}).catch(e=>{fontkitPromise=null;throw e;});
   await fontkitPromise;
  }
  const say=t=>$('status').textContent=t;
+ let lastDownloadUrl=null;function invalidateDownload(){if(lastDownloadUrl)URL.revokeObjectURL(lastDownloadUrl);lastDownloadUrl=null;$('download-link').hidden=true;$('download-link').removeAttribute('href');}
  let inlineSession=null,inlineSaving=false,lastTextTap={index:'',at:0};
  const inline=document.createElement('textarea');inline.id='np-inline';inline.hidden=true;inline.maxLength=2000;
  inline.setAttribute('aria-label','Edit text directly on PDF');inline.spellcheck=false;
  $('wrap').append(inline);
- function closeInline(){inlineSession=null;inline.hidden=true;inline.value='';inline.removeAttribute('aria-busy');}
+ function closeInline(){inlineSession=null;inline.hidden=true;inline.value='';inline.removeAttribute('aria-busy');$('cancel-edit').hidden=true;$('save-edit').hidden=true;}
  function positionInline(o){
   const r=view.convertToViewportRectangle(o.bounds),left=Math.min(r[0],r[2]),top=Math.min(r[1],r[3]);
   const scale=view.scale||Math.hypot(view.transform[0],view.transform[1]);
@@ -5511,17 +5528,18 @@ try {
  function beginInline(o){
   if(busy||inlineSaving)return;
   if(inlineSession){if(inlineSession.object.index===o.index){inline.focus();return;}finishInline();return;}
-  choose(o);inlineSession={object:o,initial:cleanText(o.text),ticket:epoch};inline.value=inlineSession.initial;
+  if(tool!=='edit')setTool('edit');
+  invalidateDownload();choose(o);inlineSession={object:o,initial:cleanText(o.text),ticket:epoch};inline.value=inlineSession.initial;$('cancel-edit').hidden=false;$('save-edit').hidden=false;
   positionInline(o);inline.hidden=false;inline.focus();inline.setSelectionRange(inline.value.length,inline.value.length);
-  say('यहीं लिखें / Backspace करें। Enter या बाहर click = save; Shift+Enter = नई line; Esc = cancel।');
+  say('Editing · Enter to save · Esc to cancel');
  }
  function beginNewInline(at){
   if(busy||inlineSaving||inlineSession)return;
   const p=view.convertToPdfPoint(at.x,at.y),angle=(view.rotation||0)*Math.PI/180;
   const o={index:'new',text:'',size:size(),color:$('color').value,boldLevel:boldLevel(),matrix:[Math.cos(angle),Math.sin(angle),-Math.sin(angle),Math.cos(angle),p[0],p[1]],bounds:[p[0],p[1],p[0]+120,p[1]+size()]};
-  selected=null;inlineSession={object:o,initial:'',ticket:epoch,isNew:true};inline.value='';$('text').value='';
+  invalidateDownload();selected=null;inlineSession={object:o,initial:'',ticket:epoch,isNew:true};inline.value='';$('text').value='';$('cancel-edit').hidden=false;$('save-edit').hidden=false;
   positionInline(o);Object.assign(inline.style,{left:Math.max(0,at.x)+'px',top:Math.max(0,at.y)+'px',width:Math.max(60,Math.min(240,view.width-at.x))+'px'});
-  inline.hidden=false;inline.focus();say('नया text यहीं लिखें। Enter / बाहर click = save; Esc = cancel।');
+  inline.hidden=false;inline.focus();say('New text · Enter to save · Esc to cancel');
  }
  async function saveNewInline(session,value){return await job(async ticket=>{
   const out=await PDFLib.PDFDocument.load(bytes),o=session.object;
@@ -5540,8 +5558,8 @@ try {
   finally{
    inlineSaving=false;
    if(inlineSession===session&&epoch===session.ticket){
-    if(success)closeInline();
-    else{inline.hidden=false;inline.removeAttribute('aria-busy');inline.focus();}
+    if(success){closeInline();if(session.isNew)setTool('edit');const next=objects.find(n=>cleanText(n.text)===value&&Math.hypot(n.matrix[4]-o.matrix[4],n.matrix[5]-o.matrix[5])<2);if(next)choose(next);}
+    else{inline.hidden=false;inline.removeAttribute('aria-busy');say($('status').textContent+' · Retry या Cancel edit चुनें।');}
    }
   }
   return Boolean(success);
@@ -5556,11 +5574,24 @@ try {
   else if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();finishInline();}
   // All other keys use native caret, Backspace, selection, copy/paste and undo behavior.
  });
- inline.addEventListener('blur',e=>{
-  if(!inlineSession||inlineSaving)return;
-  if(e.relatedTarget?.closest('.np-panel'))return;
-  finishInline();
- });
+ // Do not save on blur: it disabled the clicked button before its click was delivered.
+ // Save first, then replay the user's intended action after controls have been released.
+ let replayingInlineAction=false;
+ document.addEventListener('click',async e=>{
+  const button=e.target.closest('button');
+  if(replayingInlineAction||!inlineSession||!button||button===inline)return;
+  if(['np-cancel-edit','np-save-edit','np-apply'].includes(button.id))return;
+  if(!root.contains(button)&&!button.classList.contains('tab-btn'))return;
+  e.preventDefault();e.stopImmediatePropagation();if(inlineSaving||busy)return;
+  const id=button.id,toolName=button.dataset.npTool,oldObject=button.dataset.block?objects.find(o=>o.index===button.dataset.block):null;
+  const ticket=epoch,ok=await finishInline();if(!ok||ticket!==epoch)return;
+  if(oldObject){const match=objects.find(o=>o.text===oldObject.text&&Math.hypot(o.matrix[4]-oldObject.matrix[4],o.matrix[5]-oldObject.matrix[5])<2);if(match)beginInline(match);return;}
+  if(id==='np-open'){say('Edit saved. Open PDF दोबारा दबाएँ।');return;}
+  const target=id?document.getElementById(id):toolName?root.querySelector('[data-np-tool="'+toolName+'"]'):button;
+  if(target?.isConnected){replayingInlineAction=true;try{target.click();}finally{replayingInlineAction=false;}}
+ },true);
+ $('save-edit').onclick=()=>finishInline();
+ $('cancel-edit').onclick=()=>{if(inlineSaving||busy)return;$('text').value=inlineSession?.initial||'';closeInline();say('Edit cancelled.');};
  window.addEventListener('portal-auth-cleared',closeInline);
 
  const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
@@ -5592,7 +5623,7 @@ try {
  function finishPassword(value){if($('password-dialog').open)$('password-dialog').close();$('password').value='';const r=passwordResolve;passwordResolve=null;if(r)r(value);}
  $('password-form').onsubmit=e=>{e.preventDefault();finishPassword($('password').value);};
  $('password-cancel').onclick=()=>finishPassword(null);$('password-dialog').oncancel=e=>{e.preventDefault();finishPassword(null);};
- function reset(){epoch++;closeInline();finishPassword(null);if(pdf)pdf.destroy().catch(()=>{});pdf=null;parsedBytes=null;inspectedBytes=null;inspectedObjects=[];inspectedPage=-1;bytes=null;undo=[];redo=[];objects=[];selected=null;gesture=null;imageFile=null;view=null;dirty=false;busy=false;page=0;name='';$('file').value='';$('text').value='';$('find').value='';$('results').replaceChildren();$('hits').replaceChildren();$('canvas').width=$('gesture').width=1;$('wrap').hidden=true;$('empty').hidden=false;$('name').textContent='PDF चुनें · अधिकतम 25 MB / 100 pages';$('page-label').textContent='0 / 0';buttons();say('Ready · Original file नहीं बदलेगी।');}
+ function reset(){epoch++;invalidateDownload();closeInline();finishPassword(null);if(pdf)pdf.destroy().catch(()=>{});pdf=null;parsedBytes=null;inspectedBytes=null;inspectedObjects=[];inspectedPage=-1;bytes=null;undo=[];redo=[];objects=[];selected=null;gesture=null;imageFile=null;view=null;dirty=false;busy=false;page=0;name='';$('file').value='';$('text').value='';$('find').value='';$('results').replaceChildren();$('hits').replaceChildren();$('canvas').width=$('gesture').width=1;$('wrap').hidden=true;$('empty').hidden=false;$('name').textContent='PDF चुनें · अधिकतम 25 MB / 100 pages';$('page-label').textContent='0 / 0';buttons();say('Ready · Original file नहीं बदलेगी।');}
  function choose(o){if(busy)return;if(inlineSession){if(inlineSession.object.index===o.index)return;finishInline();return;}selected=o;$('text').value=cleanText(o.text);$('size').value=Math.round(o.size*10)/10;$('color').value=o.color;$('bold').value=o.boldLevel||1;updateBold();$('selection').textContent='Text पर double-click / double-tap करें। Style बदलने के बाद Apply style दबाएँ।';root.querySelectorAll('#np-hits button').forEach(b=>b.classList.toggle('chosen',b.dataset.block===o.index));buttons();}
  function hits(){
   $('hits').replaceChildren();$('results').replaceChildren();if(!view)return;
@@ -5600,7 +5631,7 @@ try {
   const query=$('find').value.toLocaleLowerCase();let count=0;
   objects.slice().sort((a,b)=>(b.bounds[2]-b.bounds[0])*(b.bounds[3]-b.bounds[1])-(a.bounds[2]-a.bounds[0])*(a.bounds[3]-a.bounds[1])).forEach(o=>{
    const coords=view.convertToViewportRectangle(o.bounds),x=Math.min(coords[0],coords[2]),y=Math.min(coords[1],coords[3]),w=Math.abs(coords[2]-coords[0]),h=Math.abs(coords[3]-coords[1]);
-   if(tool==='edit'){
+   if(tool==='edit'||tool==='text'){
     const b=document.createElement('button');b.type='button';b.title=o.text;b.setAttribute('aria-label','Edit: '+o.text);b.classList.toggle('chosen',selected?.index===o.index);Object.assign(b.style,{left:x+'px',top:y+'px',width:Math.max(5,w)+'px',height:Math.max(7,h)+'px'});b.dataset.block=o.index;b.onclick=()=>choose(o);b.ondblclick=e=>{e.preventDefault();beginInline(o);};
     b.addEventListener('pointerup',e=>{if(e.pointerType!=='touch')return;const now=Date.now();if(lastTextTap.index===o.index&&now-lastTextTap.at<450){e.preventDefault();beginInline(o);lastTextTap={index:'',at:0};}else lastTextTap={index:o.index,at:now};});$('hits').append(b);
    }
@@ -5635,7 +5666,7 @@ try {
  function pushHistory(list,value){list.push(value);while(list.length>12||list.reduce((n,b)=>n+b.length,0)>70*1024*1024)list.shift();}
  async function commit(next,ticket,message){
   if(ticket!==epoch)return;
-  const previous=bytes;bytes=next;
+  invalidateDownload();const previous=bytes;bytes=next;
   try{await render(ticket);}catch(err){if(ticket===epoch)bytes=previous;throw err;}
   if(ticket!==epoch)return;pushHistory(undo,previous);redo=[];dirty=true;say(message);buttons();
  }
@@ -5649,9 +5680,9 @@ try {
    for(;;){const pw=await passwordPrompt(message);if(pw===null||ticket!==epoch)return;try{input=core.unlock(input,pw);parsed=await PDFLib.PDFDocument.load(input);break;}catch(err){message=err.message+' फिर प्रयास करें या Cancel करें।';}}
   }
   if(ticket!==epoch)return;if(parsed.getPageCount()>100)throw new Error('अधिकतम 100 pages समर्थित हैं।');
-  const previous=bytes,oldPage=page;bytes=input;page=0;
+  invalidateDownload();const previous=bytes,oldPage=page;bytes=input;page=0;
   try{await render(ticket);}catch(err){if(ticket===epoch){bytes=previous;page=oldPage;}throw err;}
-  if(ticket!==epoch)return;undo=[];redo=[];dirty=false;name=file.name;$('name').textContent=name;say('PDF खुल गई। Edit original text चुनें और नीले box पर click करें।');
+  if(ticket!==epoch)return;undo=[];redo=[];dirty=false;name=file.name;$('name').textContent=name;say('Ready · Double-click text to edit');
  }
  function setTool(value){if(busy)return;if(inlineSession){finishInline();return;}tool=value;selected=null;gesture=null;root.querySelectorAll('[data-np-tool]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.npTool===value)));hits();buttons();say(value==='edit'?'नीले box पर click करके text बदलें।':value==='text'?'Page पर click करके वहीं नया text लिखें।':value==='image'?'PNG/JPG चुनें, फिर page पर click करें।':'Page पर drag करें। Whiteout secure redaction नहीं है।');}
  const rgb=hex=>PDFLib.rgb(parseInt(hex.slice(1,3),16)/255,parseInt(hex.slice(3,5),16)/255,parseInt(hex.slice(5,7),16)/255);
@@ -5712,20 +5743,20 @@ try {
  $('file').onchange=()=>job(t=>open($('file').files[0],t));$('close').onclick=()=>{if(!dirty||confirm('Unsaved edits छोड़कर बंद करें?'))reset();};
  $('apply').onclick=()=>inlineSession?finishInline():applyText();$('delete').onclick=()=>applyText(true);$('find').oninput=hits;
  $('language').onchange=()=>{$('text').lang=$('language').value==='auto'?'':$('language').value;say('Unicode text paste/type करें। यह transliteration नहीं है; Hindi/Marathi shaping experimental है।');};
- async function travel(from,to){await job(async t=>{if(!from.length)return;const old=bytes;bytes=from[from.length-1];try{await render(t);}catch(e){if(t===epoch)bytes=old;throw e;}if(t===epoch){from.pop();pushHistory(to,old);dirty=true;say('Undo / Redo लागू हुआ।');}});}
+ async function travel(from,to){await job(async t=>{if(!from.length)return;invalidateDownload();const old=bytes;bytes=from[from.length-1];try{await render(t);}catch(e){if(t===epoch)bytes=old;throw e;}if(t===epoch){from.pop();pushHistory(to,old);dirty=true;say('Undo / Redo लागू हुआ।');}});}
  $('undo').onclick=()=>travel(undo,redo);$('redo').onclick=()=>travel(redo,undo);
  async function changePage(delta){await job(async t=>{const old=page;page+=delta;try{await render(t);}catch(e){page=old;throw e;}},false);}
- $('prev').onclick=()=>changePage(-1);$('next').onclick=()=>changePage(1);$('zoom').onchange=()=>job(render,false);
+ $('prev').onclick=()=>changePage(-1);$('next').onclick=()=>changePage(1);$('zoom').onchange=async()=>{if(inlineSession&&!(await finishInline()))return;await job(render,false);};
  let resizeTimer,previousOverflow='';
  const documentView=root.querySelector('.np-document');
- function refreshFit(){clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{if(!bytes||!documentView.getBoundingClientRect().width)return;if(busy){refreshFit();return;}if(['fit','width'].includes($('zoom').value))job(render,false);},180);}
+ function refreshFit(){clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{if(!bytes||!documentView.getBoundingClientRect().width)return;if(busy||inlineSession){refreshFit();return;}if(['fit','width'].includes($('zoom').value))job(render,false);},180);}
  function expandPreview(expand){documentView.classList.toggle('np-expanded',expand);$('fullscreen').setAttribute('aria-pressed',String(expand));$('fullscreen').textContent=expand?'✕ Close full screen':'⛶ Full screen';if(expand){previousOverflow=document.body.style.overflow;document.body.style.overflow='hidden';}else document.body.style.overflow=previousOverflow;refreshFit();}
  $('fullscreen').onclick=()=>expandPreview(!documentView.classList.contains('np-expanded'));
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&documentView.classList.contains('np-expanded')){e.preventDefault();expandPreview(false);}});
  window.addEventListener('portal-auth-cleared',()=>{if(documentView.classList.contains('np-expanded'))expandPreview(false);});
  new ResizeObserver(refreshFit).observe($('scroll'));
  $('save').onclick=async()=>{
-  if(!bytes||busy)return;if(selected&&(cleanText($('text').value)!==cleanText(selected.text)||Math.abs(size()-selected.size)>.11||$('color').value!==selected.color||boldLevel()!==(selected.boldLevel||1))){say('Text change pending है। पहले Apply text change दबाएँ, फिर Download करें।');$('apply').focus();return;}try{await window.requirePdfPremium();}catch(e){say(e.message);return;}const blob=new Blob([bytes],{type:'application/pdf'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name.replace(/\.pdf$/i,'')+'-edited.pdf';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);dirty=false;say('PDF download तैयार है। Hindi/Marathi text और copy/search जाँच लें।');
+  if(!bytes||busy)return;if(selected&&(cleanText($('text').value)!==cleanText(selected.text)||Math.abs(size()-selected.size)>.11||$('color').value!==selected.color||boldLevel()!==(selected.boldLevel||1))){say('Text change pending है। पहले Apply text change दबाएँ, फिर Download करें।');$('apply').focus();return;}try{await window.requirePdfPremium();}catch(e){say(e.message);return;}invalidateDownload();const blob=new Blob([bytes],{type:'application/pdf'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name.replace(/\.pdf$/i,'')+'-edited.pdf';lastDownloadUrl=url;$('download-link').href=url;$('download-link').download=a.download;$('download-link').hidden=false;document.body.append(a);a.click();a.remove();dirty=false;say('PDF download तैयार है। Hindi/Marathi text और copy/search जाँच लें।');
  };
  root.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?travel(redo,undo):travel(undo,redo);}});
  window.addEventListener('portal-auth-cleared',reset);window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue='';}});buttons();
