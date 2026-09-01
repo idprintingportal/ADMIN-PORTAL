@@ -1183,6 +1183,14 @@
             <option value="id">ID Card · Standard</option><option value="pvc">PVC Card · 85.6×54 mm</option><option value="auto">Auto Print · A4</option>
           </select>
         </label>
+        <label style="font-size:12px;color:var(--text-muted);">Card type
+          <select id="pvcCardType" class="login-input" style="width:auto;display:inline-block;margin:0 4px;padding:7px 10px;">
+            <option value="auto">Auto Detect</option><option value="aadhaar">Aadhaar</option><option value="ayushman">Ayushman</option><option value="pan">PAN</option><option value="voter">Voter ID</option>
+          </select>
+        </label>
+        <label style="font-size:12px;color:var(--text-muted);">Sides
+          <select id="pvcSideMode" class="login-input" style="width:auto;display:inline-block;margin:0 4px;padding:7px 10px;"><option value="auto">Auto</option><option value="single">Single card</option><option value="double">Front + Back</option></select>
+        </label>
         <label style="font-size:12px;color:var(--text-muted);">Copies <input id="cardCopies" class="login-input" type="number" min="1" max="5" value="1" style="width:70px;display:inline-block;margin:0 4px;padding:7px 10px;"></label>
       </div>
 
@@ -3234,6 +3242,7 @@
   const slotCounter = document.getElementById('slotCounter');
   const cardPrintMode = document.getElementById('cardPrintMode');
   const cardCopies = document.getElementById('cardCopies');
+  const pvcCardType=document.getElementById('pvcCardType'),pvcSideMode=document.getElementById('pvcSideMode');
   const pvcPdfInput=document.getElementById('pvcPdfInput'),pvcPdfName=document.getElementById('pvcPdfName'),pvcPdfStatus=document.getElementById('pvcPdfStatus');
   function pvcTrimPrintableArea(input){
     const c=input,ctx=c.getContext('2d'),w=c.width,h=c.height,p=ctx.getImageData(0,0,w,h).data;
@@ -3249,14 +3258,16 @@
   function pvcHasCenterGap(c,b){
     if(!b||b.w<c.width*.45)return false;const ctx=c.getContext('2d'),p=ctx.getImageData(0,0,c.width,c.height).data,start=Math.max(1,Math.floor(c.width*.38)),end=Math.min(c.width-2,Math.floor(c.width*.62));let best=0,run=0;
     for(let x=start;x<end;x+=2){let ink=0;for(let y=b.y;y<b.y+b.h;y+=6){const i=(y*c.width+x)*4,r=p[i],g=p[i+1],bl=p[i+2];if(Math.max(r,g,bl)<248||Math.min(r,g,bl)<235)ink++;}if(ink<=Math.max(1,Math.floor(b.h/120))){run+=2;best=Math.max(best,run);}else run=0;}
-    return best>c.width*.012;
+    // Scanned Aadhaar/PVC panels often have a very narrow white separator.
+    // Accept that separator only when it is inside the content bounds.
+    return best>c.width*.006;
   }
   async function pvcRenderPdf(file,password=''){
     pvcPdfStatus.textContent='PDF पढ़ी जा रही है…';const data=await file.arrayBuffer();let doc;
     try{doc=await pdfjsLib.getDocument({data,password}).promise;}catch(e){if(/password/i.test(e.name||'')||/password/i.test(e.message||'')){document.getElementById('pvcPasswordBox').hidden=false;pvcPdfStatus.textContent='Password डालकर Unlock दबाएँ।';return;}throw e;}
     if(doc.numPages<1)throw new Error('PDF में page नहीं मिला।');const page=await doc.getPage(1),vp=page.getViewport({scale:3}),src=document.createElement('canvas');src.width=vp.width;src.height=vp.height;await page.render({canvasContext:src.getContext('2d'),viewport:vp}).promise;
-    const bounds=pvcContentBounds(src),horizontal=Boolean(bounds&&((bounds.w/bounds.h>2.2)||pvcHasCenterGap(src,bounds)));let front,back;if(horizontal){const cut=Math.floor(src.width/2),left=document.createElement('canvas'),right=document.createElement('canvas');left.width=right.width=cut;left.height=right.height=src.height;left.getContext('2d').drawImage(src,0,0,cut,src.height,0,0,cut,src.height);right.getContext('2d').drawImage(src,cut,0,src.width-cut,src.height,0,0,src.width-cut,src.height);front=pvcTrimPrintableArea(left);back=pvcTrimPrintableArea(right);}else{front=pvcTrimPrintableArea(src);back=document.createElement('canvas');back.width=front.width;back.height=front.height;back.getContext('2d').fillStyle='#fff';back.getContext('2d').fillRect(0,0,back.width,back.height);}
-    autoFitCardToCanvas(front.toDataURL('image/jpeg',.95),canvas1,ctx1,true);autoFitCardToCanvas(back.toDataURL('image/jpeg',.95),canvas2,ctx2,false);pvcPdfStatus.textContent=`✅ ${horizontal?'Side-by-side Front/Back':'Single printable card'} auto-crop होकर PVC template में तैयार है। नीचे Add This Card दबाएँ।`;document.getElementById('pvcPasswordBox').hidden=true;addCardBtn.disabled=false;
+    const bounds=pvcContentBounds(src),forcedSide=pvcSideMode.value,requestedType=pvcCardType.value,horizontal=forcedSide==='double'||(forcedSide!=='single'&&Boolean(bounds&&((bounds.w/bounds.h>2.2)||pvcHasCenterGap(src,bounds))));let front,back;if(horizontal){const cut=Math.floor(src.width/2),left=document.createElement('canvas'),right=document.createElement('canvas');left.width=right.width=cut;left.height=right.height=src.height;left.getContext('2d').drawImage(src,0,0,cut,src.height,0,0,cut,src.height);right.getContext('2d').drawImage(src,cut,0,src.width-cut,src.height,0,0,src.width-cut,src.height);front=pvcTrimPrintableArea(left);back=pvcTrimPrintableArea(right);}else{front=pvcTrimPrintableArea(src);back=document.createElement('canvas');back.width=front.width;back.height=front.height;back.getContext('2d').fillStyle='#fff';back.getContext('2d').fillRect(0,0,back.width,back.height);}
+    autoFitCardToCanvas(front.toDataURL('image/jpeg',.95),canvas1,ctx1,true);autoFitCardToCanvas(back.toDataURL('image/jpeg',.95),canvas2,ctx2,false);pvcPdfStatus.textContent=`✅ ${requestedType==='auto'?'Auto':requestedType} · ${horizontal?'Front/Back':'Single'} printable area crop होकर PVC template में तैयार है।`;document.getElementById('pvcPasswordBox').hidden=true;addCardBtn.disabled=false;
   }
   pvcPdfInput.addEventListener('change',()=>{const f=pvcPdfInput.files[0];if(!f)return;pvcPdfName.textContent='✅ '+f.name;document.getElementById('pvcPasswordBox').hidden=true;pvcRenderPdf(f).catch(e=>{pvcPdfStatus.textContent='PDF खोलने के लिए password आवश्यक है।';document.getElementById('pvcPasswordBox').hidden=false;});});
   document.getElementById('pvcUnlockBtn').addEventListener('click',()=>{const f=pvcPdfInput.files[0];if(f)pvcRenderPdf(f,document.getElementById('pvcPdfPassword').value).catch(e=>{pvcPdfStatus.textContent='❌ '+e.message;});});
