@@ -1116,6 +1116,9 @@
 
 <!-- 3. Main Portal Application -->
 <div id="mainApp">
+  <div style="max-width:720px;margin:0 auto 14px;padding:0 4px;">
+    <input id="portalServiceSearch" type="search" placeholder="🔎 Search tools: ID card, PVC, passport, PDF, JPG…" aria-label="Search portal tools" style="width:100%;padding:12px 15px;border-radius:12px;border:1px solid rgba(56,189,248,.35);background:rgba(15,23,42,.85);color:#fff;font-size:13px;">
+  </div>
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('tab-cards')">💳 ID Card (5 Slots)</button>
     <button class="tab-btn" onclick="switchTab('tab-passport')">👤 Passport Photos</button>
@@ -1169,6 +1172,19 @@
       <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">इमेज सिलेक्ट करते ही वह <strong>ऑटोमैटिकली सही ID साइज में फिट</strong> हो जाएगी। जरूरत पड़ने पर मैनुअल क्रॉप भी कर सकते हैं।</p>
       
       <div id="slotCounter" class="slot-counter-badge">Cards on Page: 0 / 5 (Next Slot: #1)</div>
+      <div class="upload-section" style="margin:12px 0;">
+        <label class="upload-box" for="pvcPdfInput" style="max-width:520px;"><strong style="display:block;font-size:14px;margin-bottom:4px;">📄 PVC Auto-Crop: PDF से Front/Back</strong><div id="pvcPdfName" style="font-size:12px;color:var(--text-muted);">PDF चुनें · ऊपर-नीचे या left-right layout अपने-आप पहचाना जाएगा</div></label>
+        <input id="pvcPdfInput" type="file" accept="application/pdf">
+      </div>
+      <div id="pvcPasswordBox" hidden style="max-width:420px;margin:10px auto;padding:14px;border:1px solid #38bdf8;border-radius:10px;background:rgba(15,23,42,.8);"><label style="display:block;text-align:left;font-size:12px;">🔒 PDF Password</label><input id="pvcPdfPassword" type="password" class="login-input" autocomplete="off"><button id="pvcUnlockBtn" type="button" class="login-btn">Unlock & Auto-Crop</button><p id="pvcPdfStatus" role="status"></p></div>
+      <div class="control-panel" style="margin:12px auto;max-width:520px;text-align:left;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;">
+        <label style="font-size:12px;color:var(--text-muted);">Print mode
+          <select id="cardPrintMode" class="login-input" style="width:auto;display:inline-block;margin:0 4px;padding:7px 10px;">
+            <option value="id">ID Card · Standard</option><option value="pvc">PVC Card · 85.6×54 mm</option><option value="auto">Auto Print · A4</option>
+          </select>
+        </label>
+        <label style="font-size:12px;color:var(--text-muted);">Copies <input id="cardCopies" class="login-input" type="number" min="1" max="5" value="1" style="width:70px;display:inline-block;margin:0 4px;padding:7px 10px;"></label>
+      </div>
 
       <div class="upload-section">
         <label class="upload-box" for="card1Input">
@@ -1209,6 +1225,7 @@
         </div>
         <div class="btn-group">
           <button id="downloadPdfBtn" class="action-btn btn-download" disabled>📥 Direct A4 PDF Download</button>
+          <button id="downloadJpgBtn" class="action-btn btn-download" disabled>🖼️ Download A4 JPG</button>
         </div>
       </div>
     </div>
@@ -2065,6 +2082,10 @@
     document.getElementById(tabId).classList.add('active');
     document.querySelectorAll('.tab-btn').forEach(btn=>{if((btn.getAttribute('onclick')||'').includes("'"+tabId+"'"))btn.classList.add('active');});
   }
+  document.getElementById('portalServiceSearch').addEventListener('input',event=>{
+    const q=event.target.value.trim().toLocaleLowerCase();
+    document.querySelectorAll('#mainApp .tab-btn').forEach(btn=>{if(btn.id==='adminTabBtn')return;btn.hidden=!!q&&!btn.textContent.toLocaleLowerCase().includes(q);});
+  });
   async function switchTab(tabId) {
     if(!authToken || (tabId==='tab-admin' && authRole!=='admin')) return;
     if(tabId==='tab-admin') {
@@ -3199,8 +3220,22 @@
 
   const addCardBtn = document.getElementById('addCardBtn');
   const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+  const downloadJpgBtn = document.getElementById('downloadJpgBtn');
   const resetPageBtn = document.getElementById('resetPageBtn');
   const slotCounter = document.getElementById('slotCounter');
+  const cardPrintMode = document.getElementById('cardPrintMode');
+  const cardCopies = document.getElementById('cardCopies');
+  const pvcPdfInput=document.getElementById('pvcPdfInput'),pvcPdfName=document.getElementById('pvcPdfName'),pvcPdfStatus=document.getElementById('pvcPdfStatus');
+  async function pvcRenderPdf(file,password=''){
+    pvcPdfStatus.textContent='PDF पढ़ी जा रही है…';const data=await file.arrayBuffer();let doc;
+    try{doc=await pdfjsLib.getDocument({data,password}).promise;}catch(e){if(/password/i.test(e.name||'')||/password/i.test(e.message||'')){document.getElementById('pvcPasswordBox').hidden=false;pvcPdfStatus.textContent='Password डालकर Unlock दबाएँ।';return;}throw e;}
+    if(doc.numPages<1)throw new Error('PDF में page नहीं मिला।');const page=await doc.getPage(1),vp=page.getViewport({scale:3}),src=document.createElement('canvas');src.width=vp.width;src.height=vp.height;await page.render({canvasContext:src.getContext('2d'),viewport:vp}).promise;
+    const horizontal=src.width/src.height>1.35;const left=document.createElement('canvas'),right=document.createElement('canvas');if(horizontal){left.width=right.width=Math.floor(src.width/2);left.height=right.height=src.height;left.getContext('2d').drawImage(src,0,0,left.width,left.height,0,0,left.width,left.height);right.getContext('2d').drawImage(src,left.width,0,right.width,right.height,0,0,right.width,right.height);}else{left.width=right.width=src.width;left.height=right.height=Math.floor(src.height/2);left.getContext('2d').drawImage(src,0,0,src.width,left.height,0,0,src.width,left.height);right.getContext('2d').drawImage(src,0,left.height,src.width,right.height,0,0,src.width,right.height);}
+    autoFitCardToCanvas(left.toDataURL('image/jpeg',.95),canvas1,ctx1,true);autoFitCardToCanvas(right.toDataURL('image/jpeg',.95),canvas2,ctx2,false);pvcPdfStatus.textContent='✅ Front/Back PVC crop तैयार है। नीचे Add This Card दबाएँ।';document.getElementById('pvcPasswordBox').hidden=true;addCardBtn.disabled=false;
+  }
+  pvcPdfInput.addEventListener('change',()=>{const f=pvcPdfInput.files[0];if(!f)return;pvcPdfName.textContent='✅ '+f.name;document.getElementById('pvcPasswordBox').hidden=true;pvcRenderPdf(f).catch(e=>{pvcPdfStatus.textContent='PDF खोलने के लिए password आवश्यक है।';document.getElementById('pvcPasswordBox').hidden=false;});});
+  document.getElementById('pvcUnlockBtn').addEventListener('click',()=>{const f=pvcPdfInput.files[0];if(f)pvcRenderPdf(f,document.getElementById('pvcPdfPassword').value).catch(e=>{pvcPdfStatus.textContent='❌ '+e.message;});});
+  cardPrintMode.addEventListener('change',()=>{slotCounter.dataset.mode=cardPrintMode.value;addCardBtn.textContent=cardPrintMode.value==='pvc'?'➕ Add PVC Card to A4':cardPrintMode.value==='auto'?'➕ Auto-Place on A4':'➕ Add This Card to A4 Sheet';});
 
   document.getElementById('card1Input').addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -3227,7 +3262,9 @@
   });
 
   addCardBtn.addEventListener('click', () => {
-    if (addedCardsCount >= MAX_CARDS) return;
+    const copies=Math.max(1,Math.min(MAX_CARDS-addedCardsCount,Number(cardCopies.value)||1));
+    if (addedCardsCount >= MAX_CARDS || !copies) return;
+    for(let copy=0;copy<copies;copy++){
     const totalPairWidth = (CARD_W * 2) + GAP_2_5MM_PX;
     const startX = (A4_W - totalPairWidth) / 2;
     const startY = 45;
@@ -3243,6 +3280,7 @@
     a4Ctx.strokeRect(backCardX, currentY, CARD_W, CARD_H);
 
     addedCardsCount++;
+    }
     if (addedCardsCount < MAX_CARDS) {
       slotCounter.innerText = `Cards on Page: ${addedCardsCount} / ${MAX_CARDS} (Next Slot: #${addedCardsCount + 1})`;
     } else {
@@ -3250,6 +3288,7 @@
     }
 
     downloadPdfBtn.disabled = false;
+    downloadJpgBtn.disabled = false;
     clearCurrentCardInputs();
   });
 
@@ -3287,6 +3326,7 @@
     }
     slotCounter.innerText = `Cards on Page: 0 / 5 (Next Slot: #1)`;
     downloadPdfBtn.disabled = true;
+    downloadJpgBtn.disabled = true;
   }
 
   resetPageBtn.addEventListener('click', () => {
@@ -3305,6 +3345,14 @@
     const blob = pdf.output('blob');
     pdf.save(fileName);
     saveToHistory('ID Card Print (5-Slots)', fileName, blob, 'application/pdf');
+  });
+
+  downloadJpgBtn.addEventListener('click', () => {
+    if (!addedCardsCount) return;
+    const link = document.createElement('a');
+    link.download = `A4_Cards_Sheet_${addedCardsCount}_Cards.jpg`;
+    link.href = a4Canvas.toDataURL('image/jpeg', 0.98);
+    link.click();
   });
 
   // ==========================================================
