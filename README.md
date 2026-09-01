@@ -880,6 +880,8 @@
 #np-editor .np-view-actions span{display:none}
 #np-editor .np-limit-help{font-size:11px;padding:6px 12px;background:#f8fafc;color:#475569}
 @media(max-width:740px){#np-editor .np-body{grid-template-columns:1fr}#np-editor .np-panel{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center}#np-editor .np-panel hr{display:none}#np-editor #np-results{width:100%}}
+#np-editor #np-inline{background:transparent!important;opacity:1!important;box-shadow:none!important;border:0!important;outline:0!important}
+#np-quota{font-size:12px;color:#475569;white-space:nowrap}
 </style>
 <style>
 #tab-pdf-editor .pe-shell{background:#111b2d;border:1px solid #34435c;border-radius:16px;overflow:hidden;text-align:left;color:#e8eef8}
@@ -983,7 +985,7 @@
   <h2 style="font-size: 20px; margin-bottom: 6px;">Sign In</h2>
   <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 15px;">Card & Photo Generator Portal</p>
 
-  <input type="email" id="loginEmail" class="login-input" placeholder="ईमेल आईडी दर्ज करें" value="oneplus777000@gmail.com">
+  <input type="email" id="loginEmail" class="login-input" placeholder="ईमेल आईडी दर्ज करें">
   <input type="password" id="loginPass" class="login-input" placeholder="पासवर्ड दर्ज करें">
   <button id="authBtn" class="login-btn">लॉगिन करें</button>
   <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड!</div>
@@ -1396,7 +1398,7 @@
  <button id="premium-submit" class="action-btn btn-download" type="submit">Submit for premium approval</button></form>
 </section>
 <section hidden id="np-editor" aria-label="PDF text editor">
- <header class="np-head"><div><span class="np-tag">PDF WORKSPACE · NO PAID SDK</span><h2>PDF Editor</h2><p>मूल text बदलें · नया text, signature और highlights जोड़ें</p></div><button id="np-save-edit" class="np-primary" hidden>✓ Save edit</button><button id="np-cancel-edit" hidden>Cancel edit</button><button id="np-save" class="np-primary" disabled>↓ Download PDF</button><a id="np-download-link" hidden>Download again</a></header>
+ <header class="np-head"><div><span class="np-tag">PDF WORKSPACE · NO PAID SDK</span><h2>PDF Editor</h2><p>मूल text बदलें · नया text, signature और highlights जोड़ें</p></div><button id="np-save-edit" class="np-primary" hidden>✓ Save edit</button><button id="np-cancel-edit" hidden>Cancel edit</button><button id="np-save" class="np-primary" disabled>↓ Download PDF</button><button type="button" id="np-download-link" hidden>Download again</button><span id="np-quota">5 downloads maximum</span></header>
  <div class="np-filebar"><button id="np-open" class="np-primary">＋ Open PDF</button><input id="np-file" type="file" accept="application/pdf,.pdf" hidden><span id="np-name">PDF चुनें · अधिकतम 25 MB / 100 pages</span><button id="np-close" disabled>Close</button></div>
  <p class="np-notice">English · हिन्दी · मराठी: नया font इस्तेमाल होगा; मूल formatting बदल सकती है। Hindi/Marathi shaping और copy/search experimental हैं। Scans/OCR और सभी प्रकार के text blocks समर्थित नहीं हैं।</p>
  <fieldset id="np-controls" disabled>
@@ -1790,7 +1792,7 @@
     <div style="background: rgba(15,23,42,0.8); padding: 12px; border-radius: 10px; margin-bottom: 20px; border: 1px solid var(--border-color); text-align: left;">
       <div style="font-size: 11px; color: var(--text-muted);">📧 Official Email IDs:</div>
       <a href="mailto:idprintingportal@gmail.com" style="color: #38bdf8; font-weight: 600; font-size: 13px; text-decoration: none;">idprintingportal@gmail.com</a><br>
-      <a href="mailto:oneplus777000@gmail.com" style="color: #38bdf8; font-weight: 600; font-size: 13px; text-decoration: none;">oneplus777000@gmail.com</a>
+      <span style="color:#38bdf8;font-weight:600;font-size:13px;">Portal admin से संपर्क करें</span>
     </div>
 
     <button onclick="closeRegModal()" class="action-btn" style="background: #ef4444; width: 100%;">❌ बंद करें (Close)</button>
@@ -1887,7 +1889,7 @@
     hidePremiumEditor();document.getElementById('pdf-premium-card').hidden=true;form.hidden=true;status.textContent='Premium status जाँच रहे हैं…';
     try{
       const info=await secureApi({action:'getPdfPremium'},{timeoutMs:30000});
-      premiumAllowed=info.allowed===true;document.getElementById('np-editor').hidden=!premiumAllowed;document.getElementById('premium-legacy-editor').hidden=!premiumAllowed;
+      showPdfQuota(info.downloadQuota);premiumAllowed=info.allowed===true;document.getElementById('np-editor').hidden=!premiumAllowed;document.getElementById('premium-legacy-editor').hidden=!premiumAllowed;
       document.getElementById('pdf-premium-card').hidden=premiumAllowed||info.state==='active';
       form.hidden=premiumAllowed||info.state==='pending';
       status.textContent=premiumAllowed?'✅ Premium active'+(info.expiry?' · Valid until '+new Date(info.expiry).toLocaleDateString():' · Admin access'):info.state==='pending'?'⏳ Payment screenshot भेज दिया है। Admin approval बाकी है।':info.state==='rejected'?'❌ Request rejected. सही payment proof के साथ फिर submit करें।':'🔒 PDF Editor के लिए ₹159 / 1 Year premium लें।';
@@ -1989,8 +1991,8 @@
         button('✅ Premium Approve',()=>review(true));button('❌ Premium Reject',()=>review(false));
       }
       if(String(d.paymentStatus).toLowerCase()==='pending') {
-        button('✅ Approve',()=>reviewDistributorPayment(d.email,true));
-        button('❌ Reject',()=>reviewDistributorPayment(d.email,false));
+        button('✅ Approve',()=>reviewDistributorPayment(d.email,d.paymentRequestId,true));
+        button('❌ Reject',()=>reviewDistributorPayment(d.email,d.paymentRequestId,false));
       }
       button('🛑 Stop',()=>toggleDistributorStatus(d.email,'Stopped'));
       button('▶️ Start',()=>toggleDistributorStatus(d.email,'Active'));
@@ -2069,9 +2071,9 @@
     if(tabId!=='tab-admin' && adminPanelUntil) lockAdminPanel();
     showPortalTab(tabId);
   }
-  async function reviewDistributorPayment(email,approved) {
+  async function reviewDistributorPayment(email,requestId,approved) {
     if(!confirm(approved?'Approve this payment?':'Reject this payment?')) return;
-    await secureApi({action:'reviewDistributorPayment',email,approved:String(approved)});
+    await secureApi({action:'reviewDistributorPayment',email,requestId,approved:String(approved)});
     await renderDistributorsTable();
     alert(approved?'✅ Approved. Validity saved by the server.':'✅ Rejected. Access remains closed.');
   }
@@ -2225,9 +2227,7 @@
     }));
   }
 
-  async function updateDistributorPasswordCloud(email, newPass) {
-    return await callCloudPost({ action: "updatePassword", email: email, newPass: newPass });
-  }
+  async 
 
   // ==========================================================
   // INDEXEDDB HISTORY STORAGE ENGINE
@@ -2249,6 +2249,44 @@
       request.onerror = () => reject(request.error);
     });
   }
+
+  function showPdfQuota(q){const label=document.getElementById('np-quota');if(label&&q)label.textContent=q.limit===null?'Admin':`${q.remaining} / ${q.limit} downloads left`;}
+  function historyTransaction(db,mode,operation){return new Promise((resolve,reject)=>{
+    const tx=db.transaction(DB_STORE,mode);let result;
+    try{result=operation(tx.objectStore(DB_STORE));}catch(e){db.close();reject(e);return;}
+    tx.oncomplete=()=>{db.close();resolve(result?.result);};tx.onerror=tx.onabort=()=>{db.close();reject(tx.error||new Error('Download history save failed.'));};
+  });}
+  async function savePdfHistory(record){const db=await openHistoryDB();return historyTransaction(db,'readwrite',s=>s.put(record));}
+  async function getPdfHistory(id){const db=await openHistoryDB();return historyTransaction(db,'readonly',s=>s.get(id));}
+  async function deletePdfHistory(id){const db=await openHistoryDB();return historyTransaction(db,'readwrite',s=>s.delete(id));}
+  function triggerPdfDownload(record){
+    const url=URL.createObjectURL(record.data),a=document.createElement('a');a.href=url;a.download=record.fileName;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+  }
+  let pdfDownloadInFlight=false;
+  window.exportPortalPdf=async(blob,fileName,retryRecord=null)=>{
+    if(pdfDownloadInFlight)throw new Error('Download in progress.');pdfDownloadInFlight=true;
+    const token=authToken;let record=retryRecord;
+    try{
+      if(!token||!authEmail)throw new Error('Login required.');
+      if(!record){
+        const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',await blob.arrayBuffer()))).map(x=>x.toString(16).padStart(2,'0')).join('');
+        record={feature:'PDF Editor',fileName:fileName.slice(0,180),data:blob,fileType:'pdf',timestamp:Date.now(),dateFormatted:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}),pdfRequestId:crypto.randomUUID(),pdfHash:hash,pdfState:'pending'};
+        if(token!==authToken)throw new Error('Account changed.');
+        record.id=await savePdfHistory(record); // Fail before consuming quota if browser history cannot persist.
+      }
+      if(token!==authToken)throw new Error('Account changed.');
+      const result=await secureApi({action:'authorizePdfDownload',requestId:record.pdfRequestId,sha256:record.pdfHash,fileName:record.fileName},{timeoutMs:30000});
+      showPdfQuota(result.quota);record.pdfState='authorized';
+      await savePdfHistory(record); // Pending row survives response loss / quota finalization failure for safe retry.
+      if(token!==authToken)throw new Error('Account changed.');
+      triggerPdfDownload(record);return result;
+    }catch(error){
+      // A rejected sixth attempt was never downloaded, so it must not appear in download history.
+      if(record?.id&&/PDF_DOWNLOAD_LIMIT/.test(error.message)&&token===authToken){await deletePdfHistory(record.id).catch(()=>{});}
+      if(error.name==='AbortError'||/Failed to fetch/.test(error.message))throw new Error('Response नहीं मिला। History में उसी entry का Retry करें; दोबारा quota नहीं कटेगा।');
+      throw error;
+    }finally{pdfDownloadInFlight=false;}
+  };
 
   async function saveToHistory(featureName, fileName, blobOrDataUrl, fileType) {
     try {
@@ -2289,7 +2327,7 @@
         records.reverse().forEach(rec => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td><strong style="color:var(--accent-blue);">${escapeHtml(rec.feature)}</strong></td>
+            <td><strong style="color:var(--accent-blue);">${escapeHtml(rec.feature)}</strong>${rec.pdfState==='pending'?' · Pending / Retry':rec.pdfState==='limit-reached'?' · Limit reached':''}</td>
             <td>${escapeHtml(rec.fileName)}</td>
             <td style="color:#94a3b8; font-size:11px;">${escapeHtml(rec.dateFormatted)}</td>
             <td>
@@ -2309,9 +2347,12 @@
     const store = tx.objectStore(DB_STORE);
     const request = store.get(recordId);
 
-    request.onsuccess = function() {
+    request.onsuccess = async function() {
       const rec = request.result;
       if (!rec) return;
+      if(rec.feature==='PDF Editor'){
+        try{await window.exportPortalPdf(rec.data,rec.fileName,rec.pdfState==='pending'?rec:null);await renderHistoryTable();}catch(error){alert(error.message);}return;
+      }
 
       const link = document.createElement('a');
       if (typeof rec.data === 'string') {
@@ -2344,8 +2385,6 @@
   if (typeof pdfjsLib !== 'undefined') {
     pdfjsLib.GlobalWorkerOptions.workerSrc = '';
   }
-
-  const ADMIN_EMAIL = "oneplus777000@gmail.com";
   const THIRTY_DAYS = 30;
   const THIRTY_MS = THIRTY_DAYS * 24 * 60 * 60 * 1000;
   const ONE_YEAR_DAYS = 365;
@@ -2376,13 +2415,6 @@
 
     if (!name || !email || !pass) {
       msg.innerText = "⚠️ कृपया सभी फ़ील्ड भरें!";
-      msg.style.color = "#ef4444";
-      msg.style.display = "block";
-      return;
-    }
-
-    if (email === ADMIN_EMAIL.toLowerCase()) {
-      msg.innerText = "⚠️ यह ईमेल एडमिन ईमेल है!";
       msg.style.color = "#ef4444";
       msg.style.display = "block";
       return;
@@ -2820,13 +2852,6 @@
 
     if (!paymentFile) {
       signUpStatusMsg.innerText = '⚠️ कृपया भुगतान का स्क्रीनशॉट अपलोड करें!';
-      signUpStatusMsg.style.color = '#ef4444';
-      signUpStatusMsg.style.display = 'block';
-      return;
-    }
-
-    if (email === ADMIN_EMAIL.toLowerCase()) {
-      signUpStatusMsg.innerText = '⚠️ यह एडमिन ईमेल है, कृपया दूसरा ईमेल चुनें!';
       signUpStatusMsg.style.color = '#ef4444';
       signUpStatusMsg.style.display = 'block';
       return;
@@ -5445,6 +5470,11 @@ try {
         return result;
       }finally{if(tp)this.e.FPDFText_ClosePage(tp);if(page)this.e.FPDF_ClosePage(page);this.close(h);}
     }
+    previewHidden(bytes,pageIndex,selected){
+      // Remove only from a throwaway copy; never add a white rectangle.
+      return this.remove(bytes,pageIndex,selected);
+    }
+
     save(doc){
       const w=this.e.PDFiumExt_OpenFileWriter();let p=0;
       try{
@@ -5519,7 +5549,23 @@ try {
  const inline=document.createElement('textarea');inline.id='np-inline';inline.hidden=true;inline.maxLength=2000;
  inline.setAttribute('aria-label','Edit text directly on PDF');inline.spellcheck=false;
  $('wrap').append(inline);
- function closeInline(){inlineSession=null;inline.hidden=true;inline.value='';inline.removeAttribute('aria-busy');$('cancel-edit').hidden=true;$('save-edit').hidden=true;}
+ let inlineCanvasSnapshot=null;
+ async function transparentInlinePreview(session){
+  const currentCanvas=$('canvas');inlineCanvasSnapshot=document.createElement('canvas');inlineCanvasSnapshot.width=currentCanvas.width;inlineCanvasSnapshot.height=currentCanvas.height;inlineCanvasSnapshot.getContext('2d').drawImage(currentCanvas,0,0);
+  let preview=null;
+  try{
+    const hidden=core.previewHidden(bytes,page,session.object);
+    preview=await pdfjsLib.getDocument({data:hidden,isEvalSupported:false,enableScripting:false}).promise;
+    const source=await preview.getPage(page+1),scale=currentCanvas.width/view.width;
+    const temp=document.createElement('canvas');temp.width=currentCanvas.width;temp.height=currentCanvas.height;
+    await source.render({canvasContext:temp.getContext('2d'),viewport:source.getViewport({scale:view.scale*scale})}).promise;
+    if(inlineSession===session&&!inlineSaving&&epoch===session.ticket){currentCanvas.getContext('2d').clearRect(0,0,currentCanvas.width,currentCanvas.height);currentCanvas.getContext('2d').drawImage(temp,0,0);}
+  }catch(error){if(inlineSession===session&&!inlineSaving)say('Transparent preview नहीं बनी। मूल PDF सुरक्षित है; Save error हो तो Cancel करें।');}
+  finally{if(preview)await preview.destroy();}
+ }
+ function restoreInlineCanvas(){if(inlineCanvasSnapshot){const c=$('canvas');if(c.width===inlineCanvasSnapshot.width&&c.height===inlineCanvasSnapshot.height){c.getContext('2d').clearRect(0,0,c.width,c.height);c.getContext('2d').drawImage(inlineCanvasSnapshot,0,0);}inlineCanvasSnapshot=null;}}
+
+ function closeInline(restore=true){if(restore)restoreInlineCanvas();else inlineCanvasSnapshot=null;inlineSession=null;inline.hidden=true;inline.value='';inline.removeAttribute('aria-busy');$('cancel-edit').hidden=true;$('save-edit').hidden=true;}
  function positionInline(o){
   const r=view.convertToViewportRectangle(o.bounds),left=Math.min(r[0],r[2]),top=Math.min(r[1],r[3]);
   const scale=view.scale||Math.hypot(view.transform[0],view.transform[1]);
@@ -5530,7 +5576,7 @@ try {
   if(inlineSession){if(inlineSession.object.index===o.index){inline.focus();return;}finishInline();return;}
   if(tool!=='edit')setTool('edit');
   invalidateDownload();choose(o);inlineSession={object:o,initial:cleanText(o.text),ticket:epoch};inline.value=inlineSession.initial;$('cancel-edit').hidden=false;$('save-edit').hidden=false;
-  positionInline(o);inline.hidden=false;inline.focus();inline.setSelectionRange(inline.value.length,inline.value.length);
+  positionInline(o);inline.hidden=false;inline.focus();transparentInlinePreview(inlineSession);inline.setSelectionRange(inline.value.length,inline.value.length);
   say('Editing · Enter to save · Esc to cancel');
  }
  function beginNewInline(at){
@@ -5558,7 +5604,7 @@ try {
   finally{
    inlineSaving=false;
    if(inlineSession===session&&epoch===session.ticket){
-    if(success){closeInline();if(session.isNew)setTool('edit');const next=objects.find(n=>cleanText(n.text)===value&&Math.hypot(n.matrix[4]-o.matrix[4],n.matrix[5]-o.matrix[5])<2);if(next)choose(next);}
+    if(success){closeInline(false);if(session.isNew)setTool('edit');const next=objects.find(n=>cleanText(n.text)===value&&Math.hypot(n.matrix[4]-o.matrix[4],n.matrix[5]-o.matrix[5])<2);if(next)choose(next);}
     else{inline.hidden=false;inline.removeAttribute('aria-busy');say($('status').textContent+' · Retry या Cancel edit चुनें।');}
    }
   }
@@ -5756,10 +5802,13 @@ try {
  window.addEventListener('portal-auth-cleared',()=>{if(documentView.classList.contains('np-expanded'))expandPreview(false);});
  new ResizeObserver(refreshFit).observe($('scroll'));
  $('save').onclick=async()=>{
-  if(!bytes||busy)return;if(selected&&(cleanText($('text').value)!==cleanText(selected.text)||Math.abs(size()-selected.size)>.11||$('color').value!==selected.color||boldLevel()!==(selected.boldLevel||1))){say('Text change pending है। पहले Apply text change दबाएँ, फिर Download करें।');$('apply').focus();return;}try{await window.requirePdfPremium();}catch(e){say(e.message);return;}invalidateDownload();const blob=new Blob([bytes],{type:'application/pdf'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name.replace(/\.pdf$/i,'')+'-edited.pdf';lastDownloadUrl=url;$('download-link').href=url;$('download-link').download=a.download;$('download-link').hidden=false;document.body.append(a);a.click();a.remove();dirty=false;say('PDF download तैयार है। Hindi/Marathi text और copy/search जाँच लें।');
+  if(!bytes||busy)return;
+  if(selected&&(cleanText($('text').value)!==cleanText(selected.text)||Math.abs(size()-selected.size)>.11||$('color').value!==selected.color||boldLevel()!==(selected.boldLevel||1))){say('पहले Save edit / Apply style करें।');return;}
+  await job(async ticket=>{const blob=new Blob([bytes],{type:'application/pdf'});await window.exportPortalPdf(blob,name.replace(/\.pdf$/i,'')+'-edited.pdf');if(ticket!==epoch)return;dirty=false;$('download-link').hidden=false;say('PDF history में save हुई और download भेजा गया।');});
  };
+ $('download-link').onclick=()=>$('save').click();
  root.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?travel(redo,undo):travel(undo,redo);}});
- window.addEventListener('portal-auth-cleared',reset);window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue='';}});buttons();
+ window.addEventListener('portal-auth-cleared',reset);window.addEventListener('beforeunload',e=>{if(dirty||(inlineSession&&cleanText(inline.value)!==inlineSession.initial)){e.preventDefault();e.returnValue='';}});buttons();
 })();
 
 </script>
