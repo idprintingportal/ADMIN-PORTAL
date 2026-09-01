@@ -1072,6 +1072,10 @@
   <h2>Replace Signup Screenshot</h2>
   <p>Registered email verify करें और नया payment screenshot चुनें। नया screenshot पुराने screenshot को replace करेगा।</p>
   <input id="pendingEmail" type="email" class="login-input" placeholder="Registered email ID" autocomplete="email" maxlength="254">
+  <label class="upload-box" for="pendingScreenshot" style="display:block;width:100%;box-sizing:border-box;margin:14px 0;text-align:center;">
+    <strong style="display:block;font-size:14px;margin-bottom:5px;">📸 Payment screenshot चुनें</strong>
+    <span id="pendingScreenshotName" style="font-size:12px;color:var(--text-muted);">JPG, PNG या WEBP · अधिकतम 5 MB</span>
+  </label>
   <input id="pendingScreenshot" type="file" accept="image/jpeg,image/png,image/webp">
   <p id="pendingUploadStatus" role="alert"></p>
   <button id="pendingUploadBtn" type="button" class="login-btn">Send Replacement Screenshot</button>
@@ -1414,7 +1418,7 @@
   <button data-np-tool="edit" aria-pressed="true">↖ Edit original text</button><button data-np-tool="text">T Add text</button><button data-np-tool="image">▧ Image / Signature</button><button data-np-tool="highlight">▰ Highlight</button><button data-np-tool="whiteout">▱ Whiteout</button><button data-np-tool="draw">✎ Draw / Sign</button><button id="np-undo">↶ Undo</button><button id="np-redo">↷ Redo</button>
  </div>
  <div class="np-body"><aside class="np-panel">
-  <textarea id="np-text" hidden aria-hidden="true" tabindex="-1" maxlength="2000"></textarea><p class="np-inline-help">नाम/text पर double-click या double-tap करें और सीधे वहीं लिखें। Enter या बाहर click करने पर save होगा।</p>
+  <textarea id="np-text" aria-label="Selected original PDF text" maxlength="2000" rows="4"></textarea><p class="np-inline-help">नीले text box पर double-click करें और उसी original text को बदलें। फिर Apply दबाएँ।</p>
   <label for="np-language">Language</label><select id="np-language"><option value="auto">Auto · Noto fonts</option><option value="en">English</option><option value="hi">हिन्दी · Experimental</option><option value="mr">मराठी · Experimental</option></select>
   <div class="np-fields"><label>Size <input id="np-size" type="number" min="6" max="120" value="18"></label><label>Color <input id="np-color" type="color" value="#111827"></label></div>
   <label for="np-bold">Bold level <output id="np-bold-value" for="np-bold">1 / 5 · Normal</output></label>
@@ -2979,6 +2983,7 @@
     document.getElementById('pendingUploadScreen').style.display='block';
     document.getElementById('pendingEmail').value=authEmail||'';
     document.getElementById('pendingScreenshot').value='';
+    document.getElementById('pendingScreenshotName').textContent='JPG, PNG या WEBP · अधिकतम 5 MB';
     document.getElementById('pendingUploadStatus').textContent='';
     document.getElementById('pendingEmail').focus();
   });
@@ -2997,6 +3002,10 @@
       document.getElementById('pendingUploadScreen').style.display='none';document.getElementById('pendingScreen').style.display='block';
     } catch(error) {status.textContent=error.message;}
     finally {button.disabled=false;}
+  });
+  document.getElementById('pendingScreenshot').addEventListener('change', event => {
+    const file=event.target.files[0];
+    document.getElementById('pendingScreenshotName').textContent=file ? `✅ ${file.name}` : 'JPG, PNG या WEBP · अधिकतम 5 MB';
   });
   document.getElementById('pendingBackBtn').addEventListener('click', () => {
     secureApi({action:'logout'}).catch(()=>{});clearAuth();
