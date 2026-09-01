@@ -1072,6 +1072,10 @@
   <h2>Replace Signup Screenshot</h2>
   <p>Registered email verify करें और नया payment screenshot चुनें। नया screenshot पुराने screenshot को replace करेगा।</p>
   <input id="pendingEmail" type="email" class="login-input" placeholder="Registered email ID" autocomplete="email" maxlength="254">
+  <label class="upload-box" for="pendingScreenshot" style="display:block;width:100%;box-sizing:border-box;margin:14px 0;text-align:center;">
+    <strong style="display:block;font-size:14px;margin-bottom:5px;">📸 Payment screenshot चुनें</strong>
+    <span id="pendingScreenshotName" style="font-size:12px;color:var(--text-muted);">JPG, PNG या WEBP · अधिकतम 5 MB</span>
+  </label>
   <input id="pendingScreenshot" type="file" accept="image/jpeg,image/png,image/webp">
   <p id="pendingUploadStatus" role="alert"></p>
   <button id="pendingUploadBtn" type="button" class="login-btn">Send Replacement Screenshot</button>
@@ -2979,6 +2983,7 @@
     document.getElementById('pendingUploadScreen').style.display='block';
     document.getElementById('pendingEmail').value=authEmail||'';
     document.getElementById('pendingScreenshot').value='';
+    document.getElementById('pendingScreenshotName').textContent='JPG, PNG या WEBP · अधिकतम 5 MB';
     document.getElementById('pendingUploadStatus').textContent='';
     document.getElementById('pendingEmail').focus();
   });
@@ -2997,6 +3002,10 @@
       document.getElementById('pendingUploadScreen').style.display='none';document.getElementById('pendingScreen').style.display='block';
     } catch(error) {status.textContent=error.message;}
     finally {button.disabled=false;}
+  });
+  document.getElementById('pendingScreenshot').addEventListener('change', event => {
+    const file=event.target.files[0];
+    document.getElementById('pendingScreenshotName').textContent=file ? `✅ ${file.name}` : 'JPG, PNG या WEBP · अधिकतम 5 MB';
   });
   document.getElementById('pendingBackBtn').addEventListener('click', () => {
     secureApi({action:'logout'}).catch(()=>{});clearAuth();
