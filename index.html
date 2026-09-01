@@ -3095,7 +3095,14 @@
       cropper = new Cropper(imageToCrop, {
         aspectRatio: targetRatio,
         viewMode: 1,
+        dragMode: 'move',
         autoCropArea: 0.98
+        ,cropBoxMovable: true,
+        cropBoxResizable: true,
+        guides: true,
+        center: true,
+        responsive: true,
+        background: true
       });
     };
 
