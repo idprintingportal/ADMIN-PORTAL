@@ -1175,8 +1175,9 @@
       <div class="upload-section" style="margin:12px 0;">
         <label class="upload-box" for="pvcPdfInput" style="max-width:520px;"><strong style="display:block;font-size:14px;margin-bottom:4px;">📄 PVC Auto-Crop: PDF से Front/Back</strong><div id="pvcPdfName" style="font-size:12px;color:var(--text-muted);">PDF चुनें · ऊपर-नीचे या left-right layout अपने-आप पहचाना जाएगा</div></label>
         <input id="pvcPdfInput" type="file" accept="application/pdf">
+        <p id="pvcPdfStatus" role="status" style="min-height:18px;margin:8px 0 0;font-size:12px;color:var(--accent-blue);text-align:center;"></p>
       </div>
-      <div id="pvcPasswordBox" hidden style="max-width:420px;margin:10px auto;padding:14px;border:1px solid #38bdf8;border-radius:10px;background:rgba(15,23,42,.8);"><label style="display:block;text-align:left;font-size:12px;">🔒 PDF Password</label><input id="pvcPdfPassword" type="password" class="login-input" autocomplete="off"><button id="pvcUnlockBtn" type="button" class="login-btn">Unlock & Auto-Crop</button><p id="pvcPdfStatus" role="status"></p></div>
+      <div id="pvcPasswordBox" hidden style="max-width:420px;margin:10px auto;padding:14px;border:1px solid #38bdf8;border-radius:10px;background:rgba(15,23,42,.8);"><label style="display:block;text-align:left;font-size:12px;">🔒 PDF Password</label><input id="pvcPdfPassword" type="password" class="login-input" autocomplete="off"><button id="pvcUnlockBtn" type="button" class="login-btn">Unlock & Auto-Crop</button></div>
       <div class="control-panel" style="margin:12px auto;max-width:520px;text-align:left;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;">
         <label style="font-size:12px;color:var(--text-muted);">Print mode
           <select id="cardPrintMode" class="login-input" style="width:auto;display:inline-block;margin:0 4px;padding:7px 10px;">
@@ -1192,6 +1193,8 @@
           <select id="pvcSideMode" class="login-input" style="width:auto;display:inline-block;margin:0 4px;padding:7px 10px;"><option value="auto">Auto</option><option value="single">Single card</option><option value="double">Front + Back</option></select>
         </label>
         <label style="font-size:12px;color:var(--text-muted);">Copies <input id="cardCopies" class="login-input" type="number" min="1" max="5" value="1" style="width:70px;display:inline-block;margin:0 4px;padding:7px 10px;"></label>
+        <label style="font-size:12px;color:var(--text-muted);"><input id="pvcBorderEnabled" type="checkbox" checked> Black border</label>
+        <label style="font-size:12px;color:var(--text-muted);">Border size <input id="pvcBorderSize" type="range" min="1" max="20" value="6" style="width:90px;vertical-align:middle;"><output id="pvcBorderSizeValue">6 px</output></label>
       </div>
 
       <div class="upload-section">
@@ -3088,12 +3091,12 @@
       cropModal.style.display = 'flex';
       if (cropper) cropper.destroy();
 
-      let targetRatio = 1013 / 638;
+      let targetRatio = NaN;
       if (type === 'name_passport' || type.startsWith('multi_passport_')) targetRatio = 35 / 45;
       if (type === 'photo4x6') targetRatio = 1200 / 1800;
 
       cropper = new Cropper(imageToCrop, {
-        aspectRatio: targetRatio,
+        aspectRatio: Number.isFinite(targetRatio) ? targetRatio : NaN,
         viewMode: 1,
         dragMode: 'move',
         autoCropArea: 0.98
@@ -3174,15 +3177,26 @@
     if (!cropper) return;
 
     if (activeCropType === 'card_front' || activeCropType === 'card_back') {
-      const croppedCanvas = cropper.getCroppedCanvas({ width: 1013, height: 638, imageSmoothingQuality: 'high' });
+      const croppedCanvas = cropper.getCroppedCanvas({ imageSmoothingQuality: 'high' });
       if (activeCropType === 'card_front') {
         ctx1.clearRect(0, 0, CARD_W, CARD_H);
-        ctx1.drawImage(croppedCanvas, 0, 0);
+        ctx1.drawImage(croppedCanvas, 0, 0, CARD_W, CARD_H);
         img1Loaded = true;
+        frontCardRawData = croppedCanvas.toDataURL('image/png');
+        if (pvcCropQueue && pvcCropQueue.backPending) {
+          pvcCropQueue.backPending = false;
+          setTimeout(() => { pvcPdfStatus.textContent='अब उसी PDF page में Back card का rectangle select करें और Crop & Set दबाएँ।'; openCropEngine(pvcCropQueue.page,'card_back'); }, 150);
+        } else if (pvcCropQueue) {
+          img2Loaded = true;
+          addCardBtn.disabled = false;
+          pvcCropQueue = null;
+        }
       } else {
         ctx2.clearRect(0, 0, CARD_W, CARD_H);
-        ctx2.drawImage(croppedCanvas, 0, 0);
+        ctx2.drawImage(croppedCanvas, 0, 0, CARD_W, CARD_H);
         img2Loaded = true;
+        backCardRawData = croppedCanvas.toDataURL('image/png');
+        pvcCropQueue = null;
       }
       if (img1Loaded && img2Loaded) addCardBtn.disabled = false;
     } 
@@ -3250,7 +3264,10 @@
   const cardPrintMode = document.getElementById('cardPrintMode');
   const cardCopies = document.getElementById('cardCopies');
   const pvcCardType=document.getElementById('pvcCardType'),pvcSideMode=document.getElementById('pvcSideMode');
+  const pvcBorderEnabled=document.getElementById('pvcBorderEnabled'),pvcBorderSize=document.getElementById('pvcBorderSize'),pvcBorderSizeValue=document.getElementById('pvcBorderSizeValue');
+  pvcBorderSize.addEventListener('input',()=>pvcBorderSizeValue.textContent=pvcBorderSize.value+' px');
   const pvcPdfInput=document.getElementById('pvcPdfInput'),pvcPdfName=document.getElementById('pvcPdfName'),pvcPdfStatus=document.getElementById('pvcPdfStatus');
+  let pvcCropQueue=null;
   function pvcTrimPrintableArea(input){
     const c=input,ctx=c.getContext('2d'),w=c.width,h=c.height,p=ctx.getImageData(0,0,w,h).data;
     let minX=w,minY=h,maxX=-1,maxY=-1;
@@ -3270,7 +3287,9 @@
     return best>c.width*.006;
   }
   async function pvcRenderPdf(file,password=''){
-    pvcPdfStatus.textContent='PDF पढ़ी जा रही है…';const data=await file.arrayBuffer();let doc;
+    pvcPdfStatus.textContent='Python PDF engine से printable area crop हो रहा है…';
+    try{const form=new FormData();form.append('file',file);if(password)form.append('password',password);const workerResponse=await fetch('https://all-services-are-working-fine-1.onrender.com/crop-card',{method:'POST',body:form});const workerResult=await workerResponse.json();if(!workerResponse.ok||!workerResult.success)throw new Error(workerResult.error||'Python crop worker unavailable.');pvcCropQueue={page:workerResult.page,backPending:pvcSideMode.value!=='single'};pvcPdfStatus.textContent='✅ PDF read हो गई। अब rectangle को चारों तरफ से card पर set करके Crop & Set दबाएँ।';openCropEngine(workerResult.page,'card_front');document.getElementById('pvcPasswordBox').hidden=true;return;}catch(workerError){pvcPdfStatus.textContent='Python worker से connection नहीं हुआ; browser fallback चल रहा है…';}
+    const data=await file.arrayBuffer();let doc;
     try{doc=await pdfjsLib.getDocument({data,password}).promise;}catch(e){if(/password/i.test(e.name||'')||/password/i.test(e.message||'')){document.getElementById('pvcPasswordBox').hidden=false;pvcPdfStatus.textContent='Password डालकर Unlock दबाएँ।';return;}throw e;}
     if(doc.numPages<1)throw new Error('PDF में page नहीं मिला।');const page=await doc.getPage(1),vp=page.getViewport({scale:3}),src=document.createElement('canvas');src.width=vp.width;src.height=vp.height;await page.render({canvasContext:src.getContext('2d'),viewport:vp}).promise;
     const bounds=pvcContentBounds(src),forcedSide=pvcSideMode.value,requestedType=pvcCardType.value,horizontal=forcedSide==='double'||(forcedSide!=='single'&&Boolean(bounds&&((bounds.w/bounds.h>2.2)||pvcHasCenterGap(src,bounds))));let front,back;if(horizontal){const cut=Math.floor(src.width/2),left=document.createElement('canvas'),right=document.createElement('canvas');left.width=right.width=cut;left.height=right.height=src.height;left.getContext('2d').drawImage(src,0,0,cut,src.height,0,0,cut,src.height);right.getContext('2d').drawImage(src,cut,0,src.width-cut,src.height,0,0,src.width-cut,src.height);front=pvcTrimPrintableArea(left);back=pvcTrimPrintableArea(right);}else{front=pvcTrimPrintableArea(src);back=document.createElement('canvas');back.width=front.width;back.height=front.height;back.getContext('2d').fillStyle='#fff';back.getContext('2d').fillRect(0,0,back.width,back.height);}
@@ -3317,10 +3336,12 @@
     const backCardX = startX + CARD_W + GAP_2_5MM_PX;
     a4Ctx.drawImage(canvas2, backCardX, currentY, CARD_W, CARD_H);
 
-    a4Ctx.strokeStyle = '#000000';
-    a4Ctx.lineWidth = 6;
-    a4Ctx.strokeRect(startX, currentY, CARD_W, CARD_H);
-    a4Ctx.strokeRect(backCardX, currentY, CARD_W, CARD_H);
+    if(pvcBorderEnabled.checked){
+      a4Ctx.strokeStyle = '#000000';
+      a4Ctx.lineWidth = Number(pvcBorderSize.value)||6;
+      a4Ctx.strokeRect(startX, currentY, CARD_W, CARD_H);
+      a4Ctx.strokeRect(backCardX, currentY, CARD_W, CARD_H);
+    }
 
     addedCardsCount++;
     }
