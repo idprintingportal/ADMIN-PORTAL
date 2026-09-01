@@ -1064,10 +1064,18 @@
 <div id="pendingScreen" class="auth-box" style="display:none;">
   <h2>Payment Review</h2>
   <p id="pendingStatus"></p>
-  <p>Your portal remains locked until admin approval. If your signup screenshot failed, upload it here.</p>
+  <p>Your portal remains locked until admin approval.</p>
+  <button id="pendingOpenUploadBtn" type="button" class="login-btn">Upload Signup Screenshot</button>
+  <button id="pendingBackBtn" type="button" class="login-btn">Back to Login</button>
+</div>
+<div id="pendingUploadScreen" class="auth-box" style="display:none;">
+  <h2>Replace Signup Screenshot</h2>
+  <p>Registered email verify करें और नया payment screenshot चुनें। नया screenshot पुराने screenshot को replace करेगा।</p>
+  <input id="pendingEmail" type="email" class="login-input" placeholder="Registered email ID" autocomplete="email" maxlength="254">
   <input id="pendingScreenshot" type="file" accept="image/jpeg,image/png,image/webp">
-  <button id="pendingUploadBtn" class="login-btn">Upload Signup Screenshot</button>
-  <button id="pendingBackBtn" class="login-btn">Back to Login</button>
+  <p id="pendingUploadStatus" role="alert"></p>
+  <button id="pendingUploadBtn" type="button" class="login-btn">Send Replacement Screenshot</button>
+  <button id="pendingUploadBackBtn" type="button" class="login-btn">Back</button>
 </div>
 
 
@@ -2080,7 +2088,7 @@
   function showPendingScreen(record,state) {
     activeDistributorSession=null;
     mainApp.style.display='none';loginScreen.style.display='none';renewalScreen.style.display='none';signUpScreen.style.display='none';changePwdScreen.style.display='none';
-    document.getElementById('pendingScreen').style.display='block';
+    document.getElementById('pendingUploadScreen').style.display='none';document.getElementById('pendingScreen').style.display='block';
     document.getElementById('pendingStatus').textContent=state==='rejected'?'Payment rejected. Contact admin or upload corrected proof.':'Your application is awaiting admin approval.';
   }
   async function handleLogin() {
@@ -2143,7 +2151,7 @@
         else {activeDistributorSession=result.record;renderDistributorNotice(result.record);}
       }
     } catch(error) {
-      clearAuth();mainApp.style.display='none';renewalScreen.style.display='none';document.getElementById('pendingScreen').style.display='none';loginScreen.style.display='block';
+      clearAuth();mainApp.style.display='none';renewalScreen.style.display='none';document.getElementById('pendingScreen').style.display='none';document.getElementById('pendingUploadScreen').style.display='none';loginScreen.style.display='block';
       errorMsg.textContent=error.message;errorMsg.style.display='block';
     } finally {checkingSession=false;}
   }
@@ -2966,20 +2974,33 @@
 
 
 
+  document.getElementById('pendingOpenUploadBtn').addEventListener('click',()=>{
+    document.getElementById('pendingScreen').style.display='none';
+    document.getElementById('pendingUploadScreen').style.display='block';
+    document.getElementById('pendingEmail').value=authEmail||'';
+    document.getElementById('pendingScreenshot').value='';
+    document.getElementById('pendingUploadStatus').textContent='';
+    document.getElementById('pendingEmail').focus();
+  });
+  document.getElementById('pendingUploadBackBtn').addEventListener('click',()=>{
+    document.getElementById('pendingUploadScreen').style.display='none';document.getElementById('pendingScreen').style.display='block';
+  });
   document.getElementById('pendingUploadBtn').addEventListener('click', async () => {
-    const button=document.getElementById('pendingUploadBtn');button.disabled=true;
+    const button=document.getElementById('pendingUploadBtn'),status=document.getElementById('pendingUploadStatus');button.disabled=true;
     try {
-      const file=document.getElementById('pendingScreenshot').files[0];
-      if(!file) throw new Error('Choose a screenshot.');
-      const imageData=await preparePaymentScreenshot(file);
-      await secureApi({action:'uploadPaymentScreenshot',imageData});
-      document.getElementById('pendingStatus').textContent='Screenshot saved. Awaiting admin approval.';
-    } catch(error) {document.getElementById('pendingStatus').textContent=error.message;}
+      const email=document.getElementById('pendingEmail').value.trim().toLowerCase(),file=document.getElementById('pendingScreenshot').files[0];
+      if(!email||email!==String(authEmail||'').toLowerCase())throw new Error('Registered login email ID सही भरें।');
+      if(!file)throw new Error('Payment screenshot चुनें।');
+      status.textContent='Screenshot upload हो रहा है…';const imageData=await preparePaymentScreenshot(file);
+      await secureApi({action:'uploadPaymentScreenshot',email,imageData},{timeoutMs:90000});
+      document.getElementById('pendingStatus').textContent='New screenshot replaced the previous screenshot. Awaiting admin approval.';
+      document.getElementById('pendingUploadScreen').style.display='none';document.getElementById('pendingScreen').style.display='block';
+    } catch(error) {status.textContent=error.message;}
     finally {button.disabled=false;}
   });
   document.getElementById('pendingBackBtn').addEventListener('click', () => {
     secureApi({action:'logout'}).catch(()=>{});clearAuth();
-    document.getElementById('pendingScreen').style.display='none';loginScreen.style.display='block';
+    document.getElementById('pendingScreen').style.display='none';document.getElementById('pendingUploadScreen').style.display='none';loginScreen.style.display='block';
   });
 
   document.getElementById('adminUnlockForm').addEventListener('submit',submitAdminUnlock);
