@@ -1418,7 +1418,7 @@
   <button data-np-tool="edit" aria-pressed="true">↖ Edit original text</button><button data-np-tool="text">T Add text</button><button data-np-tool="image">▧ Image / Signature</button><button data-np-tool="highlight">▰ Highlight</button><button data-np-tool="whiteout">▱ Whiteout</button><button data-np-tool="draw">✎ Draw / Sign</button><button id="np-undo">↶ Undo</button><button id="np-redo">↷ Redo</button>
  </div>
  <div class="np-body"><aside class="np-panel">
-  <textarea id="np-text" hidden aria-hidden="true" tabindex="-1" maxlength="2000"></textarea><p class="np-inline-help">नाम/text पर double-click या double-tap करें और सीधे वहीं लिखें। Enter या बाहर click करने पर save होगा।</p>
+  <textarea id="np-text" aria-label="Selected original PDF text" maxlength="2000" rows="4"></textarea><p class="np-inline-help">नीले text box पर double-click करें और उसी original text को बदलें। फिर Apply दबाएँ।</p>
   <label for="np-language">Language</label><select id="np-language"><option value="auto">Auto · Noto fonts</option><option value="en">English</option><option value="hi">हिन्दी · Experimental</option><option value="mr">मराठी · Experimental</option></select>
   <div class="np-fields"><label>Size <input id="np-size" type="number" min="6" max="120" value="18"></label><label>Color <input id="np-color" type="color" value="#111827"></label></div>
   <label for="np-bold">Bold level <output id="np-bold-value" for="np-bold">1 / 5 · Normal</output></label>
