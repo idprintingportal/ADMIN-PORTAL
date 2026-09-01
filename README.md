@@ -2227,7 +2227,7 @@
     }));
   }
 
-  async 
+  
 
   // ==========================================================
   // INDEXEDDB HISTORY STORAGE ENGINE
@@ -4626,7 +4626,7 @@
   }catch(error){if(token===epoch)status('Download नहीं हो सकी: '+error.message);}
   finally{if(token===epoch){busy=false;controls();}}
  };
- window.addEventListener('beforeunload',e=>{if(dirty||(inlineSession&&cleanText(inline.value)!==inlineSession.initial)){e.preventDefault();e.returnValue='';}});
+ window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue='';}});
  window.addEventListener('portal-auth-cleared',reset);
  controls();
 })();
