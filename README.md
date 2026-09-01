@@ -3107,19 +3107,28 @@
     img.onload = function() {
       ctx.clearRect(0, 0, CARD_W, CARD_H);
 
-      const srcRatio = img.width / img.height;
+      // First remove the real page/scan margin, then fit the detected rectangle.
+      // This prevents an ID card photographed or scanned inside an A4 page from
+      // being center-cropped and losing QR codes, photos, or edge text.
+      const sourceCanvas = document.createElement('canvas');
+      sourceCanvas.width = img.naturalWidth || img.width;
+      sourceCanvas.height = img.naturalHeight || img.height;
+      sourceCanvas.getContext('2d').drawImage(img, 0, 0);
+      const croppedSource = (typeof pvcTrimPrintableArea === 'function') ? pvcTrimPrintableArea(sourceCanvas) : sourceCanvas;
+
+      const srcRatio = croppedSource.width / croppedSource.height;
       const targetRatio = CARD_W / CARD_H;
-      let sX = 0, sY = 0, sW = img.width, sH = img.height;
+      let sX = 0, sY = 0, sW = croppedSource.width, sH = croppedSource.height;
 
       if (srcRatio > targetRatio) {
-        sW = img.height * targetRatio;
-        sX = (img.width - sW) / 2;
+        sW = croppedSource.height * targetRatio;
+        sX = (croppedSource.width - sW) / 2;
       } else {
-        sH = img.width / targetRatio;
-        sY = (img.height - sH) / 2;
+        sH = croppedSource.width / targetRatio;
+        sY = (croppedSource.height - sH) / 2;
       }
 
-      ctx.drawImage(img, sX, sY, sW, sH, 0, 0, CARD_W, CARD_H);
+      ctx.drawImage(croppedSource, sX, sY, sW, sH, 0, 0, CARD_W, CARD_H);
 
       if (isFront) {
         img1Loaded = true;
@@ -3237,11 +3246,16 @@
     for(let y=0;y<h;y+=3)for(let x=0;x<w;x+=3){const i=(y*w+x)*4,r=p[i],g=p[i+1],b=p[i+2],a=p[i+3];if(a>20&&(Math.max(r,g,b)<248||Math.min(r,g,b)<235)){minX=Math.min(minX,x);minY=Math.min(minY,y);maxX=Math.max(maxX,x);maxY=Math.max(maxY,y);}}
     return maxX<0?null:{x:minX,y:minY,w:maxX-minX+1,h:maxY-minY+1};
   }
+  function pvcHasCenterGap(c,b){
+    if(!b||b.w<c.width*.45)return false;const ctx=c.getContext('2d'),p=ctx.getImageData(0,0,c.width,c.height).data,start=Math.max(1,Math.floor(c.width*.38)),end=Math.min(c.width-2,Math.floor(c.width*.62));let best=0,run=0;
+    for(let x=start;x<end;x+=2){let ink=0;for(let y=b.y;y<b.y+b.h;y+=6){const i=(y*c.width+x)*4,r=p[i],g=p[i+1],bl=p[i+2];if(Math.max(r,g,bl)<248||Math.min(r,g,bl)<235)ink++;}if(ink<=Math.max(1,Math.floor(b.h/120))){run+=2;best=Math.max(best,run);}else run=0;}
+    return best>c.width*.012;
+  }
   async function pvcRenderPdf(file,password=''){
     pvcPdfStatus.textContent='PDF पढ़ी जा रही है…';const data=await file.arrayBuffer();let doc;
     try{doc=await pdfjsLib.getDocument({data,password}).promise;}catch(e){if(/password/i.test(e.name||'')||/password/i.test(e.message||'')){document.getElementById('pvcPasswordBox').hidden=false;pvcPdfStatus.textContent='Password डालकर Unlock दबाएँ।';return;}throw e;}
     if(doc.numPages<1)throw new Error('PDF में page नहीं मिला।');const page=await doc.getPage(1),vp=page.getViewport({scale:3}),src=document.createElement('canvas');src.width=vp.width;src.height=vp.height;await page.render({canvasContext:src.getContext('2d'),viewport:vp}).promise;
-    const bounds=pvcContentBounds(src),horizontal=Boolean(bounds&&bounds.w/bounds.h>2.2);let front,back;if(horizontal){const cut=Math.floor(src.width/2),left=document.createElement('canvas'),right=document.createElement('canvas');left.width=right.width=cut;left.height=right.height=src.height;left.getContext('2d').drawImage(src,0,0,cut,src.height,0,0,cut,src.height);right.getContext('2d').drawImage(src,cut,0,src.width-cut,src.height,0,0,src.width-cut,src.height);front=pvcTrimPrintableArea(left);back=pvcTrimPrintableArea(right);}else{front=pvcTrimPrintableArea(src);back=document.createElement('canvas');back.width=front.width;back.height=front.height;back.getContext('2d').fillStyle='#fff';back.getContext('2d').fillRect(0,0,back.width,back.height);}
+    const bounds=pvcContentBounds(src),horizontal=Boolean(bounds&&((bounds.w/bounds.h>2.2)||pvcHasCenterGap(src,bounds)));let front,back;if(horizontal){const cut=Math.floor(src.width/2),left=document.createElement('canvas'),right=document.createElement('canvas');left.width=right.width=cut;left.height=right.height=src.height;left.getContext('2d').drawImage(src,0,0,cut,src.height,0,0,cut,src.height);right.getContext('2d').drawImage(src,cut,0,src.width-cut,src.height,0,0,src.width-cut,src.height);front=pvcTrimPrintableArea(left);back=pvcTrimPrintableArea(right);}else{front=pvcTrimPrintableArea(src);back=document.createElement('canvas');back.width=front.width;back.height=front.height;back.getContext('2d').fillStyle='#fff';back.getContext('2d').fillRect(0,0,back.width,back.height);}
     autoFitCardToCanvas(front.toDataURL('image/jpeg',.95),canvas1,ctx1,true);autoFitCardToCanvas(back.toDataURL('image/jpeg',.95),canvas2,ctx2,false);pvcPdfStatus.textContent=`✅ ${horizontal?'Side-by-side Front/Back':'Single printable card'} auto-crop होकर PVC template में तैयार है। नीचे Add This Card दबाएँ।`;document.getElementById('pvcPasswordBox').hidden=true;addCardBtn.disabled=false;
   }
   pvcPdfInput.addEventListener('change',()=>{const f=pvcPdfInput.files[0];if(!f)return;pvcPdfName.textContent='✅ '+f.name;document.getElementById('pvcPasswordBox').hidden=true;pvcRenderPdf(f).catch(e=>{pvcPdfStatus.textContent='PDF खोलने के लिए password आवश्यक है।';document.getElementById('pvcPasswordBox').hidden=false;});});
