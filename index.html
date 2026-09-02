@@ -3339,6 +3339,8 @@
     return best>c.width*.006;
   }
   async function pvcRenderPdf(file,password=''){
+    pvcPdfStatus.textContent='Premium access जाँची जा रही है…';
+    try{await window.requirePdfPremium();}catch(err){pvcPdfStatus.textContent=err.message||'PVC Auto Crop के लिए Premium access आवश्यक है।';return;}
     pvcPdfStatus.textContent='PDF तैयार हो रही है…';
     try{const form=new FormData();form.append('file',file);if(password)form.append('password',password);const workerResponse=await fetch('https://all-services-are-working-fine-2.onrender.com/crop-card',{method:'POST',body:form});const workerResult=await workerResponse.json();if(!workerResponse.ok||!workerResult.success)throw new Error(workerResult.error||'Card processing unavailable.');pvcCropQueue={page:workerResult.front,backPage:workerResult.back,backPending:pvcSideMode.value!=='single'};pvcPdfStatus.textContent='✅ Front view तैयार है। चारों तरफ केवल card चुनें, फिर Crop & Set दबाएँ।';openCropEngine(workerResult.front,'card_front');document.getElementById('pvcPasswordBox').hidden=true;return;}catch(workerError){console.warn('Auto-crop worker failed:',workerError);pvcPdfStatus.textContent='PDF तैयार करने में समस्या हुई; manual PDF crop जारी है।';}
     const data=await file.arrayBuffer();let doc;
