@@ -64,6 +64,35 @@ def split_cards(image: Image.Image):
     return front, back, "side-by-side"
 
 
+def template_boxes(filename: str):
+    """Return verified PDF-point boxes for known sample layouts.
+    Coordinates are converted to pixels after rendering; they are not raw
+    1200-DPI pixel values.
+    """
+    name = (filename or "").lower().replace("_", " ").replace("-", " ")
+    if "e shram" in name or "eshram" in name:
+        return [(35, 45, 560, 340)]
+    if "maandhan" in name or "mandhan" in name:
+        return [(40, 50, 555, 350)]
+    if "aadhaar" in name or "eaadhaar" in name or "aadhar" in name:
+        return [(35, 715, 295, 970), (510, 715, 770, 970)]
+    if "pan" in name or "signed" in name:
+        return [(50, 380, 545, 625), (50, 680, 545, 925)]
+    return None
+
+
+def crop_pdf_box(image: Image.Image, box, page_rect):
+    """Crop a PDF-point rectangle from a rendered image."""
+    sx = image.width / max(1, float(page_rect.width))
+    sy = image.height / max(1, float(page_rect.height))
+    x0, y0, x1, y1 = box
+    px = (round(x0 * sx), round(y0 * sy), round(x1 * sx), round(y1 * sy))
+    px = (max(0, px[0]), max(0, px[1]), min(image.width, px[2]), min(image.height, px[3]))
+    if px[2] <= px[0] or px[3] <= px[1]:
+        raise ValueError("Configured card box is outside this PDF page.")
+    return image.crop(px)
+
+
 def png_data(image: Image.Image) -> str:
     out = io.BytesIO()
     # Low compression level is materially faster for temporary API previews;
@@ -94,7 +123,17 @@ def crop_card():
         except Exception:
             pixmap = page.get_pixmap(dpi=600, alpha=False)
         image = Image.open(io.BytesIO(pixmap.tobytes("png"))).convert("RGB")
-        front, back, layout = split_cards(image)
+        boxes = template_boxes(uploaded.filename)
+        if boxes:
+            front = trim_content(crop_pdf_box(image, boxes[0], page.rect), padding=8)
+            if len(boxes) > 1:
+                back = trim_content(crop_pdf_box(image, boxes[1], page.rect), padding=8)
+                layout = "template-front-back"
+            else:
+                back = Image.new("RGB", front.size, "white")
+                layout = "template-single"
+        else:
+            front, back, layout = split_cards(image)
         return jsonify({"success": True, "layout": layout,
                         "page": "data:image/png;base64," + png_data(image),
                         "front": "data:image/png;base64," + png_data(front),
