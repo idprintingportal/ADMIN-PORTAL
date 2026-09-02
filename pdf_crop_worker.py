@@ -3,7 +3,10 @@ import base64
 import io
 import fitz
 from PIL import Image, ImageChops
-
+import os
+import subprocess
+import tempfile
+from flask import send_file
 app = Flask(__name__)
 
 @app.after_request
