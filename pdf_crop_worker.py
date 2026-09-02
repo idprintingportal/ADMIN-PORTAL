@@ -66,7 +66,10 @@ def split_cards(image: Image.Image):
 
 def png_data(image: Image.Image) -> str:
     out = io.BytesIO()
-    image.save(out, "PNG", optimize=True)
+    # Low compression level is materially faster for temporary API previews;
+    # the source pixels remain lossless and the final PVC export is handled by
+    # the browser canvas.
+    image.save(out, "PNG", optimize=False, compress_level=1)
     return base64.b64encode(out.getvalue()).decode("ascii")
 
 
@@ -83,8 +86,9 @@ def crop_card():
         if document.page_count == 0:
             return jsonify(error="PDF has no pages."), 400
         page = document.load_page(0)
-        # Render at print quality. A source PDF cannot gain new detail, but this
-        # preserves the maximum available detail for the downstream PVC export.
+        # Keep the source detail for the crop/export pipeline. The worker must
+        # not reduce the downloaded card quality, so the normal path remains
+        # 1200 DPI; 600 DPI is only an emergency fallback for large pages.
         try:
             pixmap = page.get_pixmap(dpi=1200, alpha=False)
         except Exception:
