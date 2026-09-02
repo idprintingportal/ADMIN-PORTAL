@@ -923,6 +923,9 @@
 #tab-pdf-editor #pe-empty span{font-size:62px;color:#42bdd0}
 #tab-pdf-editor #pe-empty h2{font-size:20px;margin:15px 0}
 #tab-pdf-editor #pe-status{padding:13px 20px;border-top:1px solid #34435c;font-size:12px;color:#9de0ed}
+#tab-pdf-editor #pe-progress{height:4px;background:#22324b;overflow:hidden;display:none}
+#tab-pdf-editor #pe-progress i{display:block;height:100%;width:35%;background:linear-gradient(90deg,#43c4d4,#a78bfa);animation:peProgress 1.15s ease-in-out infinite}
+@keyframes peProgress{0%{transform:translateX(-120%)}100%{transform:translateX(330%)}}
 #tab-pdf-editor #pe-source-layer{position:absolute;inset:0;z-index:2;pointer-events:none}
 #tab-pdf-editor #pe-source-layer button{position:absolute;padding:0;border:1px dashed #0284c7;background:#0ea5e91a;border-radius:0;pointer-events:auto;min-width:6px;min-height:6px}
 #tab-pdf-editor #pe-source-layer button:hover,#tab-pdf-editor #pe-source-layer button:focus{background:#0ea5e94d;border:2px solid #0369a1}
@@ -944,6 +947,7 @@
 .front-home .front-search{display:block;width:min(680px,calc(100% - 48px));margin:0 auto 40px;padding:17px 24px;border:1px solid #e2e6ef;border-radius:18px;background:#fff;color:#64748b;box-shadow:0 8px 18px #17203318;text-align:left;font-size:15px;outline:0}.front-home .front-search:focus{border-color:#5577e8;box-shadow:0 10px 24px #5577e844}
 .front-home .front-services{display:grid;grid-template-columns:repeat(5,1fr);gap:22px;margin:0 48px 40px}.front-home .front-services h3{grid-column:1/-1;font-size:24px;margin:0;color:#18243c;border-left:4px solid #4c6fe4;padding-left:10px}.front-home .service-tile{min-height:145px;border:1px solid #cfe4df;border-radius:22px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;color:#172033;font-weight:700;box-shadow:0 5px 12px #1720330b;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s}.front-home .service-tile:hover,.front-home .service-tile:focus-visible{transform:translateY(-6px);border-color:#5b78e8;box-shadow:0 14px 28px #5577e844;outline:0}.front-home .service-tile span{font-size:39px}.front-home .service-tile small{font-size:14px}.front-home .legacy-front{display:none}
 .front-home{background:linear-gradient(135deg,#eef6ff 0%,#f8f4ff 48%,#ecfff8 100%)!important}.front-home .front-nav{justify-content:flex-start;padding:0 28px;gap:0;background:rgba(255,255,255,.88);backdrop-filter:blur(12px)}.front-home .front-nav strong{font-size:20px;color:#173b72!important;display:flex;align-items:center;gap:10px}.front-home .front-nav strong:before{content:'OP';display:inline-grid;place-items:center;width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;font-size:12px;font-weight:900;box-shadow:0 6px 14px #4f46e566}.front-home .front-nav>span{display:none}.front-home .front-hero{background:linear-gradient(120deg,#155eaa,#4338a8 55%,#087f71);box-shadow:0 18px 35px #3156bd33}.front-home .front-menu-btn{font-size:22px;padding:11px 16px}.front-home .front-services{grid-template-columns:repeat(4,1fr)}.front-home .front-services h3{border-left-color:#10b981}.change-password-link{display:block!important;width:min(420px,100%);margin:18px auto 0;padding:14px 18px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff!important;text-align:center;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 8px 18px #3156bd33}
+.tab-btn,.pdf-tools-menu button,.action-btn,.login-btn{min-height:44px!important;padding:11px 16px!important;font-size:14px!important;font-weight:700!important;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}.tab-btn:hover,.pdf-tools-menu button:hover,.action-btn:hover,.login-btn:hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 8px 18px #38bdf844}.pdf-tools-menu button{min-height:50px!important;font-size:13px!important}.front-home .service-tile{animation:opFloatIn .45s ease both}.front-home .service-tile:nth-child(3){animation-delay:.05s}.front-home .service-tile:nth-child(4){animation-delay:.1s}.front-home .service-tile:nth-child(5){animation-delay:.15s}.front-home .service-tile:nth-child(6){animation-delay:.2s}@keyframes opFloatIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @media(max-width:900px){.front-home .front-services{grid-template-columns:repeat(3,1fr);margin:0 22px}.front-home .front-hero{margin:42px 22px 30px}.front-home .front-hero h1{font-size:31px}.front-home .front-nav{gap:14px}.front-home .front-nav .front-icons{margin-left:8px}}
 @media(max-width:520px){.front-home .front-services{grid-template-columns:repeat(2,1fr);gap:12px}.front-home .front-services h3{font-size:20px}.front-home .front-hero h1{font-size:25px}.front-home .front-hero p{font-size:13px}}
 @media(max-width:720px){#tab-pdf-editor .pe-heading{padding:16px;align-items:flex-start;flex-direction:column}#tab-pdf-editor .pe-workspace{grid-template-columns:minmax(0,1fr)}#tab-pdf-editor .pe-sidebar{border-right:0;border-bottom:1px solid #34435c}#tab-pdf-editor .pe-sidebar p,#tab-pdf-editor .pe-sidebar hr,#tab-pdf-editor .pe-sidebar h3{display:none}#tab-pdf-editor #pe-scroll{height:520px;padding:12px}#tab-pdf-editor .pe-toolbar{gap:5px}#tab-pdf-editor .pe-toolbar button{padding:8px;font-size:11px}}
@@ -1489,7 +1493,7 @@
  <section class="pe-shell" aria-label="PDF Editor">
   <header class="pe-heading"><div><span class="pe-eyebrow">DOCUMENT TOOLS</span><h1>PDF Editor</h1><p>Text, signatures और images जोड़ें — आपकी PDF इसी browser में रहती है।</p></div><button id="pe-download" class="pe-primary" disabled>↓ Download PDF</button></header>
   <div class="pe-filebar"><button id="pe-open" class="pe-primary">＋ Open PDF</button><input id="pe-file" type="file" accept="application/pdf,.pdf" hidden><span id="pe-filename">कोई PDF नहीं चुनी है · अधिकतम 50 MB / 150 pages</span><button id="pe-close" disabled>Close document</button></div>
-<div id="pe-status" role="status" aria-live="polite">Ready · PDF libraries लोड करने के लिए internet चाहिए।</div>
+<div id="pe-progress" aria-hidden="true"><i></i></div><div id="pe-status" role="status" aria-live="polite">Ready · PDF libraries लोड करने के लिए internet चाहिए।</div>
   <p class="pe-notice"><strong>Replace original text</strong> से text चुनें और sidebar में बदलें। English / हिन्दी / मराठी समर्थित हैं। यह visual replacement है, मूल font/reflow editing नहीं। Replacement या locked PDF की download image-based होगी: text search/select नहीं होगा। Scanned PDF को OCR चाहिए। Whiteout को secure redaction न मानें।</p>
   <dialog id="pe-password-dialog"><form id="pe-password-form"><h2>🔒 Password-protected PDF</h2><p id="pe-password-message">इस PDF का password डालें।</p><label for="pe-password">PDF password</label><input id="pe-password" type="password" autocomplete="off" required><p>Password केवल इसी browser में इस्तेमाल होगा; save/upload नहीं किया जाएगा।</p><div class="pe-row"><button type="button" id="pe-password-cancel">Cancel</button><button type="submit" class="pe-primary">Unlock PDF</button></div></form></dialog>
   <dialog id="pe-export-dialog"><h2>Image-based PDF download</h2><p>इस copy में password, searchable text, links, form fields और digital signatures नहीं रहेंगे। Original file नहीं बदलेगी। आगे बढ़ें?</p><div class="pe-row"><button id="pe-export-cancel">Cancel download</button><button id="pe-export-ok" class="pe-primary">Download image-based PDF</button></div></dialog>
@@ -1606,6 +1610,7 @@
             </label>
             <span style="color:var(--accent-blue);">DPI: 300 (for mm/cm)</span>
           </div>
+          <div style="margin:14px auto 0;max-width:520px;text-align:center;color:var(--text-muted);font-size:12px;">Target JPG size: <output id="resizerKbValue">200 KB</output><input id="resizerKbSlider" type="range" min="10" max="2048" value="200" step="10" style="width:100%;margin-top:6px;"><small>Quality is adjusted automatically; PNG remains lossless.</small></div>
         </div>
 
         <div class="preview-container">
@@ -2132,7 +2137,11 @@
   document.getElementById('frontLoginBtn').addEventListener('click',()=>{document.getElementById('frontMenu').classList.remove('open');document.getElementById('loginEmail').focus();});
   document.getElementById('frontJoinBtn').addEventListener('click',()=>{document.getElementById('frontMenu').classList.remove('open');document.getElementById('goToSignUp').click();});
   document.getElementById('frontLanguageSelect').addEventListener('change',event=>{const lang=event.target.value;const copy={en:{hero:'Launch Your Digital Operations With',sub:'All-in-one platform for seamless online printing and digital services.',services:'Essential Services'},hi:{hero:'अपना डिजिटल काम आसानी से करें',sub:'ऑनलाइन प्रिंटिंग और डिजिटल सेवाओं का एक आसान प्लेटफॉर्म।',services:'जरूरी सेवाएँ'},mr:{hero:'तुमचे डिजिटल काम सहज करा',sub:'ऑनलाइन प्रिंटिंग आणि डिजिटल सेवांसाठी एक सोपे प्लॅटफॉर्म.',services:'महत्त्वाच्या सेवा'}}[lang];const hero=document.querySelector('.front-hero h1'),sub=document.querySelector('.front-hero p'),heading=document.querySelector('.front-services h3');if(hero)hero.innerHTML=copy.hero+'<br>OP Printing Hub';if(sub)sub.textContent=copy.sub;if(heading)heading.textContent=copy.services;});
+  document.getElementById('frontLanguageSelect').addEventListener('change',e=>{document.getElementById('portalLanguageSelect').value=e.target.value;applyPortalLanguage(e.target.value);});
   document.getElementById('portalLanguageSelect').addEventListener('change',event=>{const lang=event.target.value;document.documentElement.lang=lang==='hi'?'hi':lang==='mr'?'mr':'en';document.querySelectorAll('#portalLanguageSelect,#frontLanguageSelect').forEach(select=>select.value=lang);});
+  const opTranslations={hi:{'ID Card (5 Slots)':'आईडी कार्ड (5 स्लॉट)','Passport Photos':'पासपोर्ट फोटो','Name & Date Passport':'नाम और तारीख पासपोर्ट','4×6 Photo Print':'4×6 फोटो प्रिंट','PDF Editor':'पीडीएफ एडिटर','PDF Arranger':'पीडीएफ अरेंजर','Image Resizer':'इमेज रिसाइजर','PDF Compressor':'पीडीएफ कंप्रेसर','History':'इतिहास','PDF Tools':'पीडीएफ टूल्स','Download JPG Image':'JPG डाउनलोड करें','Download PNG Image':'PNG डाउनलोड करें'},mr:{'ID Card (5 Slots)':'आयडी कार्ड (5 स्लॉट)','Passport Photos':'पासपोर्ट फोटो','Name & Date Passport':'नाव आणि तारीख पासपोर्ट','4×6 Photo Print':'4×6 फोटो प्रिंट','PDF Editor':'पीडीएफ एडिटर','PDF Arranger':'पीडीएफ अरेंजर','Image Resizer':'इमेज रिसायझर','PDF Compressor':'पीडीएफ कंप्रेसर','History':'इतिहास','PDF Tools':'पीडीएफ टूल्स','Download JPG Image':'JPG डाउनलोड करा','Download PNG Image':'PNG डाउनलोड करा'}};
+  const opOriginalLabels=new WeakMap();function applyPortalLanguage(lang){document.querySelectorAll('#mainApp .tab-btn,#pdfToolsBtn,#pdfToolsMenu button,#downloadResizedJpgBtn,#downloadResizedPngBtn').forEach(el=>{if(!opOriginalLabels.has(el))opOriginalLabels.set(el,el.textContent);const original=opOriginalLabels.get(el),key=Object.keys(opTranslations.en||{}).find(k=>original.includes(k))||Object.keys(opTranslations.hi).find(k=>original.includes(k));el.textContent=(lang!=='en'&&key&&opTranslations[lang][key])?opTranslations[lang][key]:original;});}
+  document.getElementById('portalLanguageSelect').addEventListener('change',e=>applyPortalLanguage(e.target.value));
   function applyMaintenance(settings){const banner=document.getElementById('maintenanceBanner');if(!banner)return;const active=settings&&settings.enabled===true;if(active){document.getElementById('maintenanceBannerText').textContent=settings.message||'Portal maintenance चल रहा है। कृपया बाद में प्रयास करें।';banner.hidden=false;}else banner.hidden=true;}
   document.getElementById('saveMaintenanceBtn').addEventListener('click',async()=>{const s=document.getElementById('maintenanceStatus'),b=document.getElementById('saveMaintenanceBtn');b.disabled=true;s.textContent='Saving…';try{const r=await secureApi({action:'setMaintenance',enabled:document.getElementById('maintenanceEnabled').checked,start:document.getElementById('maintenanceStart').value,end:document.getElementById('maintenanceEnd').value,message:document.getElementById('maintenanceMessage').value});applyMaintenance(r.maintenance);s.textContent='✅ Saved';}catch(e){s.textContent='❌ '+e.message;}finally{b.disabled=false;}});
   document.getElementById('pdfToolsBtn').addEventListener('click',()=>document.getElementById('pdfToolsMenu').classList.toggle('open'));
@@ -4317,17 +4326,21 @@
     updateResizerCanvas();
   }
 
-  document.getElementById('downloadResizedJpgBtn').addEventListener('click', () => {
+  document.getElementById('resizerKbSlider').addEventListener('input',e=>document.getElementById('resizerKbValue').textContent=e.target.value+' KB');
+  async function resizedJpegForTarget(targetKB){let q=.95,blob=await new Promise(r=>resizerCanvas.toBlob(r,'image/jpeg',q));while(blob&&blob.size/1024>targetKB&&q>.35){q=Math.max(.35,q-.05);blob=await new Promise(r=>resizerCanvas.toBlob(r,'image/jpeg',q));}return blob;}
+  document.getElementById('downloadResizedJpgBtn').addEventListener('click', async () => {
     if (!originalResizerImg) return;
     const dims = getPixelDimensions();
-    const dataUrl = resizerCanvas.toDataURL('image/jpeg', 0.95);
+    const blob = await resizedJpegForTarget(Number(document.getElementById('resizerKbSlider').value)||200);
+    const dataUrl = URL.createObjectURL(blob);
     const fileName = `Resized_${dims.width}x${dims.height}px.jpg`;
     
     const link = document.createElement('a');
     link.href = dataUrl;
     link.download = fileName;
     link.click();
-    saveToHistory('Image Resizer (JPG)', fileName, dataUrl, 'image/jpeg');
+    saveToHistory('Image Resizer (JPG)', fileName, blob, 'image/jpeg');
+    setTimeout(()=>URL.revokeObjectURL(dataUrl),1000);
   });
 
   document.getElementById('downloadResizedPngBtn').addEventListener('click', () => {
@@ -5849,7 +5862,7 @@ try {
   })().catch(err=>{enginePromise=null;throw err;});
   return enginePromise;
  }
- async function job(fn,authorize=true){if(busy)return;busy=true;buttons();const ticket=epoch;try{if(authorize)await window.requirePdfPremium();if(ticket!==epoch)return false;return await fn(ticket);}catch(err){if(ticket===epoch)say(err.message||'Operation failed.');return false;}finally{if(ticket===epoch){busy=false;buttons();}}}
+ async function job(fn,authorize=true){if(busy)return;busy=true;buttons();const progress=$('pe-progress');if(progress)progress.style.display='block';const ticket=epoch;try{say(authorize?'Checking access…':'Processing PDF…');await new Promise(requestAnimationFrame);if(authorize)await window.requirePdfPremium();if(ticket!==epoch)return false;return await fn(ticket);}catch(err){if(ticket===epoch)say(err.message||'Operation failed.');return false;}finally{if(ticket===epoch){busy=false;buttons();if(progress)progress.style.display='none';}}}
  function passwordPrompt(message){$('password-message').textContent=message;$('password').value='';$('password-dialog').showModal();$('password').focus();return new Promise(r=>passwordResolve=r);}
  function finishPassword(value){if($('password-dialog').open)$('password-dialog').close();$('password').value='';const r=passwordResolve;passwordResolve=null;if(r)r(value);}
  $('password-form').onsubmit=e=>{e.preventDefault();finishPassword($('password').value);};
