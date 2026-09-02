@@ -950,6 +950,15 @@
 .tab-btn,.pdf-tools-menu button,.action-btn,.login-btn{min-height:44px!important;padding:11px 16px!important;font-size:14px!important;font-weight:700!important;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}.tab-btn:hover,.pdf-tools-menu button:hover,.action-btn:hover,.login-btn:hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 8px 18px #38bdf844}.pdf-tools-menu button{min-height:50px!important;font-size:13px!important}.front-home .service-tile{animation:opFloatIn .45s ease both}.front-home .service-tile:nth-child(3){animation-delay:.05s}.front-home .service-tile:nth-child(4){animation-delay:.1s}.front-home .service-tile:nth-child(5){animation-delay:.15s}.front-home .service-tile:nth-child(6){animation-delay:.2s}@keyframes opFloatIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @media(max-width:900px){.front-home .front-services{grid-template-columns:repeat(3,1fr);margin:0 22px}.front-home .front-hero{margin:42px 22px 30px}.front-home .front-hero h1{font-size:31px}.front-home .front-nav{gap:14px}.front-home .front-nav .front-icons{margin-left:8px}}
 @media(max-width:520px){.front-home .front-services{grid-template-columns:repeat(2,1fr);gap:12px}.front-home .front-services h3{font-size:20px}.front-home .front-hero h1{font-size:25px}.front-home .front-hero p{font-size:13px}}
+.portal-main-heading,#frontServiceSearch,.front-services .service-tile:first-of-type{display:none!important}
+body:has(#loginScreen.front-home){background:#edf3f8!important}
+.front-home{background:#edf3f8!important}
+.front-home .front-nav{position:relative;z-index:30;background:#ffffff}
+.front-home .front-menu-wrap{z-index:40}
+.front-home .front-menu{z-index:50;top:52px;right:0;min-width:210px}
+.top-reg-nav{z-index:60}
+#loginScreen .top-reg-nav{display:block!important;margin:12px auto 0;text-align:center}
+#loginScreen .top-reg-nav .top-reg-btn{font-size:14px;padding:12px 18px}
 @media(max-width:720px){#tab-pdf-editor .pe-heading{padding:16px;align-items:flex-start;flex-direction:column}#tab-pdf-editor .pe-workspace{grid-template-columns:minmax(0,1fr)}#tab-pdf-editor .pe-sidebar{border-right:0;border-bottom:1px solid #34435c}#tab-pdf-editor .pe-sidebar p,#tab-pdf-editor .pe-sidebar hr,#tab-pdf-editor .pe-sidebar h3{display:none}#tab-pdf-editor #pe-scroll{height:520px;padding:12px}#tab-pdf-editor .pe-toolbar{gap:5px}#tab-pdf-editor .pe-toolbar button{padding:8px;font-size:11px}}
 
 </style>
@@ -1749,13 +1758,16 @@
       <div class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">Master Administrator Panel <button id="lockAdminPanelBtn" type="button" class="login-btn">🔒 Lock Panel</button></div>
       <h1 style="color: #fbbf24;">Cloud Distributor Management</h1>
       <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। डिस्ट्रीब्यूटर की वैलिडिटी 30 दिनों की होगी और डेटा सुरक्षित रहेगा।</p>
-      <div class="control-panel" style="max-width:700px;text-align:left;margin-bottom:25px;border-color:#f59e0b;">
-        <h3 style="font-size:14px;color:#fbbf24;margin-bottom:12px;">🛠️ Portal Maintenance</h3>
-        <label style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><input type="checkbox" id="maintenanceEnabled"> Maintenance mode चालू करें</label>
+      <div style="max-width:700px;text-align:left;margin-bottom:25px;">
+        <button id="openMaintenanceSettingsBtn" type="button" class="action-btn btn-add">🛠️ Maintenance Settings</button>
+      </div>
+      <dialog id="maintenanceSettingsDialog" style="max-width:620px;width:calc(100% - 32px);border:1px solid #f59e0b;border-radius:14px;padding:22px;background:#172338;color:#fff;">
+        <h3 style="font-size:16px;color:#fbbf24;margin:0 0 14px;">🛠️ Portal Maintenance</h3>
+        <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><input type="checkbox" id="maintenanceEnabled"> Maintenance mode चालू करें</label>
         <div style="display:flex;gap:10px;flex-wrap:wrap;"><label>Start <input id="maintenanceStart" class="text-field-input" type="datetime-local"></label><label>End <input id="maintenanceEnd" class="text-field-input" type="datetime-local"></label></div>
         <input id="maintenanceMessage" class="text-field-input" style="max-width:100%;margin-top:10px" value="Portal maintenance चल रहा है। कृपया बाद में प्रयास करें।" placeholder="Distributor को दिखने वाला message">
-        <button id="saveMaintenanceBtn" type="button" class="action-btn btn-add" style="margin-top:10px">💾 Save Maintenance Settings</button><span id="maintenanceStatus" style="font-size:12px;margin-left:10px"></span>
-      </div>
+        <div style="margin-top:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><button id="saveMaintenanceBtn" type="button" class="action-btn btn-add">💾 Save Settings</button><button id="closeMaintenanceSettingsBtn" type="button" class="action-btn">Close</button><span id="maintenanceStatus" style="font-size:12px"></span></div>
+      </dialog>
 
       <div class="control-panel" style="max-width: 500px; text-align: left; margin-bottom: 25px;">
         <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 12px;">➕ Add New Distributor</h3>
@@ -2134,6 +2146,7 @@
     const q=event.target.value.trim().toLocaleLowerCase();document.querySelectorAll('.front-home .service-tile').forEach(tile=>{tile.hidden=!!q&&!tile.textContent.toLocaleLowerCase().includes(q);});
   });
   document.getElementById('frontMenuBtn').addEventListener('click',()=>{const menu=document.getElementById('frontMenu'),open=menu.classList.toggle('open');document.getElementById('frontMenuBtn').setAttribute('aria-expanded',String(open));});
+  const helpNav=document.getElementById('topNavRegistrationBox'),changePwd=document.getElementById('goToChangePwd');if(helpNav&&changePwd)changePwd.parentElement.appendChild(helpNav);
   document.getElementById('frontLoginBtn').addEventListener('click',()=>{document.getElementById('frontMenu').classList.remove('open');document.getElementById('loginEmail').focus();});
   document.getElementById('frontJoinBtn').addEventListener('click',()=>{document.getElementById('frontMenu').classList.remove('open');document.getElementById('goToSignUp').click();});
   document.getElementById('frontLanguageSelect').addEventListener('change',event=>{const lang=event.target.value;const copy={en:{hero:'Launch Your Digital Operations With',sub:'All-in-one platform for seamless online printing and digital services.',services:'Essential Services'},hi:{hero:'अपना डिजिटल काम आसानी से करें',sub:'ऑनलाइन प्रिंटिंग और डिजिटल सेवाओं का एक आसान प्लेटफॉर्म।',services:'जरूरी सेवाएँ'},mr:{hero:'तुमचे डिजिटल काम सहज करा',sub:'ऑनलाइन प्रिंटिंग आणि डिजिटल सेवांसाठी एक सोपे प्लॅटफॉर्म.',services:'महत्त्वाच्या सेवा'}}[lang];const hero=document.querySelector('.front-hero h1'),sub=document.querySelector('.front-hero p'),heading=document.querySelector('.front-services h3');if(hero)hero.innerHTML=copy.hero+'<br>OP Printing Hub';if(sub)sub.textContent=copy.sub;if(heading)heading.textContent=copy.services;});
@@ -2143,6 +2156,9 @@
   const opOriginalLabels=new WeakMap();function applyPortalLanguage(lang){document.querySelectorAll('#mainApp .tab-btn,#pdfToolsBtn,#pdfToolsMenu button,#downloadResizedJpgBtn,#downloadResizedPngBtn').forEach(el=>{if(!opOriginalLabels.has(el))opOriginalLabels.set(el,el.textContent);const original=opOriginalLabels.get(el),key=Object.keys(opTranslations.en||{}).find(k=>original.includes(k))||Object.keys(opTranslations.hi).find(k=>original.includes(k));el.textContent=(lang!=='en'&&key&&opTranslations[lang][key])?opTranslations[lang][key]:original;});}
   document.getElementById('portalLanguageSelect').addEventListener('change',e=>applyPortalLanguage(e.target.value));
   function applyMaintenance(settings){const banner=document.getElementById('maintenanceBanner');if(!banner)return;const active=settings&&settings.enabled===true;if(active){document.getElementById('maintenanceBannerText').textContent=settings.message||'Portal maintenance चल रहा है। कृपया बाद में प्रयास करें।';banner.hidden=false;}else banner.hidden=true;}
+  document.getElementById('openMaintenanceSettingsBtn').addEventListener('click',()=>document.getElementById('maintenanceSettingsDialog').showModal());
+  document.getElementById('closeMaintenanceSettingsBtn').addEventListener('click',()=>document.getElementById('maintenanceSettingsDialog').close());
+  document.getElementById('maintenanceSettingsDialog').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.close();});
   document.getElementById('saveMaintenanceBtn').addEventListener('click',async()=>{const s=document.getElementById('maintenanceStatus'),b=document.getElementById('saveMaintenanceBtn');b.disabled=true;s.textContent='Saving…';try{const r=await secureApi({action:'setMaintenance',enabled:document.getElementById('maintenanceEnabled').checked,start:document.getElementById('maintenanceStart').value,end:document.getElementById('maintenanceEnd').value,message:document.getElementById('maintenanceMessage').value});applyMaintenance(r.maintenance);s.textContent='✅ Saved';}catch(e){s.textContent='❌ '+e.message;}finally{b.disabled=false;}});
   document.getElementById('pdfToolsBtn').addEventListener('click',()=>document.getElementById('pdfToolsMenu').classList.toggle('open'));
   document.querySelectorAll('[data-pdf-tab]').forEach(btn=>btn.addEventListener('click',()=>{document.getElementById('pdfToolsMenu').classList.remove('open');switchTab(btn.dataset.pdfTab);}));
