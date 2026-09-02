@@ -1024,7 +1024,18 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
     <span id="goToSignUp" hidden aria-hidden="true">Create Account</span>
     <span id="goToChangePwd" class="auth-link change-password-link">🔑 Change Password</span>
   </div>
+  <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:10px;">
+    <button type="button" id="forgotIdBtn" class="auth-link" style="border:0;background:none;cursor:pointer;">🪪 Forgot ID</button>
+    <button type="button" id="changePasswordBtn" class="auth-link" style="border:0;background:none;cursor:pointer;">🔑 Change Password</button>
+    <button type="button" id="forgotPasswordBtn" class="auth-link" style="border:0;background:none;cursor:pointer;">🔒 Forgot Password</button>
+  </div>
 </div>
+
+<dialog id="accountRecoveryDialog" style="max-width:440px;width:calc(100% - 32px);border:1px solid #38bdf8;border-radius:14px;padding:22px;background:#172338;color:#fff;">
+  <h3 id="accountRecoveryTitle" style="margin:0 0 10px;color:#7dd3fc;">Account Recovery</h3>
+  <p id="accountRecoveryText" style="font-size:13px;line-height:1.5;color:#cbd5e1;"></p>
+  <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;"><button type="button" id="accountRecoveryClose" class="action-btn">Close</button><button type="button" id="accountRecoveryContinue" class="action-btn btn-add">Continue</button></div>
+</dialog>
 
 <!-- 2. Sign Up Screen -->
 <div id="signUpScreen" class="auth-box" style="display:none;">
@@ -1151,12 +1162,14 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
   <div style="max-width:720px;margin:0 auto 14px;padding:0 4px;">
     <input id="portalServiceSearch" type="search" placeholder="🔎 Search tools: ID card, PVC, passport, PDF, JPG…" aria-label="Search portal tools" style="width:100%;padding:12px 15px;border-radius:12px;border:1px solid rgba(56,189,248,.35);background:rgba(15,23,42,.85);color:#fff;font-size:13px;">
   </div>
-  <div class="tab-nav">
-    <button class="tab-btn active" onclick="switchTab('tab-cards')">💳 ID Card (5 Slots)</button>
+  <div class="tab-nav" aria-label="Main tools">
+    <button class="tab-btn active" id="basicIdCropperBtn" onclick="switchTab('tab-cards');focusTool('basic')">✂️ Basic ID Cropper</button>
+    <button class="tab-btn" id="premiumAutoCropperBtn" onclick="openPremiumAutoCropper()">✨ Premium Auto ID Cropper</button>
+    <button class="tab-btn" id="premiumPdfEditorBtn" onclick="openPremiumPdfEditor()">📄 Premium PDF Editor</button>
     <button class="tab-btn" onclick="switchTab('tab-passport')">👤 Passport Photos</button>
     <button class="tab-btn" onclick="switchTab('tab-name-passport')">📝 Name & Date Passport</button>
     <button class="tab-btn" onclick="switchTab('tab-4x6')">🖼️ 4×6 Photo Print</button>
-    <button class="tab-btn" onclick="switchTab('tab-pdf-editor')">✏️ PDF Editor</button>
+    <button class="tab-btn" onclick="openPremiumPdfEditor()">✏️ PDF Editor</button>
     <button class="tab-btn" onclick="switchTab('tab-arranger')">📑 PDF Arranger</button>
     <button class="tab-btn" onclick="switchTab('tab-jpg-to-pdf')">📄 PDF, JPG, PNG to PDF</button>
     <button class="tab-btn" onclick="switchTab('tab-resizer')">📐 Image Resizer</button>
@@ -1207,7 +1220,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
       
       <div id="slotCounter" class="slot-counter-badge">Cards on Page: 0 / 5 (Next Slot: #1)</div>
       <div class="upload-section" style="margin:12px 0;">
-        <label class="upload-box" for="pvcPdfInput" style="max-width:520px;"><strong style="display:block;font-size:14px;margin-bottom:4px;">📄 PVC Auto-Crop: PDF से Front/Back</strong><div id="pvcPdfName" style="font-size:12px;color:var(--text-muted);">PDF चुनें · ऊपर-नीचे या left-right layout अपने-आप पहचाना जाएगा</div></label>
+        <label class="upload-box" for="pvcPdfInput" style="max-width:520px;"><strong style="display:block;font-size:14px;margin-bottom:4px;">✨ Premium Auto ID Cropper: PDF से Front/Back</strong><div id="pvcPdfName" style="font-size:12px;color:var(--text-muted);">Premium access के बाद PDF चुनें · ऊपर-नीचे या left-right layout अपने-आप पहचाना जाएगा</div></label>
         <input id="pvcPdfInput" type="file" accept="application/pdf">
         <p id="pvcPdfStatus" role="status" style="min-height:18px;margin:8px 0 0;font-size:12px;color:var(--accent-blue);text-align:center;"></p>
       </div>
@@ -1755,18 +1768,19 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
 
     <!-- TAB 11: ADMIN PANEL -->
     <div id="tab-admin" class="tab-content">
-      <div class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">Master Administrator Panel <button id="lockAdminPanelBtn" type="button" class="login-btn">🔒 Lock Panel</button></div>
+      <div class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">Master Administrator Panel <button id="lockAdminPanelBtn" type="button" class="login-btn">🔒 Lock Panel</button> <button id="adminChangePasswordBtn" type="button" class="login-btn">🔑 Change Admin Password</button></div>
       <h1 style="color: #fbbf24;">Cloud Distributor Management</h1>
       <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। डिस्ट्रीब्यूटर की वैलिडिटी 30 दिनों की होगी और डेटा सुरक्षित रहेगा।</p>
       <div style="max-width:700px;text-align:left;margin-bottom:25px;">
         <button id="openMaintenanceSettingsBtn" type="button" class="action-btn btn-add">🛠️ Maintenance Settings</button>
+        <div id="maintenanceCountdown" role="status" style="display:none;margin-top:10px;padding:10px 14px;border-radius:10px;background:#172338;border:1px solid #f59e0b;color:#fbbf24;font-size:13px;font-weight:700;text-align:center;"></div>
       </div>
       <dialog id="maintenanceSettingsDialog" style="max-width:620px;width:calc(100% - 32px);border:1px solid #f59e0b;border-radius:14px;padding:22px;background:#172338;color:#fff;">
         <h3 style="font-size:16px;color:#fbbf24;margin:0 0 14px;">🛠️ Portal Maintenance</h3>
         <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><input type="checkbox" id="maintenanceEnabled"> Maintenance mode चालू करें</label>
         <div style="display:flex;gap:10px;flex-wrap:wrap;"><label>Start <input id="maintenanceStart" class="text-field-input" type="datetime-local"></label><label>End <input id="maintenanceEnd" class="text-field-input" type="datetime-local"></label></div>
         <input id="maintenanceMessage" class="text-field-input" style="max-width:100%;margin-top:10px" value="Portal maintenance चल रहा है। कृपया बाद में प्रयास करें।" placeholder="Distributor को दिखने वाला message">
-        <div style="margin-top:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><button id="saveMaintenanceBtn" type="button" class="action-btn btn-add">💾 Save Settings</button><button id="closeMaintenanceSettingsBtn" type="button" class="action-btn">Close</button><span id="maintenanceStatus" style="font-size:12px"></span></div>
+        <div style="margin-top:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><button id="saveMaintenanceBtn" type="button" class="action-btn btn-add">💾 Save Settings</button><button id="closeMaintenanceSettingsBtn" type="button" class="action-btn">Close</button><span id="maintenanceStatus" role="status" style="font-size:12px"></span></div>
       </dialog>
 
       <div class="control-panel" style="max-width: 500px; text-align: left; margin-bottom: 25px;">
@@ -2155,11 +2169,14 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
   const opTranslations={hi:{'ID Card (5 Slots)':'आईडी कार्ड (5 स्लॉट)','Passport Photos':'पासपोर्ट फोटो','Name & Date Passport':'नाम और तारीख पासपोर्ट','4×6 Photo Print':'4×6 फोटो प्रिंट','PDF Editor':'पीडीएफ एडिटर','PDF Arranger':'पीडीएफ अरेंजर','Image Resizer':'इमेज रिसाइजर','PDF Compressor':'पीडीएफ कंप्रेसर','History':'इतिहास','PDF Tools':'पीडीएफ टूल्स','Download JPG Image':'JPG डाउनलोड करें','Download PNG Image':'PNG डाउनलोड करें'},mr:{'ID Card (5 Slots)':'आयडी कार्ड (5 स्लॉट)','Passport Photos':'पासपोर्ट फोटो','Name & Date Passport':'नाव आणि तारीख पासपोर्ट','4×6 Photo Print':'4×6 फोटो प्रिंट','PDF Editor':'पीडीएफ एडिटर','PDF Arranger':'पीडीएफ अरेंजर','Image Resizer':'इमेज रिसायझर','PDF Compressor':'पीडीएफ कंप्रेसर','History':'इतिहास','PDF Tools':'पीडीएफ टूल्स','Download JPG Image':'JPG डाउनलोड करा','Download PNG Image':'PNG डाउनलोड करा'}};
   const opOriginalLabels=new WeakMap();function applyPortalLanguage(lang){document.querySelectorAll('#mainApp .tab-btn,#pdfToolsBtn,#pdfToolsMenu button,#downloadResizedJpgBtn,#downloadResizedPngBtn').forEach(el=>{if(!opOriginalLabels.has(el))opOriginalLabels.set(el,el.textContent);const original=opOriginalLabels.get(el),key=Object.keys(opTranslations.en||{}).find(k=>original.includes(k))||Object.keys(opTranslations.hi).find(k=>original.includes(k));el.textContent=(lang!=='en'&&key&&opTranslations[lang][key])?opTranslations[lang][key]:original;});}
   document.getElementById('portalLanguageSelect').addEventListener('change',e=>applyPortalLanguage(e.target.value));
-  function applyMaintenance(settings){const banner=document.getElementById('maintenanceBanner');if(!banner)return;const active=!!(settings&&settings.active===true);if(active){document.getElementById('maintenanceBannerText').textContent=settings.message||'Portal maintenance चल रहा है। कृपया बाद में प्रयास करें।';banner.hidden=false;}else banner.hidden=true;}
+  let maintenanceTimer=null;
+  function applyMaintenance(settings){const banner=document.getElementById('maintenanceBanner');if(!banner)return;const active=!!(settings&&settings.active===true);if(active){document.getElementById('maintenanceBannerText').textContent=settings.message||'Portal maintenance चल रहा है। कृपया बाद में प्रयास करें।';banner.hidden=false;}else banner.hidden=true;updateMaintenanceCountdown(settings);}
+  function updateMaintenanceCountdown(settings){const box=document.getElementById('maintenanceCountdown');if(!box)return;clearInterval(maintenanceTimer);const end=settings&&settings.end?Date.parse(settings.end):NaN;if(!settings||settings.active!==true||!Number.isFinite(end)){box.style.display='none';return;}const tick=()=>{const left=Math.max(0,end-Date.now());if(!left){box.textContent='✅ Maintenance ended · Distributor portals are available';clearInterval(maintenanceTimer);return;}const total=Math.floor(left/1000),days=Math.floor(total/86400),hours=Math.floor(total%86400/3600),mins=Math.floor(total%3600/60),secs=total%60;box.style.display='block';box.textContent=`🛠️ Maintenance active · ${days?days+'d ':''}${String(hours).padStart(2,'0')}h ${String(mins).padStart(2,'0')}m ${String(secs).padStart(2,'0')}s remaining`;};tick();maintenanceTimer=setInterval(tick,1000);}
+  document.getElementById('adminChangePasswordBtn')?.addEventListener('click',()=>{pwdEmailInput.value=loginEmail.value.trim().toLowerCase();oldPassInput.value='';newPassInput.value='';confirmPassInput.value='';mainApp.style.display='none';changePwdScreen.style.display='block';pwdStatusMsg.style.display='none';oldPassInput.focus();});
   document.getElementById('openMaintenanceSettingsBtn').addEventListener('click',()=>document.getElementById('maintenanceSettingsDialog').showModal());
   document.getElementById('closeMaintenanceSettingsBtn').addEventListener('click',()=>document.getElementById('maintenanceSettingsDialog').close());
   document.getElementById('maintenanceSettingsDialog').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.close();});
-  document.getElementById('saveMaintenanceBtn').addEventListener('click',async()=>{const s=document.getElementById('maintenanceStatus'),b=document.getElementById('saveMaintenanceBtn');b.disabled=true;s.textContent='Saving…';try{const r=await secureApi({action:'setMaintenance',enabled:document.getElementById('maintenanceEnabled').checked,start:document.getElementById('maintenanceStart').value,end:document.getElementById('maintenanceEnd').value,message:document.getElementById('maintenanceMessage').value});applyMaintenance(r.maintenance);s.textContent='✅ Saved';}catch(e){s.textContent='❌ '+e.message;}finally{b.disabled=false;}});
+  document.getElementById('saveMaintenanceBtn').addEventListener('click',async()=>{const s=document.getElementById('maintenanceStatus'),b=document.getElementById('saveMaintenanceBtn');b.disabled=true;s.textContent='⏳ Saving…';try{const r=await secureApi({action:'setMaintenance',enabled:document.getElementById('maintenanceEnabled').checked,start:document.getElementById('maintenanceStart').value,end:document.getElementById('maintenanceEnd').value,message:document.getElementById('maintenanceMessage').value});applyMaintenance(r.maintenance);s.textContent=r.maintenance.active?'✅ Saved · सभी distributor portals रोक दिए गए हैं':'✅ Schedule saved · portal निर्धारित समय पर खुलेगा';}catch(e){s.textContent='❌ '+e.message;}finally{b.disabled=false;}});
   document.getElementById('pdfToolsBtn').addEventListener('click',()=>document.getElementById('pdfToolsMenu').classList.toggle('open'));
   document.querySelectorAll('[data-pdf-tab]').forEach(btn=>btn.addEventListener('click',()=>{document.getElementById('pdfToolsMenu').classList.remove('open');switchTab(btn.dataset.pdfTab);}));
   document.querySelectorAll('[data-pdf-info]').forEach(btn=>btn.addEventListener('click',()=>{document.getElementById('pdfToolsMenu').classList.remove('open');alert(btn.dataset.pdfInfo+' को जोड़ने के लिए dedicated processing engine/OCR की आवश्यकता है।');}));
@@ -2181,6 +2198,18 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
     if(tabId!=='tab-admin' && adminPanelUntil) lockAdminPanel();
     showPortalTab(tabId);
   }
+  function focusTool(kind){
+    if(kind==='basic') document.getElementById('card1Input')?.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  function openPremiumAutoCropper(){
+    switchTabDirect('tab-cards');
+    const input=document.getElementById('pvcPdfInput');
+    if(input){input.closest('.upload-section')?.scrollIntoView({behavior:'smooth',block:'center'});input.focus({preventScroll:true});}
+  }
+  function openPremiumPdfEditor(){
+    switchTabDirect('tab-pdf-editor');
+    document.getElementById('np-editor')?.scrollIntoView({behavior:'smooth',block:'start'});
+  }
   async function reviewDistributorPayment(email,requestId,approved) {
     if(!confirm(approved?'Approve this payment?':'Reject this payment?')) return;
     await secureApi({action:'reviewDistributorPayment',email,requestId,approved:String(approved)});
@@ -2195,7 +2224,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
   }
   async function handleLogin() {
     const email=loginEmail.value.trim().toLowerCase(), password=loginPass.value;
-    authBtn.disabled=true;
+    authBtn.disabled=true;const loginLabel=authBtn.textContent;authBtn.textContent='⏳ Loading…';
     try {
       const previousToken=authToken;
       if(previousToken) { try {await secureApi({action:'logout'});} catch(_) {} }
@@ -2224,8 +2253,19 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
     } catch(error) {
       clearAuth();mainApp.style.display='none';loginScreen.style.display='block';
       errorMsg.textContent=error.message;errorMsg.style.display='block';if(/maintenance|चल रहा है/i.test(error.message))alert('🛠️ '+error.message);
-    } finally {authBtn.disabled=false;}
+    } finally {authBtn.disabled=false;authBtn.textContent=loginLabel;}
   }
+  const recoveryDialog=document.getElementById('accountRecoveryDialog');
+  function openRecovery(kind){
+    const title=document.getElementById('accountRecoveryTitle'),msg=document.getElementById('accountRecoveryText'),go=document.getElementById('accountRecoveryContinue');
+    if(kind==='id'){title.textContent='🪪 Forgot ID';msg.textContent='अपनी registered ID जानने के लिए admin से संपर्क करें। सुरक्षा कारणों से system किसी दूसरे व्यक्ति को account details नहीं दिखाता।';go.textContent='Contact Admin';go.onclick=()=>alert('कृपया OP Printing Hub admin को अपना नाम और registered mobile/payment reference भेजें।');}
+    else {title.textContent='🔒 Forgot Password';msg.textContent='Registered email पर OTP भेजकर password reset करें।';go.textContent='Send OTP';go.onclick=async()=>{const email=prompt('Registered email ID डालें:');if(!email)return;try{go.disabled=true;await secureApi({action:'requestPasswordReset',email});const otp=prompt('Email में आया 6-digit OTP डालें:');if(!otp)return;const verified=await secureApi({action:'verifyPasswordOtp',email,otp});const p1=prompt('नया password डालें (12–128 characters):');if(!p1)return;const p2=prompt('नया password फिर डालें:');if(p1!==p2)throw new Error('Passwords do not match.');await secureApi({action:'resetPassword',email,resetToken:verified.resetToken,newPass:p1});alert('✅ Password बदल गया। अब नए password से login करें।');recoveryDialog.close();}catch(e){alert(e.message);}finally{go.disabled=false;}};}
+    recoveryDialog.showModal();
+  }
+  document.getElementById('forgotIdBtn').addEventListener('click',()=>openRecovery('id'));
+  document.getElementById('forgotPasswordBtn').addEventListener('click',()=>openRecovery('password'));
+  document.getElementById('changePasswordBtn').addEventListener('click',()=>document.getElementById('goToChangePwd').click());
+  document.getElementById('accountRecoveryClose').addEventListener('click',()=>recoveryDialog.close());
   async function changePasswordFromForm() {
     const newPass=newPassInput.value;
     pwdStatusMsg.style.display='block';
@@ -3355,7 +3395,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
     return best>c.width*.006;
   }
   async function pvcRenderPdf(file,password=''){
-    pvcPdfStatus.textContent='Premium access जाँची जा रही है…';
+    pvcPdfStatus.textContent='⏳ Loading…';
     try{await window.requirePdfPremium();}catch(err){pvcPdfStatus.textContent=err.message||'PVC Auto Crop के लिए Premium access आवश्यक है।';return;}
     pvcPdfStatus.textContent='PDF तैयार हो रही है…';
     try{const form=new FormData();form.append('file',file);if(password)form.append('password',password);const workerResponse=await fetch('https://all-services-are-working-fine-2.onrender.com/crop-card',{method:'POST',body:form});const workerResult=await workerResponse.json();if(!workerResponse.ok||!workerResult.success)throw new Error(workerResult.error||'Card processing unavailable.');pvcCropQueue={page:workerResult.front,backPage:workerResult.back,backPending:pvcSideMode.value!=='single'};pvcPdfStatus.textContent='✅ Front view तैयार है। चारों तरफ केवल card चुनें, फिर Crop & Set दबाएँ।';openCropEngine(workerResult.front,'card_front');document.getElementById('pvcPasswordBox').hidden=true;return;}catch(workerError){console.warn('Auto-crop worker failed:',workerError);pvcPdfStatus.textContent='PDF तैयार करने में समस्या हुई; manual PDF crop जारी है।';}
