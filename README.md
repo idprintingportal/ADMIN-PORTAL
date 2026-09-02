@@ -953,19 +953,19 @@
 <body>
 
 <div class="portal-main-heading">
-  ID CARD PRINT & CONVERTER PORTAL
+  OP PRINTING HUB
 </div>
 
 <!-- Contact for Registration Button -->
 <div class="top-reg-nav" id="topNavRegistrationBox">
   <button class="top-reg-btn" onclick="openRegModal()">
-    💬 Contact for Registration
+    💬 Help & Contact
   </button>
 </div>
 
 <!-- 1. Login Screen with Running Ticker, Ad Images & Services Info -->
 <div id="loginScreen" class="auth-box front-home">
-  <nav class="front-nav"><strong>OP Printing Hub</strong><div class="front-menu-wrap"><button class="front-menu-btn" id="frontMenuBtn" aria-expanded="false" aria-controls="frontMenu">☰</button><div class="front-menu" id="frontMenu"><button type="button" id="frontLoginBtn">🔑 Login</button><button type="button" id="frontJoinBtn">📝 Join / Create Account</button></div></div></nav>
+  <nav class="front-nav"><strong>OP Printing Hub</strong><label class="front-language" style="margin-left:auto;margin-right:58px;font-size:12px;color:#475569;display:flex;align-items:center;gap:6px;">🌐 <select id="frontLanguageSelect" style="border:1px solid #cbd5e1;border-radius:9px;padding:7px;background:#fff;color:#334155;"><option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option></select></label><div class="front-menu-wrap"><button class="front-menu-btn" id="frontMenuBtn" aria-expanded="false" aria-controls="frontMenu">☰</button><div class="front-menu" id="frontMenu"><button type="button" id="frontLoginBtn">🔑 Login</button><button type="button" id="frontJoinBtn">📝 Join / Create Account</button></div></div></nav>
   <section class="front-hero"><h1>Launch Your Digital Operations With<br>Our Print Portal</h1><p>All-in-one platform for seamless online printing and digital services.</p></section>
   <input class="front-search" id="frontServiceSearch" type="search" placeholder="⌕  Search services, forms, files... (e.g. Aadhaar, PDF)" aria-label="Search services">
   <section class="front-services"><h3>Essential &amp; Services</h3><div class="service-tile" tabindex="0" onclick="document.getElementById('loginEmail').focus()"><span>📝</span><small>Mock Test</small></div><div class="service-tile" tabindex="0" onclick="document.getElementById('loginEmail').focus()"><span>🪪</span><small>ID Card Print</small></div><div class="service-tile" tabindex="0" onclick="document.getElementById('loginEmail').focus()"><span>✂️</span><small>PVC Auto Crop</small></div><div class="service-tile" tabindex="0" onclick="document.getElementById('loginEmail').focus()"><span>🖨️</span><small>Auto Print</small></div><div class="service-tile" tabindex="0" onclick="document.getElementById('loginEmail').focus()"><span>📷</span><small>Passport Photo</small></div></section>
@@ -1839,8 +1839,8 @@
 <!-- Contact for Registration Popup Modal -->
 <div id="regModalPopup">
   <div class="reg-popup-content">
-    <h3 style="color: var(--accent-blue); margin-bottom: 10px; font-size: 18px;">📞 Contact for Registration</h3>
-    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">पोर्टल रजिस्ट्रेशन और पूछताछ के लिए संपर्क करें:</p>
+    <h3 style="color: var(--accent-blue); margin-bottom: 10px; font-size: 18px;">📞 Help &amp; Contact</h3>
+    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">सहायता और registration पूछताछ के लिए संपर्क करें। उत्तर समय: 48 घंटे।</p>
     
     <div style="background: rgba(15,23,42,0.8); padding: 12px; border-radius: 10px; margin-bottom: 12px; border: 1px solid var(--border-color); text-align: left;">
       <div style="font-size: 11px; color: var(--text-muted);">📱 WhatsApp Helpline:</div>
@@ -1850,7 +1850,7 @@
     <div style="background: rgba(15,23,42,0.8); padding: 12px; border-radius: 10px; margin-bottom: 20px; border: 1px solid var(--border-color); text-align: left;">
       <div style="font-size: 11px; color: var(--text-muted);">📧 Official Email IDs:</div>
       <a href="mailto:idprintingportal@gmail.com" style="color: #38bdf8; font-weight: 600; font-size: 13px; text-decoration: none;">idprintingportal@gmail.com</a><br>
-      <span style="color:#38bdf8;font-weight:600;font-size:13px;">Portal admin से संपर्क करें</span>
+      <span style="color:#38bdf8;font-weight:600;font-size:13px;">Email response time: 48 hours</span>
     </div>
 
     <button onclick="closeRegModal()" class="action-btn" style="background: #ef4444; width: 100%;">❌ बंद करें (Close)</button>
@@ -2121,6 +2121,7 @@
   document.getElementById('frontMenuBtn').addEventListener('click',()=>{const menu=document.getElementById('frontMenu'),open=menu.classList.toggle('open');document.getElementById('frontMenuBtn').setAttribute('aria-expanded',String(open));});
   document.getElementById('frontLoginBtn').addEventListener('click',()=>{document.getElementById('frontMenu').classList.remove('open');document.getElementById('loginEmail').focus();});
   document.getElementById('frontJoinBtn').addEventListener('click',()=>{document.getElementById('frontMenu').classList.remove('open');document.getElementById('goToSignUp').click();});
+  document.getElementById('frontLanguageSelect').addEventListener('change',event=>{const lang=event.target.value;const copy={en:{hero:'Launch Your Digital Operations With',sub:'All-in-one platform for seamless online printing and digital services.',services:'Essential Services'},hi:{hero:'अपना डिजिटल काम आसानी से करें',sub:'ऑनलाइन प्रिंटिंग और डिजिटल सेवाओं का एक आसान प्लेटफॉर्म।',services:'जरूरी सेवाएँ'},mr:{hero:'तुमचे डिजिटल काम सहज करा',sub:'ऑनलाइन प्रिंटिंग आणि डिजिटल सेवांसाठी एक सोपे प्लॅटफॉर्म.',services:'महत्त्वाच्या सेवा'}}[lang];const hero=document.querySelector('.front-hero h1'),sub=document.querySelector('.front-hero p'),heading=document.querySelector('.front-services h3');if(hero)hero.innerHTML=copy.hero+'<br>OP Printing Hub';if(sub)sub.textContent=copy.sub;if(heading)heading.textContent=copy.services;});
   document.getElementById('pdfToolsBtn').addEventListener('click',()=>document.getElementById('pdfToolsMenu').classList.toggle('open'));
   document.querySelectorAll('[data-pdf-tab]').forEach(btn=>btn.addEventListener('click',()=>{document.getElementById('pdfToolsMenu').classList.remove('open');switchTab(btn.dataset.pdfTab);}));
   document.querySelectorAll('[data-pdf-info]').forEach(btn=>btn.addEventListener('click',()=>{document.getElementById('pdfToolsMenu').classList.remove('open');alert(btn.dataset.pdfInfo+' को जोड़ने के लिए dedicated processing engine/OCR की आवश्यकता है।');}));
