@@ -1,7 +1,16 @@
 FROM python:3.12-slim
 
 RUN apt-get update && \
-    apt-get install -y tesseract-ocr tesseract-ocr-eng tesseract-ocr-hin && \
+    RUN apt-get update && \
+    apt-get install -y \
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    tesseract-ocr-hin \
+    libreoffice \
+    libreoffice-writer \
+    libreoffice-calc \
+    libreoffice-impress \
+    && rm -rf /var/lib/apt/lists/* && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
