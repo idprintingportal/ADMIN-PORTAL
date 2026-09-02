@@ -935,7 +935,7 @@
 #tab-pdf-editor #pe-export-dialog p{margin:18px 0}
 /* Reference-style public front panel */
 #loginScreen.front-home{max-width:1280px;background:#f8fafc;color:#172033;box-shadow:none;border:0;padding:0 0 42px}
-.front-home .front-nav{height:62px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;gap:34px;color:#4b5563;font-size:14px}
+.front-home .front-nav{height:62px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;gap:34px;color:#4b5563;font-size:14px;position:relative}.front-home .front-menu-wrap{position:absolute;right:28px;top:10px}.front-home .front-menu-btn{border:0;background:#f1f5f9;color:#3156bd;border-radius:20px;padding:10px 14px;font-size:18px;cursor:pointer;transition:.2s}.front-home .front-menu-btn:hover{transform:scale(1.08);box-shadow:0 6px 16px #5577e844}.front-home .front-menu{display:none;position:absolute;right:0;top:48px;z-index:5;width:180px;padding:10px;background:#fff;border:1px solid #dbe3f0;border-radius:14px;box-shadow:0 14px 30px #17203333}.front-home .front-menu.open{display:grid;gap:6px}.front-home .front-menu button{border:0;border-radius:9px;background:#f8fafc;padding:10px;text-align:left;color:#172033;cursor:pointer}.front-home .front-menu button:hover{background:#e7edff;color:#3156bd}
 .front-home .front-nav strong{color:#4169d8}.front-home .front-nav .front-icons{margin-left:70px;color:#4965c9;font-size:20px}
 .front-home .front-hero{margin:72px 48px 42px;padding:48px 24px 54px;border-radius:24px;text-align:center;color:#fff;background:linear-gradient(110deg,#d04c9c,#6e72d9 52%,#49a8db);box-shadow:0 18px 30px #9aaee344;position:relative;overflow:hidden}
 .front-home .front-hero:after{content:'◈  ◇  ◈  ◇  ◈  ◇  ◈  ◇';position:absolute;inset:8px;color:#ffffff22;font-size:46px;letter-spacing:28px;line-height:1.9;pointer-events:none}
@@ -963,7 +963,7 @@
 
 <!-- 1. Login Screen with Running Ticker, Ad Images & Services Info -->
 <div id="loginScreen" class="auth-box front-home">
-  <nav class="front-nav"><strong>Home</strong><span>Services⌄</span><span>Pricing</span><span>More⌄</span><span class="front-icons">◉　☰</span></nav>
+  <nav class="front-nav"><strong>Home</strong><span>Services⌄</span><span>Pricing</span><span>More⌄</span><div class="front-menu-wrap"><button class="front-menu-btn" id="frontMenuBtn" aria-expanded="false" aria-controls="frontMenu">☰</button><div class="front-menu" id="frontMenu"><button type="button" id="frontLoginBtn">🔑 Login</button><button type="button" id="frontJoinBtn">📝 Join / Create Account</button></div></div></nav>
   <section class="front-hero"><h1>Launch Your Digital Operations With<br>Our Print Portal</h1><p>All-in-one platform for seamless online printing and digital services.</p></section>
   <input class="front-search" id="frontServiceSearch" type="search" placeholder="⌕  Search services, forms, files... (e.g. Aadhaar, PDF)" aria-label="Search services">
   <section class="front-services"><h3>Essential &amp; Services</h3><div class="service-tile" tabindex="0" onclick="document.getElementById('loginEmail').focus()"><span>📝</span><small>Mock Test</small></div><div class="service-tile" tabindex="0" onclick="document.getElementById('loginEmail').focus()"><span>🪪</span><small>ID Card Print</small></div><div class="service-tile" tabindex="0" onclick="document.getElementById('loginEmail').focus()"><span>✂️</span><small>PVC Auto Crop</small></div><div class="service-tile" tabindex="0" onclick="document.getElementById('loginEmail').focus()"><span>🖨️</span><small>Auto Print</small></div><div class="service-tile" tabindex="0" onclick="document.getElementById('loginEmail').focus()"><span>📷</span><small>Passport Photo</small></div></section>
@@ -2115,6 +2115,9 @@
   document.getElementById('frontServiceSearch').addEventListener('input',event=>{
     const q=event.target.value.trim().toLocaleLowerCase();document.querySelectorAll('.front-home .service-tile').forEach(tile=>{tile.hidden=!!q&&!tile.textContent.toLocaleLowerCase().includes(q);});
   });
+  document.getElementById('frontMenuBtn').addEventListener('click',()=>{const menu=document.getElementById('frontMenu'),open=menu.classList.toggle('open');document.getElementById('frontMenuBtn').setAttribute('aria-expanded',String(open));});
+  document.getElementById('frontLoginBtn').addEventListener('click',()=>{document.getElementById('frontMenu').classList.remove('open');document.getElementById('loginEmail').focus();});
+  document.getElementById('frontJoinBtn').addEventListener('click',()=>{document.getElementById('frontMenu').classList.remove('open');document.getElementById('goToSignUp').click();});
   async function switchTab(tabId) {
     if(!authToken || (tabId==='tab-admin' && authRole!=='admin')) return;
     if(tabId==='tab-admin') {
