@@ -1034,6 +1034,13 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
 <dialog id="accountRecoveryDialog" style="max-width:440px;width:calc(100% - 32px);border:1px solid #38bdf8;border-radius:14px;padding:22px;background:#172338;color:#fff;">
   <h3 id="accountRecoveryTitle" style="margin:0 0 10px;color:#7dd3fc;">Account Recovery</h3>
   <p id="accountRecoveryText" style="font-size:13px;line-height:1.5;color:#cbd5e1;"></p>
+  <div id="recoveryFields" hidden>
+    <input id="recoveryEmail" type="email" class="login-input" placeholder="Registered email ID" autocomplete="email">
+    <input id="recoveryOtp" type="text" inputmode="numeric" maxlength="6" class="login-input" placeholder="6-digit OTP" hidden>
+    <input id="recoveryNewPassword" type="password" class="login-input" placeholder="New password (12–128 characters)" hidden autocomplete="new-password">
+    <input id="recoveryConfirmPassword" type="password" class="login-input" placeholder="Confirm new password" hidden autocomplete="new-password">
+    <div id="recoveryStatus" role="status" style="min-height:20px;margin-top:8px;font-size:12px;color:#93c5fd;"></div>
+  </div>
   <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;"><button type="button" id="accountRecoveryClose" class="action-btn">Close</button><button type="button" id="accountRecoveryContinue" class="action-btn btn-add">Continue</button></div>
 </dialog>
 
@@ -2257,9 +2264,10 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
   }
   const recoveryDialog=document.getElementById('accountRecoveryDialog');
   function openRecovery(kind){
-    const title=document.getElementById('accountRecoveryTitle'),msg=document.getElementById('accountRecoveryText'),go=document.getElementById('accountRecoveryContinue');
-    if(kind==='id'){title.textContent='🪪 Forgot ID';msg.textContent='अपनी registered ID जानने के लिए admin से संपर्क करें। सुरक्षा कारणों से system किसी दूसरे व्यक्ति को account details नहीं दिखाता।';go.textContent='Contact Admin';go.onclick=()=>alert('कृपया OP Printing Hub admin को अपना नाम और registered mobile/payment reference भेजें।');}
-    else {title.textContent='🔒 Forgot Password';msg.textContent='Registered email पर OTP भेजकर password reset करें।';go.textContent='Send OTP';go.onclick=async()=>{const email=prompt('Registered email ID डालें:');if(!email)return;try{go.disabled=true;await secureApi({action:'requestPasswordReset',email});const otp=prompt('Email में आया 6-digit OTP डालें:');if(!otp)return;const verified=await secureApi({action:'verifyPasswordOtp',email,otp});const p1=prompt('नया password डालें (12–128 characters):');if(!p1)return;const p2=prompt('नया password फिर डालें:');if(p1!==p2)throw new Error('Passwords do not match.');await secureApi({action:'resetPassword',email,resetToken:verified.resetToken,newPass:p1});alert('✅ Password बदल गया। अब नए password से login करें।');recoveryDialog.close();}catch(e){alert(e.message);}finally{go.disabled=false;}};}
+    const title=document.getElementById('accountRecoveryTitle'),msg=document.getElementById('accountRecoveryText'),go=document.getElementById('accountRecoveryContinue'),fields=document.getElementById('recoveryFields');
+    fields.hidden=kind==='id';
+    if(kind==='id'){title.textContent='🪪 Forgot ID';msg.textContent='अपनी registered ID जानने के लिए admin से संपर्क करें। सुरक्षा कारणों से account details खुले में नहीं दिखाई जातीं।';go.textContent='Contact Admin';go.onclick=()=>alert('कृपया OP Printing Hub admin को अपना नाम और registered mobile/payment reference भेजें।');}
+    else {title.textContent='🔒 Forgot Password';msg.textContent='Registered email पर OTP भेजें। यही dialog खुला रहेगा और अगले step में OTP field आएगी.';go.textContent='Send OTP';const email=document.getElementById('recoveryEmail'),otp=document.getElementById('recoveryOtp'),np=document.getElementById('recoveryNewPassword'),cp=document.getElementById('recoveryConfirmPassword'),status=document.getElementById('recoveryStatus');[email,otp,np,cp].forEach(x=>{x.hidden=x!==email;x.value='';});status.textContent='';go.onclick=async()=>{try{go.disabled=true;go.textContent='⏳ Sending…';if(otp.hidden){await secureApi({action:'requestPasswordReset',email:email.value.trim().toLowerCase()});otp.hidden=false;go.textContent='Verify OTP';status.textContent='✅ OTP sent. Email से OTP डालें.';otp.focus();return;}if(np.hidden){const verified=await secureApi({action:'verifyPasswordOtp',email:email.value.trim().toLowerCase(),otp:otp.value.trim()});go.dataset.resetToken=verified.resetToken;np.hidden=false;cp.hidden=false;go.textContent='Reset Password';status.textContent='✅ OTP verified.';np.focus();return;}if(np.value!==cp.value)throw new Error('Passwords do not match.');await secureApi({action:'resetPassword',email:email.value.trim().toLowerCase(),resetToken:go.dataset.resetToken,newPass:np.value});status.textContent='✅ Password changed. अब नए password से login करें.';go.hidden=true;}catch(e){status.textContent='❌ '+e.message;}finally{go.disabled=false;if(!go.hidden&&go.textContent.includes('Sending'))go.textContent='Send OTP';}};}
     recoveryDialog.showModal();
   }
   document.getElementById('forgotIdBtn').addEventListener('click',()=>openRecovery('id'));
