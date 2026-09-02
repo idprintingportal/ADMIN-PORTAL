@@ -933,6 +933,17 @@
 #tab-pdf-editor #pe-export-dialog{margin:auto;max-width:480px;width:calc(100% - 32px);padding:24px;border:1px solid #43c4d4;border-radius:12px;background:#172338;color:#fff}
 #tab-pdf-editor #pe-export-dialog::backdrop{background:#020617bd}
 #tab-pdf-editor #pe-export-dialog p{margin:18px 0}
+/* Reference-style public front panel */
+#loginScreen.front-home{max-width:1280px;background:#f8fafc;color:#172033;box-shadow:none;border:0;padding:0 0 42px}
+.front-home .front-nav{height:62px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;gap:34px;color:#4b5563;font-size:14px}
+.front-home .front-nav strong{color:#4169d8}.front-home .front-nav .front-icons{margin-left:70px;color:#4965c9;font-size:20px}
+.front-home .front-hero{margin:72px 48px 42px;padding:48px 24px 54px;border-radius:24px;text-align:center;color:#fff;background:linear-gradient(110deg,#d04c9c,#6e72d9 52%,#49a8db);box-shadow:0 18px 30px #9aaee344;position:relative;overflow:hidden}
+.front-home .front-hero:after{content:'◈  ◇  ◈  ◇  ◈  ◇  ◈  ◇';position:absolute;inset:8px;color:#ffffff22;font-size:46px;letter-spacing:28px;line-height:1.9;pointer-events:none}
+.front-home .front-hero>*{position:relative;z-index:1}.front-home .front-hero h1{font-size:42px;line-height:1.12;margin:0 auto 15px;color:#fff;background:none;-webkit-text-fill-color:initial}.front-home .front-hero p{font-size:17px;color:#fff;margin:0}
+.front-home .front-search{display:block;width:min(680px,calc(100% - 48px));margin:0 auto 40px;padding:17px 24px;border:1px solid #e2e6ef;border-radius:18px;background:#fff;color:#64748b;box-shadow:0 8px 18px #17203318;text-align:left;font-size:15px}
+.front-home .front-services{display:grid;grid-template-columns:repeat(6,1fr);gap:22px;margin:0 48px 40px}.front-home .front-services h3{grid-column:1/-1;font-size:24px;margin:0;color:#18243c;border-left:4px solid #4c6fe4;padding-left:10px}.front-home .service-tile{min-height:145px;border:1px solid #cfe4df;border-radius:22px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;color:#172033;font-weight:700;box-shadow:0 5px 12px #1720330b}.front-home .service-tile span{font-size:39px}.front-home .service-tile small{font-size:14px}.front-home .legacy-front{display:none}
+@media(max-width:900px){.front-home .front-services{grid-template-columns:repeat(3,1fr);margin:0 22px}.front-home .front-hero{margin:42px 22px 30px}.front-home .front-hero h1{font-size:31px}.front-home .front-nav{gap:14px}.front-home .front-nav .front-icons{margin-left:8px}}
+@media(max-width:520px){.front-home .front-services{grid-template-columns:repeat(2,1fr);gap:12px}.front-home .front-services h3{font-size:20px}.front-home .front-hero h1{font-size:25px}.front-home .front-hero p{font-size:13px}}
 @media(max-width:720px){#tab-pdf-editor .pe-heading{padding:16px;align-items:flex-start;flex-direction:column}#tab-pdf-editor .pe-workspace{grid-template-columns:minmax(0,1fr)}#tab-pdf-editor .pe-sidebar{border-right:0;border-bottom:1px solid #34435c}#tab-pdf-editor .pe-sidebar p,#tab-pdf-editor .pe-sidebar hr,#tab-pdf-editor .pe-sidebar h3{display:none}#tab-pdf-editor #pe-scroll{height:520px;padding:12px}#tab-pdf-editor .pe-toolbar{gap:5px}#tab-pdf-editor .pe-toolbar button{padding:8px;font-size:11px}}
 
 </style>
@@ -951,24 +962,28 @@
 </div>
 
 <!-- 1. Login Screen with Running Ticker, Ad Images & Services Info -->
-<div id="loginScreen" class="auth-box">
+<div id="loginScreen" class="auth-box front-home">
+  <nav class="front-nav"><strong>Home</strong><span>Services⌄</span><span>Pricing</span><span>More⌄</span><span class="front-icons">◉　☰</span></nav>
+  <section class="front-hero"><h1>Launch Your Digital Operations With<br>Our Print Portal</h1><p>All-in-one platform for seamless online printing and digital services.</p></section>
+  <div class="front-search">⌕　Search services, forms, files... (e.g. Aadhaar, List, PDF)</div>
+  <section class="front-services"><h3>Essential &amp; Services</h3><div class="service-tile"><span>🧾</span><small>Latest Jobs</small></div><div class="service-tile"><span>📝</span><small>Mock Test</small></div><div class="service-tile"><span>🪪</span><small>ID Card Print</small></div><div class="service-tile"><span>✂️</span><small>PVC Auto Crop</small></div><div class="service-tile"><span>🖨️</span><small>Auto Print</small></div><div class="service-tile"><span>📷</span><small>Passport Photo</small></div></section>
   
   <!-- Running Ticker Notification -->
-  <div class="ticker-container">
+  <div class="ticker-container legacy-front">
     <div class="ticker-text">
       🚀 Smart & Reliable Print Portal — Fast Operations, Simple Workflow & Daily Business Use! | 📌 Essential Document & Photo Printing Services in One Place!
     </div>
   </div>
 
   <!-- Advertisement Images -->
-  <div class="ad-slider-box">
+  <div class="ad-slider-box legacy-front">
     <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=400&auto=format&fit=crop&q=60" alt="Print Service 1" class="ad-slide-img" title="Photo & Document Print">
     <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&auto=format&fit=crop&q=60" alt="Print Service 2" class="ad-slide-img" title="Passport Sheet Generator">
     <img src="https://images.unsplash.com/photo-1633158829585-23ba8f7c8caf?w=400&auto=format&fit=crop&q=60" alt="Print Service 3" class="ad-slide-img" title="Government ID Print">
   </div>
 
   <!-- Portal Services Info List -->
-  <div class="services-info-card">
+  <div class="services-info-card legacy-front">
     <h4>⚡ Our Printing Services (उपलब्ध मुख्य सर्विसेज):</h4>
     <ul>
       <li>🔹 5-Cards ID Print (A4)</li>
