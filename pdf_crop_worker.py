@@ -3,6 +3,12 @@ import base64
 import io
 import fitz
 from PIL import Image, ImageChops
+try:
+    import cv2
+    import numpy as np
+except ImportError:  # The service still works with the conservative fallback.
+    cv2 = None
+    np = None
 
 app = Flask(__name__)
 
@@ -30,11 +36,86 @@ def trim_content(image: Image.Image, padding: int = 18) -> Image.Image:
     return rgb.crop((left, top, right, bottom))
 
 
+def _quad_crop(image: Image.Image, points):
+    """Perspective-correct a detected card quadrilateral."""
+    if cv2 is None:
+        return trim_content(image, 12)
+    src = np.float32(points)
+    def dist(a, b): return float(np.linalg.norm(a - b))
+    tl, tr, br, bl = src
+    w = max(dist(tl, tr), dist(bl, br))
+    h = max(dist(tl, bl), dist(tr, br))
+    if w < 40 or h < 25:
+        raise ValueError("Detected document is too small.")
+    # ID cards are landscape; rotate portrait detections after warping.
+    out_w, out_h = max(640, round(w)), max(400, round(h))
+    dst = np.float32([[0, 0], [out_w-1, 0], [out_w-1, out_h-1], [0, out_h-1]])
+    matrix = cv2.getPerspectiveTransform(src, dst)
+    arr = cv2.cvtColor(np.asarray(image.convert("RGB")), cv2.COLOR_RGB2BGR)
+    warped = cv2.warpPerspective(arr, matrix, (out_w, out_h), borderMode=cv2.BORDER_REPLICATE)
+    result = Image.fromarray(cv2.cvtColor(warped, cv2.COLOR_BGR2RGB))
+    if result.height > result.width * 1.15:
+        result = result.rotate(90, expand=True)
+    return trim_content(result, 8)
+
+
+def detect_card_quads(image: Image.Image):
+    """Find card-like rectangles independent of filename/template coordinates."""
+    if cv2 is None:
+        return []
+    small = image.copy()
+    scale = min(1.0, 1600.0 / max(image.size))
+    if scale < 1:
+        small = small.resize((round(image.width*scale), round(image.height*scale)), Image.Resampling.LANCZOS)
+    gray = cv2.cvtColor(np.asarray(small), cv2.COLOR_RGB2GRAY)
+    blur = cv2.GaussianBlur(gray, (5, 5), 0)
+    edges = cv2.Canny(blur, 35, 130)
+    edges = cv2.morphologyEx(edges, cv2.MORPH_CLOSE, np.ones((5, 5), np.uint8), iterations=2)
+    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    page_area = float(gray.shape[0] * gray.shape[1])
+    found = []
+    for contour in contours:
+        area = cv2.contourArea(contour)
+        if area < page_area * 0.015 or area > page_area * 0.92:
+            continue
+        peri = cv2.arcLength(contour, True)
+        poly = cv2.approxPolyDP(contour, 0.035 * peri, True)
+        if len(poly) != 4 or not cv2.isContourConvex(poly):
+            continue
+        rect = cv2.minAreaRect(contour)
+        rw, rh = rect[1]
+        ratio = max(rw, rh) / max(1.0, min(rw, rh))
+        if not 1.25 <= ratio <= 2.15:
+            continue
+        pts = poly.reshape(4, 2).astype(np.float32) / scale
+        center = pts.mean(axis=0)
+        # Order corners clockwise from top-left.
+        ordered = np.array(sorted(pts, key=lambda p: (p[1], p[0])), dtype=np.float32)
+        top = sorted(ordered[:2], key=lambda p: p[0]); bottom = sorted(ordered[2:], key=lambda p: p[0])
+        quad = [top[0], top[1], bottom[1], bottom[0]]
+        found.append((area, center[1], quad))
+    found.sort(key=lambda item: (-item[0], item[1]))
+    selected = []
+    for area, _, quad in found:
+        cx, cy = np.mean(quad, axis=0)
+        if all(np.linalg.norm(np.array([cx, cy]) - np.mean(q, axis=0)) > min(image.size)*0.08 for q in selected):
+            selected.append(quad)
+        if len(selected) == 2:
+            break
+    return selected
+
+
 def split_cards(image: Image.Image):
     """Detect common ID layouts: side-by-side or front-above-back.
     Explanatory labels beside sample cards are ignored for stacked layouts.
     """
     image = image.convert("RGB")
+    quads = detect_card_quads(image)
+    if quads:
+        crops = [_quad_crop(image, q) for q in sorted(quads, key=lambda q: float(np.mean(q[:, 1])))]
+        if len(crops) >= 2:
+            return crops[0], crops[1], "detected-front-back"
+        return crops[0], Image.new("RGB", crops[0].size, "white"), "detected-single"
     width, height = image.size
     content = trim_content(image)
     ratio = content.width / max(1, content.height)
@@ -123,17 +204,15 @@ def crop_card():
         except Exception:
             pixmap = page.get_pixmap(dpi=600, alpha=False)
         image = Image.open(io.BytesIO(pixmap.tobytes("png"))).convert("RGB")
-        boxes = template_boxes(uploaded.filename)
-        if boxes:
-            front = trim_content(crop_pdf_box(image, boxes[0], page.rect), padding=8)
-            if len(boxes) > 1:
-                back = trim_content(crop_pdf_box(image, boxes[1], page.rect), padding=8)
-                layout = "template-front-back"
-            else:
-                back = Image.new("RGB", front.size, "white")
-                layout = "template-single"
-        else:
-            front, back, layout = split_cards(image)
+        # Detection is primary. Templates are only a bounded fallback for the
+        # supplied government-ID samples and never override a good detection.
+        front, back, layout = split_cards(image)
+        if layout == "single":
+            boxes = template_boxes(uploaded.filename)
+            if boxes:
+                front = trim_content(crop_pdf_box(image, boxes[0], page.rect), padding=8)
+                back = trim_content(crop_pdf_box(image, boxes[1], page.rect), padding=8) if len(boxes) > 1 else Image.new("RGB", front.size, "white")
+                layout = "template-front-back" if len(boxes) > 1 else "template-single"
         return jsonify({"success": True, "layout": layout,
                         "page": "data:image/png;base64," + png_data(image),
                         "front": "data:image/png;base64," + png_data(front),
