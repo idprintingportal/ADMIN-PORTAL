@@ -3,10 +3,7 @@ import base64
 import io
 import fitz
 from PIL import Image, ImageChops
-import os
-import subprocess
-import tempfile
-from flask import send_file
+
 app = Flask(__name__)
 
 @app.after_request
@@ -34,12 +31,31 @@ def trim_content(image: Image.Image, padding: int = 18) -> Image.Image:
 
 
 def split_cards(image: Image.Image):
-    """Split only a clearly side-by-side page; otherwise keep one whole card."""
+    """Detect common ID layouts: side-by-side or front-above-back.
+    Explanatory labels beside sample cards are ignored for stacked layouts.
+    """
     image = image.convert("RGB")
     width, height = image.size
     content = trim_content(image)
     ratio = content.width / max(1, content.height)
     if ratio <= 2.2:
+        # e-Shram/MahaSarathi/Aadhaar samples are commonly two cards stacked
+        # vertically on an A4 page. Keep the left card column and split near
+        # the widest whitespace between the two cards.
+        if content.height > content.width * 1.18:
+            card_area = content.crop((0, 0, max(1, int(content.width * 0.70)), content.height))
+            row_scores = []
+            pix = card_area.convert("L")
+            for y in range(card_area.height):
+                dark = sum(1 for x in range(card_area.width) if pix.getpixel((x, y)) < 245)
+                row_scores.append(dark)
+            middle = card_area.height // 2
+            search = range(max(1, middle - card_area.height // 5), min(card_area.height - 1, middle + card_area.height // 5))
+            cut = min(search, key=lambda y: row_scores[y])
+            if row_scores[cut] < card_area.width * 0.08:
+                front = trim_content(card_area.crop((0, 0, card_area.width, cut)))
+                back = trim_content(card_area.crop((0, cut, card_area.width, card_area.height)))
+                return front, back, "stacked"
         blank = Image.new("RGB", content.size, "white")
         return content, blank, "single"
     cut = width // 2
@@ -82,56 +98,6 @@ def crop_card():
     except Exception as exc:
         return jsonify(error=str(exc)[:240]), 422
 
-@app.route("/convert-office", methods=["POST"])
-def convert_office():
-    if "file" not in request.files:
-        return {"success": False, "error": "File missing"}, 400
 
-    uploaded_file = request.files["file"]
-    output_format = request.form.get("format", "docx").lower()
-
-    allowed_formats = {
-        "docx": "docx",
-        "xlsx": "xlsx",
-        "pptx": "pptx"
-    }
-
-    if output_format not in allowed_formats:
-        return {"success": False, "error": "Invalid output format"}, 400
-
-    with tempfile.TemporaryDirectory() as temp_dir:
-        input_path = os.path.join(temp_dir, "input.pdf")
-        uploaded_file.save(input_path)
-
-        command = [
-            "libreoffice",
-            "--headless",
-            "--convert-to",
-            allowed_formats[output_format],
-            "--outdir",
-            temp_dir,
-            input_path
-        ]
-
-        result = subprocess.run(
-            command,
-            capture_output=True,
-            text=True,
-            timeout=120
-        )
-
-        output_path = os.path.join(temp_dir, f"input.{output_format}")
-
-        if result.returncode != 0 or not os.path.exists(output_path):
-            return {
-                "success": False,
-                "error": result.stderr or "Conversion failed"
-            }, 500
-
-        return send_file(
-            output_path,
-            as_attachment=True,
-            download_name=f"converted.{output_format}"
-        )
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=8766, debug=False)
