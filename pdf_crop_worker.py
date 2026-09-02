@@ -82,6 +82,56 @@ def crop_card():
     except Exception as exc:
         return jsonify(error=str(exc)[:240]), 422
 
+@app.route("/convert-office", methods=["POST"])
+def convert_office():
+    if "file" not in request.files:
+        return {"success": False, "error": "File missing"}, 400
 
+    uploaded_file = request.files["file"]
+    output_format = request.form.get("format", "docx").lower()
+
+    allowed_formats = {
+        "docx": "docx",
+        "xlsx": "xlsx",
+        "pptx": "pptx"
+    }
+
+    if output_format not in allowed_formats:
+        return {"success": False, "error": "Invalid output format"}, 400
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        input_path = os.path.join(temp_dir, "input.pdf")
+        uploaded_file.save(input_path)
+
+        command = [
+            "libreoffice",
+            "--headless",
+            "--convert-to",
+            allowed_formats[output_format],
+            "--outdir",
+            temp_dir,
+            input_path
+        ]
+
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            timeout=120
+        )
+
+        output_path = os.path.join(temp_dir, f"input.{output_format}")
+
+        if result.returncode != 0 or not os.path.exists(output_path):
+            return {
+                "success": False,
+                "error": result.stderr or "Conversion failed"
+            }, 500
+
+        return send_file(
+            output_path,
+            as_attachment=True,
+            download_name=f"converted.{output_format}"
+        )
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=8766, debug=False)
