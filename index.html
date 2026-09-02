@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ID CARD PRINT & CONVERTER PORTAL</title>
+  <title>OP Printing Hub</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -943,6 +943,7 @@
 .front-home .front-hero>*{position:relative;z-index:1}.front-home .front-hero h1{font-size:42px;line-height:1.12;margin:0 auto 15px;color:#fff;background:none;-webkit-text-fill-color:initial}.front-home .front-hero p{font-size:17px;color:#fff;margin:0}
 .front-home .front-search{display:block;width:min(680px,calc(100% - 48px));margin:0 auto 40px;padding:17px 24px;border:1px solid #e2e6ef;border-radius:18px;background:#fff;color:#64748b;box-shadow:0 8px 18px #17203318;text-align:left;font-size:15px;outline:0}.front-home .front-search:focus{border-color:#5577e8;box-shadow:0 10px 24px #5577e844}
 .front-home .front-services{display:grid;grid-template-columns:repeat(5,1fr);gap:22px;margin:0 48px 40px}.front-home .front-services h3{grid-column:1/-1;font-size:24px;margin:0;color:#18243c;border-left:4px solid #4c6fe4;padding-left:10px}.front-home .service-tile{min-height:145px;border:1px solid #cfe4df;border-radius:22px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;color:#172033;font-weight:700;box-shadow:0 5px 12px #1720330b;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s}.front-home .service-tile:hover,.front-home .service-tile:focus-visible{transform:translateY(-6px);border-color:#5b78e8;box-shadow:0 14px 28px #5577e844;outline:0}.front-home .service-tile span{font-size:39px}.front-home .service-tile small{font-size:14px}.front-home .legacy-front{display:none}
+.front-home{background:linear-gradient(135deg,#eef6ff 0%,#f8f4ff 48%,#ecfff8 100%)!important}.front-home .front-nav{justify-content:flex-start;padding:0 28px;gap:0;background:rgba(255,255,255,.88);backdrop-filter:blur(12px)}.front-home .front-nav strong{font-size:20px;color:#173b72!important;display:flex;align-items:center;gap:10px}.front-home .front-nav strong:before{content:'OP';display:inline-grid;place-items:center;width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;font-size:12px;font-weight:900;box-shadow:0 6px 14px #4f46e566}.front-home .front-nav>span{display:none}.front-home .front-hero{background:linear-gradient(120deg,#155eaa,#4338a8 55%,#087f71);box-shadow:0 18px 35px #3156bd33}.front-home .front-menu-btn{font-size:22px;padding:11px 16px}.front-home .front-services{grid-template-columns:repeat(4,1fr)}.front-home .front-services h3{border-left-color:#10b981}.change-password-link{display:block!important;width:min(420px,100%);margin:18px auto 0;padding:14px 18px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff!important;text-align:center;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 8px 18px #3156bd33}
 @media(max-width:900px){.front-home .front-services{grid-template-columns:repeat(3,1fr);margin:0 22px}.front-home .front-hero{margin:42px 22px 30px}.front-home .front-hero h1{font-size:31px}.front-home .front-nav{gap:14px}.front-home .front-nav .front-icons{margin-left:8px}}
 @media(max-width:520px){.front-home .front-services{grid-template-columns:repeat(2,1fr);gap:12px}.front-home .front-services h3{font-size:20px}.front-home .front-hero h1{font-size:25px}.front-home .front-hero p{font-size:13px}}
 @media(max-width:720px){#tab-pdf-editor .pe-heading{padding:16px;align-items:flex-start;flex-direction:column}#tab-pdf-editor .pe-workspace{grid-template-columns:minmax(0,1fr)}#tab-pdf-editor .pe-sidebar{border-right:0;border-bottom:1px solid #34435c}#tab-pdf-editor .pe-sidebar p,#tab-pdf-editor .pe-sidebar hr,#tab-pdf-editor .pe-sidebar h3{display:none}#tab-pdf-editor #pe-scroll{height:520px;padding:12px}#tab-pdf-editor .pe-toolbar{gap:5px}#tab-pdf-editor .pe-toolbar button{padding:8px;font-size:11px}}
@@ -964,7 +965,7 @@
 
 <!-- 1. Login Screen with Running Ticker, Ad Images & Services Info -->
 <div id="loginScreen" class="auth-box front-home">
-  <nav class="front-nav"><strong>Home</strong><span>Services⌄</span><span>Pricing</span><span>More⌄</span><div class="front-menu-wrap"><button class="front-menu-btn" id="frontMenuBtn" aria-expanded="false" aria-controls="frontMenu">☰</button><div class="front-menu" id="frontMenu"><button type="button" id="frontLoginBtn">🔑 Login</button><button type="button" id="frontJoinBtn">📝 Join / Create Account</button></div></div></nav>
+  <nav class="front-nav"><strong>OP Printing Hub</strong><div class="front-menu-wrap"><button class="front-menu-btn" id="frontMenuBtn" aria-expanded="false" aria-controls="frontMenu">☰</button><div class="front-menu" id="frontMenu"><button type="button" id="frontLoginBtn">🔑 Login</button><button type="button" id="frontJoinBtn">📝 Join / Create Account</button></div></div></nav>
   <section class="front-hero"><h1>Launch Your Digital Operations With<br>Our Print Portal</h1><p>All-in-one platform for seamless online printing and digital services.</p></section>
   <input class="front-search" id="frontServiceSearch" type="search" placeholder="⌕  Search services, forms, files... (e.g. Aadhaar, PDF)" aria-label="Search services">
   <section class="front-services"><h3>Essential &amp; Services</h3><div class="service-tile" tabindex="0" onclick="document.getElementById('loginEmail').focus()"><span>📝</span><small>Mock Test</small></div><div class="service-tile" tabindex="0" onclick="document.getElementById('loginEmail').focus()"><span>🪪</span><small>ID Card Print</small></div><div class="service-tile" tabindex="0" onclick="document.getElementById('loginEmail').focus()"><span>✂️</span><small>PVC Auto Crop</small></div><div class="service-tile" tabindex="0" onclick="document.getElementById('loginEmail').focus()"><span>🖨️</span><small>Auto Print</small></div><div class="service-tile" tabindex="0" onclick="document.getElementById('loginEmail').focus()"><span>📷</span><small>Passport Photo</small></div></section>
@@ -1007,8 +1008,8 @@
   <div id="errorMsg" class="error-msg">⚠️ गलत ईमेल आईडी या पासवर्ड!</div>
   
   <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px;">
-    <span id="goToSignUp" class="auth-link">📝 Create Account</span>
-    <span id="goToChangePwd" class="auth-link">🔑 Change Password?</span>
+    <span id="goToSignUp" hidden aria-hidden="true">Create Account</span>
+    <span id="goToChangePwd" class="auth-link change-password-link">🔑 Change Password</span>
   </div>
 </div>
 
