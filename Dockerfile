@@ -1,7 +1,6 @@
 FROM python:3.12-slim
 
 RUN apt-get update && \
-    RUN apt-get update && \
     apt-get install -y \
     tesseract-ocr \
     tesseract-ocr-eng \
@@ -10,12 +9,12 @@ RUN apt-get update && \
     libreoffice-writer \
     libreoffice-calc \
     libreoffice-impress \
-    && rm -rf /var/lib/apt/lists/* && \
-    rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 COPY requirements.txt .
+
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
