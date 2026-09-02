@@ -2155,7 +2155,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
   const opTranslations={hi:{'ID Card (5 Slots)':'आईडी कार्ड (5 स्लॉट)','Passport Photos':'पासपोर्ट फोटो','Name & Date Passport':'नाम और तारीख पासपोर्ट','4×6 Photo Print':'4×6 फोटो प्रिंट','PDF Editor':'पीडीएफ एडिटर','PDF Arranger':'पीडीएफ अरेंजर','Image Resizer':'इमेज रिसाइजर','PDF Compressor':'पीडीएफ कंप्रेसर','History':'इतिहास','PDF Tools':'पीडीएफ टूल्स','Download JPG Image':'JPG डाउनलोड करें','Download PNG Image':'PNG डाउनलोड करें'},mr:{'ID Card (5 Slots)':'आयडी कार्ड (5 स्लॉट)','Passport Photos':'पासपोर्ट फोटो','Name & Date Passport':'नाव आणि तारीख पासपोर्ट','4×6 Photo Print':'4×6 फोटो प्रिंट','PDF Editor':'पीडीएफ एडिटर','PDF Arranger':'पीडीएफ अरेंजर','Image Resizer':'इमेज रिसायझर','PDF Compressor':'पीडीएफ कंप्रेसर','History':'इतिहास','PDF Tools':'पीडीएफ टूल्स','Download JPG Image':'JPG डाउनलोड करा','Download PNG Image':'PNG डाउनलोड करा'}};
   const opOriginalLabels=new WeakMap();function applyPortalLanguage(lang){document.querySelectorAll('#mainApp .tab-btn,#pdfToolsBtn,#pdfToolsMenu button,#downloadResizedJpgBtn,#downloadResizedPngBtn').forEach(el=>{if(!opOriginalLabels.has(el))opOriginalLabels.set(el,el.textContent);const original=opOriginalLabels.get(el),key=Object.keys(opTranslations.en||{}).find(k=>original.includes(k))||Object.keys(opTranslations.hi).find(k=>original.includes(k));el.textContent=(lang!=='en'&&key&&opTranslations[lang][key])?opTranslations[lang][key]:original;});}
   document.getElementById('portalLanguageSelect').addEventListener('change',e=>applyPortalLanguage(e.target.value));
-  function applyMaintenance(settings){const banner=document.getElementById('maintenanceBanner');if(!banner)return;const now=Date.now(),start=settings&&settings.start?Date.parse(settings.start):NaN,end=settings&&settings.end?Date.parse(settings.end):NaN;const active=!!(settings&&settings.enabled===true&&(!Number.isFinite(start)||now>=start)&&(!Number.isFinite(end)||now<=end));if(active){document.getElementById('maintenanceBannerText').textContent=settings.message||'Portal maintenance चल रहा है। कृपया बाद में प्रयास करें।';banner.hidden=false;}else banner.hidden=true;}
+  function applyMaintenance(settings){const banner=document.getElementById('maintenanceBanner');if(!banner)return;const active=!!(settings&&settings.active===true);if(active){document.getElementById('maintenanceBannerText').textContent=settings.message||'Portal maintenance चल रहा है। कृपया बाद में प्रयास करें।';banner.hidden=false;}else banner.hidden=true;}
   document.getElementById('openMaintenanceSettingsBtn').addEventListener('click',()=>document.getElementById('maintenanceSettingsDialog').showModal());
   document.getElementById('closeMaintenanceSettingsBtn').addEventListener('click',()=>document.getElementById('maintenanceSettingsDialog').close());
   document.getElementById('maintenanceSettingsDialog').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.close();});
@@ -2223,7 +2223,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
       initAllCanvases();
     } catch(error) {
       clearAuth();mainApp.style.display='none';loginScreen.style.display='block';
-      errorMsg.textContent=error.message;errorMsg.style.display='block';
+      errorMsg.textContent=error.message;errorMsg.style.display='block';if(/maintenance|चल रहा है/i.test(error.message))alert('🛠️ '+error.message);
     } finally {authBtn.disabled=false;}
   }
   async function changePasswordFromForm() {
