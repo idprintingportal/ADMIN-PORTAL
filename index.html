@@ -1133,6 +1133,7 @@
 
 <!-- 3. Main Portal Application -->
 <div id="mainApp">
+  <div id="maintenanceBanner" hidden style="max-width:900px;margin:0 auto 14px;padding:14px 18px;border:1px solid #f59e0b;border-radius:12px;background:#451a03;color:#fde68a;text-align:center;font-weight:600;">🛠️ <span id="maintenanceBannerText">Portal maintenance चल रहा है। कृपया बाद में प्रयास करें।</span></div>
   <div class="pdf-tools-bar"><button id="pdfToolsBtn" class="pdf-tools-btn" type="button">📑 PDF Tools ▾</button><div id="pdfToolsMenu" class="pdf-tools-menu"><button data-pdf-tab="tab-pdf-editor">✏️ Edit PDF</button><button data-pdf-tab="tab-arranger">📚 Merge / Arrange</button><button data-pdf-tab="tab-arranger">✂️ Split / Delete / Reorder</button><button data-pdf-tab="tab-arranger">🔄 Rotate Pages</button><button data-pdf-tab="tab-jpg-to-pdf">🖼️ JPG/PNG → PDF</button><button data-pdf-tab="tab-pdf-to-jpg">🔁 PDF → JPG</button><button data-pdf-tab="tab-pdf-compressor">🗜️ Compress PDF</button><button data-pdf-tab="tab-resizer">📐 Resize Images</button><button data-pdf-info="Protect / Unlock PDF">🔒 Protect / Unlock PDF</button><button data-pdf-info="Word / Excel / PowerPoint conversion">📄 Office Conversion</button></div></div>
   <div style="max-width:720px;margin:0 auto 14px;padding:0 4px;">
     <input id="portalServiceSearch" type="search" placeholder="🔎 Search tools: ID card, PVC, passport, PDF, JPG…" aria-label="Search portal tools" style="width:100%;padding:12px 15px;border-radius:12px;border:1px solid rgba(56,189,248,.35);background:rgba(15,23,42,.85);color:#fff;font-size:13px;">
@@ -1743,6 +1744,13 @@
       <div class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">Master Administrator Panel <button id="lockAdminPanelBtn" type="button" class="login-btn">🔒 Lock Panel</button></div>
       <h1 style="color: #fbbf24;">Cloud Distributor Management</h1>
       <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">नए डिस्ट्रीब्यूटर जोड़ें। डिस्ट्रीब्यूटर की वैलिडिटी 30 दिनों की होगी और डेटा सुरक्षित रहेगा।</p>
+      <div class="control-panel" style="max-width:700px;text-align:left;margin-bottom:25px;border-color:#f59e0b;">
+        <h3 style="font-size:14px;color:#fbbf24;margin-bottom:12px;">🛠️ Portal Maintenance</h3>
+        <label style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><input type="checkbox" id="maintenanceEnabled"> Maintenance mode चालू करें</label>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;"><label>Start <input id="maintenanceStart" class="text-field-input" type="datetime-local"></label><label>End <input id="maintenanceEnd" class="text-field-input" type="datetime-local"></label></div>
+        <input id="maintenanceMessage" class="text-field-input" style="max-width:100%;margin-top:10px" value="Portal maintenance चल रहा है। कृपया बाद में प्रयास करें।" placeholder="Distributor को दिखने वाला message">
+        <button id="saveMaintenanceBtn" type="button" class="action-btn btn-add" style="margin-top:10px">💾 Save Maintenance Settings</button><span id="maintenanceStatus" style="font-size:12px;margin-left:10px"></span>
+      </div>
 
       <div class="control-panel" style="max-width: 500px; text-align: left; margin-bottom: 25px;">
         <h3 style="font-size: 14px; color: var(--accent-blue); margin-bottom: 12px;">➕ Add New Distributor</h3>
@@ -2125,6 +2133,8 @@
   document.getElementById('frontJoinBtn').addEventListener('click',()=>{document.getElementById('frontMenu').classList.remove('open');document.getElementById('goToSignUp').click();});
   document.getElementById('frontLanguageSelect').addEventListener('change',event=>{const lang=event.target.value;const copy={en:{hero:'Launch Your Digital Operations With',sub:'All-in-one platform for seamless online printing and digital services.',services:'Essential Services'},hi:{hero:'अपना डिजिटल काम आसानी से करें',sub:'ऑनलाइन प्रिंटिंग और डिजिटल सेवाओं का एक आसान प्लेटफॉर्म।',services:'जरूरी सेवाएँ'},mr:{hero:'तुमचे डिजिटल काम सहज करा',sub:'ऑनलाइन प्रिंटिंग आणि डिजिटल सेवांसाठी एक सोपे प्लॅटफॉर्म.',services:'महत्त्वाच्या सेवा'}}[lang];const hero=document.querySelector('.front-hero h1'),sub=document.querySelector('.front-hero p'),heading=document.querySelector('.front-services h3');if(hero)hero.innerHTML=copy.hero+'<br>OP Printing Hub';if(sub)sub.textContent=copy.sub;if(heading)heading.textContent=copy.services;});
   document.getElementById('portalLanguageSelect').addEventListener('change',event=>{const lang=event.target.value;document.documentElement.lang=lang==='hi'?'hi':lang==='mr'?'mr':'en';document.querySelectorAll('#portalLanguageSelect,#frontLanguageSelect').forEach(select=>select.value=lang);});
+  function applyMaintenance(settings){const banner=document.getElementById('maintenanceBanner');if(!banner)return;const active=settings&&settings.enabled===true;if(active){document.getElementById('maintenanceBannerText').textContent=settings.message||'Portal maintenance चल रहा है। कृपया बाद में प्रयास करें।';banner.hidden=false;}else banner.hidden=true;}
+  document.getElementById('saveMaintenanceBtn').addEventListener('click',async()=>{const s=document.getElementById('maintenanceStatus'),b=document.getElementById('saveMaintenanceBtn');b.disabled=true;s.textContent='Saving…';try{const r=await secureApi({action:'setMaintenance',enabled:document.getElementById('maintenanceEnabled').checked,start:document.getElementById('maintenanceStart').value,end:document.getElementById('maintenanceEnd').value,message:document.getElementById('maintenanceMessage').value});applyMaintenance(r.maintenance);s.textContent='✅ Saved';}catch(e){s.textContent='❌ '+e.message;}finally{b.disabled=false;}});
   document.getElementById('pdfToolsBtn').addEventListener('click',()=>document.getElementById('pdfToolsMenu').classList.toggle('open'));
   document.querySelectorAll('[data-pdf-tab]').forEach(btn=>btn.addEventListener('click',()=>{document.getElementById('pdfToolsMenu').classList.remove('open');switchTab(btn.dataset.pdfTab);}));
   document.querySelectorAll('[data-pdf-info]').forEach(btn=>btn.addEventListener('click',()=>{document.getElementById('pdfToolsMenu').classList.remove('open');alert(btn.dataset.pdfInfo+' को जोड़ने के लिए dedicated processing engine/OCR की आवश्यकता है।');}));
@@ -2167,6 +2177,7 @@
       clearAuth();
       const result=await secureApi({action:'login',email,password});
       acceptSession(result,email);
+      applyMaintenance(result.maintenance);
       loginPass.value=''; errorMsg.style.display='none';
       document.getElementById('pendingScreen').style.display='none';
       if(result.role==='distributor') {
@@ -2210,6 +2221,7 @@
     try {
       if(Date.now()>=authExpires) throw new Error('Session expired. Please login again.');
       const result=await secureApi({action:'getMe'});
+      applyMaintenance(result.maintenance);
       if(result.role==='distributor') {
         if(result.state==='renewal'||result.state==='renewal_pending') {
           if(mainApp.style.display!=='none') showRenewalScreen(result.record);
