@@ -1155,6 +1155,8 @@
   <div class="container">
     <!-- Top Header Bar with Live Validity Counter & Logout -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+      <strong style="font-size:20px;color:#7dd3fc;letter-spacing:.3px;">OP Printing Hub</strong>
+      <label style="margin-left:auto;color:#cbd5e1;font-size:12px;">🌐 <select id="portalLanguageSelect" style="padding:7px 10px;border-radius:9px;border:1px solid #38bdf8;background:#0f172a;color:#fff;"><option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option></select></label>
       <div id="validityCounterBadge" style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #34d399; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;">
         ⏳ Validity: Initializing...
       </div>
@@ -1785,7 +1787,7 @@
     </div>
 
     <footer style="margin-top: 25px; font-size: 12px; color: var(--text-muted);">
-      Designed & Developed by <strong>JAYESH BHAVSAR @ 2026 ALL RIGHTS RESERVED</strong>
+      Designed &amp; Developed by <strong>OP PRINTING HUB @ 2026 ALL RIGHTS RESERVED</strong>
     </footer>
   </div>
 </div>
@@ -2122,6 +2124,7 @@
   document.getElementById('frontLoginBtn').addEventListener('click',()=>{document.getElementById('frontMenu').classList.remove('open');document.getElementById('loginEmail').focus();});
   document.getElementById('frontJoinBtn').addEventListener('click',()=>{document.getElementById('frontMenu').classList.remove('open');document.getElementById('goToSignUp').click();});
   document.getElementById('frontLanguageSelect').addEventListener('change',event=>{const lang=event.target.value;const copy={en:{hero:'Launch Your Digital Operations With',sub:'All-in-one platform for seamless online printing and digital services.',services:'Essential Services'},hi:{hero:'अपना डिजिटल काम आसानी से करें',sub:'ऑनलाइन प्रिंटिंग और डिजिटल सेवाओं का एक आसान प्लेटफॉर्म।',services:'जरूरी सेवाएँ'},mr:{hero:'तुमचे डिजिटल काम सहज करा',sub:'ऑनलाइन प्रिंटिंग आणि डिजिटल सेवांसाठी एक सोपे प्लॅटफॉर्म.',services:'महत्त्वाच्या सेवा'}}[lang];const hero=document.querySelector('.front-hero h1'),sub=document.querySelector('.front-hero p'),heading=document.querySelector('.front-services h3');if(hero)hero.innerHTML=copy.hero+'<br>OP Printing Hub';if(sub)sub.textContent=copy.sub;if(heading)heading.textContent=copy.services;});
+  document.getElementById('portalLanguageSelect').addEventListener('change',event=>{const lang=event.target.value;document.documentElement.lang=lang==='hi'?'hi':lang==='mr'?'mr':'en';document.querySelectorAll('#portalLanguageSelect,#frontLanguageSelect').forEach(select=>select.value=lang);});
   document.getElementById('pdfToolsBtn').addEventListener('click',()=>document.getElementById('pdfToolsMenu').classList.toggle('open'));
   document.querySelectorAll('[data-pdf-tab]').forEach(btn=>btn.addEventListener('click',()=>{document.getElementById('pdfToolsMenu').classList.remove('open');switchTab(btn.dataset.pdfTab);}));
   document.querySelectorAll('[data-pdf-info]').forEach(btn=>btn.addEventListener('click',()=>{document.getElementById('pdfToolsMenu').classList.remove('open');alert(btn.dataset.pdfInfo+' को जोड़ने के लिए dedicated processing engine/OCR की आवश्यकता है।');}));
@@ -3315,8 +3318,8 @@
     return best>c.width*.006;
   }
   async function pvcRenderPdf(file,password=''){
-    pvcPdfStatus.textContent='Python PDF engine से printable area crop हो रहा है…';
-    try{const form=new FormData();form.append('file',file);if(password)form.append('password',password);const workerResponse=await fetch('https://all-services-are-working-fine-2.onrender.com/crop-card',{method:'POST',body:form});const workerResult=await workerResponse.json();if(!workerResponse.ok||!workerResult.success)throw new Error(workerResult.error||'Python crop worker unavailable.');pvcCropQueue={page:workerResult.page,backPending:pvcSideMode.value!=='single'};pvcPdfStatus.textContent='✅ PDF read हो गई। अब rectangle को चारों तरफ से card पर set करके Crop & Set दबाएँ।';openCropEngine(workerResult.page,'card_front');document.getElementById('pvcPasswordBox').hidden=true;return;}catch(workerError){pvcPdfStatus.textContent='Python worker से connection नहीं हुआ; browser fallback चल रहा है…';}
+    pvcPdfStatus.textContent='PDF तैयार हो रही है…';
+    try{const form=new FormData();form.append('file',file);if(password)form.append('password',password);const workerResponse=await fetch('https://all-services-are-working-fine-2.onrender.com/crop-card',{method:'POST',body:form});const workerResult=await workerResponse.json();if(!workerResponse.ok||!workerResult.success)throw new Error(workerResult.error||'Card processing unavailable.');pvcCropQueue={page:workerResult.page,backPending:pvcSideMode.value!=='single'};pvcPdfStatus.textContent='✅ PDF तैयार है। अब card का rectangle चारों तरफ set करके Crop & Set दबाएँ।';openCropEngine(workerResult.page,'card_front');document.getElementById('pvcPasswordBox').hidden=true;return;}catch(workerError){pvcPdfStatus.textContent='PDF तैयार करने में समस्या हुई; कृपया फिर कोशिश करें।';}
     const data=await file.arrayBuffer();let doc;
     try{doc=await pdfjsLib.getDocument({data,password}).promise;}catch(e){if(/password/i.test(e.name||'')||/password/i.test(e.message||'')){document.getElementById('pvcPasswordBox').hidden=false;pvcPdfStatus.textContent='Password डालकर Unlock दबाएँ।';return;}throw e;}
     if(doc.numPages<1)throw new Error('PDF में page नहीं मिला।');const page=await doc.getPage(1),vp=page.getViewport({scale:3}),src=document.createElement('canvas');src.width=vp.width;src.height=vp.height;await page.render({canvasContext:src.getContext('2d'),viewport:vp}).promise;
