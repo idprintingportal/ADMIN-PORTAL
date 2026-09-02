@@ -933,6 +933,7 @@
 #tab-pdf-editor #pe-export-dialog{margin:auto;max-width:480px;width:calc(100% - 32px);padding:24px;border:1px solid #43c4d4;border-radius:12px;background:#172338;color:#fff}
 #tab-pdf-editor #pe-export-dialog::backdrop{background:#020617bd}
 #tab-pdf-editor #pe-export-dialog p{margin:18px 0}
+.pdf-tools-bar{display:flex;justify-content:center;margin:0 auto 12px;position:relative}.pdf-tools-btn{background:linear-gradient(135deg,#4f6fe8,#7c4bd4);color:#fff;border:0;border-radius:12px;padding:11px 22px;font-weight:700;cursor:pointer;box-shadow:0 7px 16px #4f6fe844}.pdf-tools-menu{display:none;position:absolute;top:48px;z-index:20;width:min(620px,calc(100% - 28px));padding:14px;background:#172338;border:1px solid #52637f;border-radius:14px;box-shadow:0 18px 40px #0008;text-align:left;grid-template-columns:repeat(3,1fr);gap:8px}.pdf-tools-menu.open{display:grid}.pdf-tools-menu button{border:1px solid #52637f;background:#24334b;color:#e8eef8;border-radius:8px;padding:9px 7px;font-size:11px;cursor:pointer}.pdf-tools-menu button:hover{background:#124951;border-color:#43c4d4;transform:translateY(-2px)}
 /* Reference-style public front panel */
 #loginScreen.front-home{max-width:1280px;background:#f8fafc;color:#172033;box-shadow:none;border:0;padding:0 0 42px}
 .front-home .front-nav{height:62px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;gap:34px;color:#4b5563;font-size:14px;position:relative}.front-home .front-menu-wrap{position:absolute;right:28px;top:10px}.front-home .front-menu-btn{border:0;background:#f1f5f9;color:#3156bd;border-radius:20px;padding:10px 14px;font-size:18px;cursor:pointer;transition:.2s}.front-home .front-menu-btn:hover{transform:scale(1.08);box-shadow:0 6px 16px #5577e844}.front-home .front-menu{display:none;position:absolute;right:0;top:48px;z-index:5;width:180px;padding:10px;background:#fff;border:1px solid #dbe3f0;border-radius:14px;box-shadow:0 14px 30px #17203333}.front-home .front-menu.open{display:grid;gap:6px}.front-home .front-menu button{border:0;border-radius:9px;background:#f8fafc;padding:10px;text-align:left;color:#172033;cursor:pointer}.front-home .front-menu button:hover{background:#e7edff;color:#3156bd}
@@ -1131,6 +1132,7 @@
 
 <!-- 3. Main Portal Application -->
 <div id="mainApp">
+  <div class="pdf-tools-bar"><button id="pdfToolsBtn" class="pdf-tools-btn" type="button">📑 PDF Tools ▾</button><div id="pdfToolsMenu" class="pdf-tools-menu"><button data-pdf-tab="tab-pdf-editor">✏️ Edit PDF</button><button data-pdf-tab="tab-arranger">📚 Merge / Arrange</button><button data-pdf-tab="tab-jpg-to-pdf">🖼️ JPG/PNG → PDF</button><button data-pdf-tab="tab-pdf-to-jpg">🔁 PDF → JPG</button><button data-pdf-tab="tab-pdf-compressor">🗜️ Compress PDF</button><button data-pdf-tab="tab-resizer">📐 Resize Images</button><button data-pdf-info="OCR / PDF to Text">🔎 OCR / PDF to Text</button><button data-pdf-info="Protect / Unlock PDF">🔒 Protect / Unlock PDF</button><button data-pdf-info="Word / Excel / PowerPoint conversion">📄 Office Conversion</button></div></div>
   <div style="max-width:720px;margin:0 auto 14px;padding:0 4px;">
     <input id="portalServiceSearch" type="search" placeholder="🔎 Search tools: ID card, PVC, passport, PDF, JPG…" aria-label="Search portal tools" style="width:100%;padding:12px 15px;border-radius:12px;border:1px solid rgba(56,189,248,.35);background:rgba(15,23,42,.85);color:#fff;font-size:13px;">
   </div>
@@ -2118,6 +2120,9 @@
   document.getElementById('frontMenuBtn').addEventListener('click',()=>{const menu=document.getElementById('frontMenu'),open=menu.classList.toggle('open');document.getElementById('frontMenuBtn').setAttribute('aria-expanded',String(open));});
   document.getElementById('frontLoginBtn').addEventListener('click',()=>{document.getElementById('frontMenu').classList.remove('open');document.getElementById('loginEmail').focus();});
   document.getElementById('frontJoinBtn').addEventListener('click',()=>{document.getElementById('frontMenu').classList.remove('open');document.getElementById('goToSignUp').click();});
+  document.getElementById('pdfToolsBtn').addEventListener('click',()=>document.getElementById('pdfToolsMenu').classList.toggle('open'));
+  document.querySelectorAll('[data-pdf-tab]').forEach(btn=>btn.addEventListener('click',()=>{document.getElementById('pdfToolsMenu').classList.remove('open');switchTab(btn.dataset.pdfTab);}));
+  document.querySelectorAll('[data-pdf-info]').forEach(btn=>btn.addEventListener('click',()=>{document.getElementById('pdfToolsMenu').classList.remove('open');alert(btn.dataset.pdfInfo+' को जोड़ने के लिए dedicated processing engine/OCR की आवश्यकता है।');}));
   async function switchTab(tabId) {
     if(!authToken || (tabId==='tab-admin' && authRole!=='admin')) return;
     if(tabId==='tab-admin') {
