@@ -3237,7 +3237,7 @@
         frontCardRawData = croppedCanvas.toDataURL('image/png');
         if (pvcCropQueue && pvcCropQueue.backPending) {
           pvcCropQueue.backPending = false;
-          setTimeout(() => { pvcPdfStatus.textContent='अब उसी PDF page में Back card का rectangle select करें और Crop & Set दबाएँ।'; openCropEngine(pvcCropQueue.page,'card_back'); }, 150);
+          setTimeout(() => { pvcPdfStatus.textContent='अब Back view में चारों तरफ rectangle set करें और Crop & Set दबाएँ।'; openCropEngine(pvcCropQueue.backPage || pvcCropQueue.page,'card_back'); }, 150);
         } else if (pvcCropQueue) {
           img2Loaded = true;
           addCardBtn.disabled = false;
@@ -3340,7 +3340,7 @@
   }
   async function pvcRenderPdf(file,password=''){
     pvcPdfStatus.textContent='PDF तैयार हो रही है…';
-    try{const form=new FormData();form.append('file',file);if(password)form.append('password',password);const workerResponse=await fetch('https://all-services-are-working-fine-2.onrender.com/crop-card',{method:'POST',body:form});const workerResult=await workerResponse.json();if(!workerResponse.ok||!workerResult.success)throw new Error(workerResult.error||'Card processing unavailable.');pvcCropQueue={page:workerResult.page,backPending:pvcSideMode.value!=='single'};pvcPdfStatus.textContent='✅ PDF तैयार है। अब card का rectangle चारों तरफ set करके Crop & Set दबाएँ।';openCropEngine(workerResult.page,'card_front');document.getElementById('pvcPasswordBox').hidden=true;return;}catch(workerError){pvcPdfStatus.textContent='PDF तैयार करने में समस्या हुई; कृपया फिर कोशिश करें।';}
+    try{const form=new FormData();form.append('file',file);if(password)form.append('password',password);const workerResponse=await fetch('https://all-services-are-working-fine-2.onrender.com/crop-card',{method:'POST',body:form});const workerResult=await workerResponse.json();if(!workerResponse.ok||!workerResult.success)throw new Error(workerResult.error||'Card processing unavailable.');pvcCropQueue={page:workerResult.front,backPage:workerResult.back,backPending:pvcSideMode.value!=='single'};pvcPdfStatus.textContent='✅ Front view तैयार है। चारों तरफ केवल card चुनें, फिर Crop & Set दबाएँ।';openCropEngine(workerResult.front,'card_front');document.getElementById('pvcPasswordBox').hidden=true;return;}catch(workerError){console.warn('Auto-crop worker failed:',workerError);pvcPdfStatus.textContent='PDF तैयार करने में समस्या हुई; manual PDF crop जारी है।';}
     const data=await file.arrayBuffer();let doc;
     try{doc=await pdfjsLib.getDocument({data,password}).promise;}catch(e){if(/password/i.test(e.name||'')||/password/i.test(e.message||'')){document.getElementById('pvcPasswordBox').hidden=false;pvcPdfStatus.textContent='Password डालकर Unlock दबाएँ।';return;}throw e;}
     if(doc.numPages<1)throw new Error('PDF में page नहीं मिला।');const page=await doc.getPage(1),vp=page.getViewport({scale:3}),src=document.createElement('canvas');src.width=vp.width;src.height=vp.height;await page.render({canvasContext:src.getContext('2d'),viewport:vp}).promise;
