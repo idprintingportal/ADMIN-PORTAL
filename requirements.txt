@@ -1,5 +1,6 @@
 Flask
 PyMuPDF
 Pillow
-gunicorn
+numpy
+opencv-python-headless
 pytesseract
