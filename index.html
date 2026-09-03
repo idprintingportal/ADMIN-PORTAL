@@ -990,7 +990,9 @@ body:has(#loginScreen.front-home){background:radial-gradient(circle at 10% 10%,#
 #mainApp .tab-btn.active,#mainApp .tab-btn.tool-active{background:linear-gradient(135deg,#2563eb,#4f46e5)!important;color:#fff!important;border-color:#93c5fd!important;box-shadow:0 10px 26px #2563eb66!important}
 #mainApp .tab-content{animation:tabIn .3s ease both}
 .dashboard-status{padding:10px 15px;margin:0 auto 15px;border:1px solid #34d39966;border-radius:14px;background:linear-gradient(90deg,#064e3b88,#0f766e55);color:#a7f3d0;text-align:center;font-weight:700;letter-spacing:.1px;box-shadow:0 8px 22px #10b98122}
-.premium-only{display:none!important}.premium-crop-mode .premium-only{display:block!important}
+  .premium-only{display:none!important}.premium-crop-mode .premium-only{display:block!important}
+  /* Landing information footer must never appear inside the logged-in portal. */
+  #mainApp:not([style*="display: none"]) ~ .op-footer{display:none!important}
 .premium-upload-cta{display:inline-flex;align-items:center;justify-content:center;margin-top:12px;padding:12px 22px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;font-size:14px;font-weight:800;box-shadow:0 8px 20px #2563eb55;transition:transform .18s,box-shadow .18s}
 .upload-box:hover .premium-upload-cta{transform:translateY(-2px);box-shadow:0 12px 26px #2563eb77}
 @keyframes dashboardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}@keyframes tabIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
