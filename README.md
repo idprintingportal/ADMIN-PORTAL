@@ -882,6 +882,7 @@
 @media(max-width:740px){#np-editor .np-body{grid-template-columns:1fr}#np-editor .np-panel{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center}#np-editor .np-panel hr{display:none}#np-editor #np-results{width:100%}}
 #np-editor #np-inline{background:transparent!important;opacity:1!important;box-shadow:none!important;border:0!important;outline:0!important}
 #np-quota{font-size:12px;color:#475569;white-space:nowrap}
+.tab-btn{min-height:54px!important;padding:14px 20px!important;font-size:15px!important}.tool-active{background:#2563eb!important;color:#fff!important;border-color:#60a5fa!important;box-shadow:0 8px 20px #2563eb66!important}.premium-crop-mode .basic-only{display:none!important}
 </style>
 <style>
 #tab-pdf-editor .pe-shell{background:#111b2d;border:1px solid #34435c;border-radius:16px;overflow:hidden;text-align:left;color:#e8eef8}
@@ -1251,7 +1252,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
         <label style="font-size:12px;color:var(--text-muted);">Border size <input id="pvcBorderSize" type="range" min="1" max="20" value="6" style="width:90px;vertical-align:middle;"><output id="pvcBorderSizeValue">6 px</output></label>
       </div>
 
-      <div class="upload-section">
+      <div class="upload-section basic-only">
         <label class="upload-box" for="card1Input">
           <strong style="display:block; font-size:14px; margin-bottom:4px;">📁 Front Side</strong>
           <div id="file1Name" style="font-size: 12px; color: var(--text-muted);">इमेज चुनें (Auto-Crop)</div>
@@ -1265,7 +1266,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
         <input type="file" id="card2Input" accept="image/*">
       </div>
 
-      <div class="preview-container">
+      <div class="preview-container basic-only">
         <div class="preview-box">
           <h4>Front Card Preview</h4>
           <canvas id="canvas1" width="1013" height="638" style="width: 180px;"></canvas>
@@ -2206,15 +2207,20 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
     showPortalTab(tabId);
   }
   function focusTool(kind){
+    document.body.classList.toggle('premium-crop-mode',kind==='premium');
+    document.querySelectorAll('#basicIdCropperBtn,#premiumAutoCropperBtn,#premiumPdfEditorBtn').forEach(b=>b.classList.remove('tool-active'));
+    const active=kind==='basic'?'basicIdCropperBtn':kind==='premium'?'premiumAutoCropperBtn':'premiumPdfEditorBtn';document.getElementById(active)?.classList.add('tool-active');
     if(kind==='basic') document.getElementById('card1Input')?.scrollIntoView({behavior:'smooth',block:'center'});
   }
   function openPremiumAutoCropper(){
     switchTabDirect('tab-cards');
+    focusTool('premium');
     const input=document.getElementById('pvcPdfInput');
     if(input){input.closest('.upload-section')?.scrollIntoView({behavior:'smooth',block:'center'});input.focus({preventScroll:true});}
   }
   function openPremiumPdfEditor(){
     switchTabDirect('tab-pdf-editor');
+    focusTool('pdf');
     document.getElementById('np-editor')?.scrollIntoView({behavior:'smooth',block:'start'});
   }
   async function reviewDistributorPayment(email,requestId,approved) {
