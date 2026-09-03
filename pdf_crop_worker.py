@@ -1,14 +1,16 @@
 from flask import Flask, jsonify, request, send_file
 import base64
 import io
+import os
 import fitz
 from PIL import Image, ImageChops
-try:
-    import cv2
-    import numpy as np
-except ImportError:  # The service still works with the conservative fallback.
-    cv2 = None
-    np = None
+import cv2
+import numpy as np
+import pytesseract
+
+_tesseract_path = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+if os.path.exists(_tesseract_path):
+    pytesseract.pytesseract.tesseract_cmd = _tesseract_path
 
 app = Flask(__name__)
 
@@ -34,6 +36,33 @@ def trim_content(image: Image.Image, padding: int = 18) -> Image.Image:
     right = min(rgb.width, right + padding)
     bottom = min(rgb.height, bottom + padding)
     return rgb.crop((left, top, right, bottom))
+
+
+def read_card_text(image: Image.Image) -> str:
+    """Read multilingual card text after light normalization."""
+    rgb = np.asarray(image.convert("RGB"))
+    gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
+    gray = cv2.resize(gray, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+    gray = cv2.GaussianBlur(gray, (3, 3), 0)
+    clean = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+    try:
+        return pytesseract.image_to_string(clean, lang="eng+hin+mar", config="--oem 3 --psm 6").lower()
+    except pytesseract.TesseractNotFoundError:
+        return ""
+
+
+def identify_card(text: str) -> str:
+    if "income tax" in text or "permanent account" in text:
+        return "pan"
+    if "aadhaar" in text or "uidai" in text:
+        return "aadhaar"
+    if "e shram" in text or "e-shram" in text or "eshram" in text:
+        return "e-shram"
+    if "ayushman" in text or "pm-jay" in text or "pmjay" in text:
+        return "ayushman"
+    if "maandhan" in text or "mandhan" in text:
+        return "maandhan"
+    return "unknown"
 
 
 def _quad_crop(image: Image.Image, points):
@@ -213,17 +242,16 @@ def crop_card():
                 front = trim_content(crop_pdf_box(image, boxes[0], page.rect), padding=8)
                 back = trim_content(crop_pdf_box(image, boxes[1], page.rect), padding=8) if len(boxes) > 1 else Image.new("RGB", front.size, "white")
                 layout = "template-front-back" if len(boxes) > 1 else "template-single"
+        front_text = read_card_text(front)
+        back_text = read_card_text(back) if back.getbbox() else ""
         return jsonify({"success": True, "layout": layout,
+                        "cardType": identify_card(front_text + " " + back_text),
+                        "ocrAvailable": True,
                         "page": "data:image/png;base64," + png_data(image),
                         "front": "data:image/png;base64," + png_data(front),
                         "back": "data:image/png;base64," + png_data(back)})
     except Exception as exc:
         return jsonify(error=str(exc)[:240]), 422
-        import pytesseract
-
-pytesseract.pytesseract.tesseract_cmd = (
-    r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-)
 
 
 if __name__ == "__main__":
