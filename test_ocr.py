@@ -5,12 +5,32 @@ pytesseract.pytesseract.tesseract_cmd = (
     r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 )
 
-image = cv2.imread(r"C:\Users\harsh\test-card.jpg")
+image_path = r"C:\Users\harsh\test-card.jpg"
+
+image = cv2.imread(image_path)
+
+if image is None:
+    raise FileNotFoundError(
+        f"Image नहीं मिली: {image_path}"
+    )
+
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-gray = cv2.resize(gray, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+
+gray = cv2.resize(
+    gray,
+    None,
+    fx=2,
+    fy=2,
+    interpolation=cv2.INTER_CUBIC
+)
+
 gray = cv2.GaussianBlur(gray, (3, 3), 0)
+
 clean = cv2.threshold(
-    gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU
+    gray,
+    0,
+    255,
+    cv2.THRESH_BINARY + cv2.THRESH_OTSU
 )[1]
 
 text = pytesseract.image_to_string(
@@ -19,4 +39,6 @@ text = pytesseract.image_to_string(
     config="--oem 3 --psm 6"
 )
 
+print("----- OCR RESULT -----")
 print(text)
+print("----------------------")
