@@ -991,6 +991,8 @@ body:has(#loginScreen.front-home){background:radial-gradient(circle at 10% 10%,#
 #mainApp .tab-content{animation:tabIn .3s ease both}
 .dashboard-status{padding:10px 15px;margin:0 auto 15px;border:1px solid #34d39966;border-radius:14px;background:linear-gradient(90deg,#064e3b88,#0f766e55);color:#a7f3d0;text-align:center;font-weight:700;letter-spacing:.1px;box-shadow:0 8px 22px #10b98122}
   .premium-only{display:none!important}.premium-crop-mode .premium-only{display:block!important}
+  .premium-preview{display:none}.premium-crop-mode .premium-preview{display:flex!important;gap:16px;justify-content:center;flex-wrap:wrap}
+  .premium-only .upload-box{margin-left:auto;margin-right:auto;text-align:center}
   /* Landing information footer must never appear inside the logged-in portal. */
   #mainApp:not([style*="display: none"]) ~ .op-footer{display:none!important}
   .premium-upload-cta{display:inline-flex;align-items:center;justify-content:center;margin-top:12px;padding:12px 22px;border:0;border-radius:12px;background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 8px 20px #2563eb55;transition:transform .18s,box-shadow .18s}
@@ -1318,7 +1320,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
         <input type="file" id="card2Input" accept="image/*">
       </div>
 
-      <div class="preview-container basic-only">
+      <div class="preview-container premium-preview">
         <div class="preview-box">
           <h4>Front Card Preview</h4>
           <canvas id="canvas1" width="1013" height="638" style="width: 180px;"></canvas>
@@ -3464,7 +3466,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
     pvcPdfStatus.textContent='⏳ Loading…';
     try{await window.requirePdfPremium();}catch(err){pvcPdfStatus.textContent=err.message||'PVC Auto Crop के लिए Premium access आवश्यक है।';return;}
     pvcPdfStatus.textContent='PDF तैयार हो रही है…';
-    try{const form=new FormData();form.append('file',file);if(password)form.append('password',password);const workerResponse=await fetch('https://all-services-are-working-fine-2.onrender.com/crop-card',{method:'POST',body:form});const workerResult=await workerResponse.json();if(!workerResponse.ok||!workerResult.success)throw new Error(workerResult.error||'Card processing unavailable.');pvcCropQueue={page:workerResult.front,backPage:workerResult.back,backPending:pvcSideMode.value!=='single'};pvcPdfStatus.textContent='✅ Front view तैयार है। चारों तरफ केवल card चुनें, फिर Crop & Set दबाएँ।';openCropEngine(workerResult.front,'card_front');document.getElementById('pvcPasswordBox').hidden=true;return;}catch(workerError){console.warn('Auto-crop worker failed:',workerError);pvcPdfStatus.textContent='PDF तैयार करने में समस्या हुई; manual PDF crop जारी है।';}
+    try{const form=new FormData();form.append('file',file);if(password)form.append('password',password);const workerResponse=await fetch('https://all-services-are-working-fine-2.onrender.com/crop-card',{method:'POST',body:form});const workerResult=await workerResponse.json();if(!workerResponse.ok||!workerResult.success)throw new Error(workerResult.error||'Card processing unavailable.');pvcCropQueue={page:workerResult.front,backPage:workerResult.back,backPending:pvcSideMode.value!=='single'};autoFitCardToCanvas(workerResult.front,canvas1,ctx1,true);if(workerResult.back){autoFitCardToCanvas(workerResult.back,canvas2,ctx2,false);}pvcPdfStatus.textContent='✅ Front/Back preview तैयार है। जरूरत हो तो नीचे Manual Crop दबाएँ।';openCropEngine(workerResult.front,'card_front');document.getElementById('pvcPasswordBox').hidden=true;return;}catch(workerError){console.warn('Auto-crop worker failed:',workerError);pvcPdfStatus.textContent='PDF तैयार करने में समस्या हुई; manual PDF crop जारी है।';}
     const data=await file.arrayBuffer();let doc;
     try{doc=await pdfjsLib.getDocument({data,password}).promise;}catch(e){if(/password/i.test(e.name||'')||/password/i.test(e.message||'')){document.getElementById('pvcPasswordBox').hidden=false;pvcPdfStatus.textContent='Password डालकर Unlock दबाएँ।';return;}throw e;}
     if(doc.numPages<1)throw new Error('PDF में page नहीं मिला।');const page=await doc.getPage(1),vp=page.getViewport({scale:3}),src=document.createElement('canvas');src.width=vp.width;src.height=vp.height;await page.render({canvasContext:src.getContext('2d'),viewport:vp}).promise;
