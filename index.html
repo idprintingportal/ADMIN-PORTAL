@@ -887,6 +887,7 @@
 <style>
   .op-footer{margin:28px auto 0;padding:32px 28px 18px;max-width:1320px;border:1px solid #ffffff24;border-radius:24px 24px 0 0;background:linear-gradient(135deg,#0f172eee,#1e1b4bee);color:#cbd5e1;box-shadow:0 -16px 45px #02061744;backdrop-filter:blur(18px)}
   .front-nav-links{display:flex;align-items:center;gap:16px;margin-left:38px}.front-nav-links a{color:#475569;text-decoration:none;font-size:12px;font-weight:700;transition:color .2s,transform .2s}.front-nav-links a:hover{color:#2563eb;transform:translateY(-1px)}
+  .info-modal{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:18px;background:#020617aa;backdrop-filter:blur(8px)}.info-modal[hidden]{display:none}.info-modal-card{position:relative;width:min(640px,100%);max-height:82vh;overflow:auto;padding:30px;border:1px solid #93c5fd66;border-radius:22px;background:linear-gradient(145deg,#172033f5,#312e81f2);color:#e2e8f0;box-shadow:0 25px 80px #0009;animation:dashboardIn .25s ease}.info-modal-card h2{margin:0 30px 18px 0;color:#bfdbfe}.info-modal-card p,.info-modal-card li{line-height:1.7;font-size:14px}.info-modal-card ul{padding-left:22px}.info-modal-close{position:absolute;right:14px;top:10px;border:0;background:transparent;color:#fff;font-size:30px;cursor:pointer}.info-modal-close:hover{color:#67e8f9}
   .op-footer-grid{display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:28px}.op-footer h3{color:#93c5fd;font-size:21px;margin-bottom:8px}.op-footer h4{color:#fff;margin-bottom:12px}.op-footer p{font-size:13px;line-height:1.6}.op-footer a{display:block;color:#cbd5e1;text-decoration:none;font-size:13px;margin:8px 0;transition:color .2s,transform .2s}.op-footer a:hover{color:#67e8f9;transform:translateX(4px)}.made-india{display:inline-block;margin-top:14px;padding:7px 11px;border:1px solid #34d39988;border-radius:999px;color:#a7f3d0;background:#064e3b66;font-size:12px;font-weight:700}.op-footer-bottom{border-top:1px solid #ffffff1c;margin-top:25px;padding-top:14px;text-align:center;font-size:12px;color:#94a3b8}.op-type-fade{opacity:.15;transition:opacity .22s}.op-footer~*{position:relative}
   @media(max-width:900px){.front-nav-links{display:none}}@media(max-width:700px){.op-footer{padding:25px 18px 15px}.op-footer-grid{grid-template-columns:1fr 1fr;gap:20px}.op-footer-grid>div:first-child{grid-column:1/-1}}
 #tab-pdf-editor .pe-shell{background:#111b2d;border:1px solid #34435c;border-radius:16px;overflow:hidden;text-align:left;color:#e8eef8}
@@ -1021,7 +1022,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
 
 <!-- 1. Login Screen with Running Ticker, Ad Images & Services Info -->
 <div id="loginScreen" class="auth-box front-home">
-  <nav class="front-nav"><strong>OP Printing Hub</strong><div class="front-nav-links" aria-label="Primary navigation"><a href="#loginScreen">Home</a><a href="#pricing">Pricing &amp; Plans</a><a href="#jobs">Government Jobs</a><a href="#mainApp">All PDF Tools</a><a href="#faq">Help &amp; FAQs</a></div><label class="front-language" style="margin-left:auto;margin-right:58px;font-size:12px;color:#475569;display:flex;align-items:center;gap:6px;">🌐 <select id="frontLanguageSelect" style="border:1px solid #cbd5e1;border-radius:9px;padding:7px;background:#fff;color:#334155;"><option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option></select></label><div class="front-menu-wrap"><button class="front-menu-btn" id="frontMenuBtn" aria-expanded="false" aria-controls="frontMenu">☰</button><div class="front-menu" id="frontMenu"><button type="button" id="frontLoginBtn">🔑 Login</button><button type="button" id="frontJoinBtn">📝 Join / Create Account</button></div></div></nav>
+  <nav class="front-nav"><strong>OP Printing Hub</strong><div class="front-nav-links" aria-label="Primary navigation"><a href="#loginScreen">Home</a><a href="#pricing">Pricing &amp; Plans</a><a href="#mainApp">All PDF Tools</a><a href="#faq">Help &amp; FAQs</a></div><label class="front-language" style="margin-left:auto;margin-right:58px;font-size:12px;color:#475569;display:flex;align-items:center;gap:6px;">🌐 <select id="frontLanguageSelect" style="border:1px solid #cbd5e1;border-radius:9px;padding:7px;background:#fff;color:#334155;"><option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option></select></label><div class="front-menu-wrap"><button class="front-menu-btn" id="frontMenuBtn" aria-expanded="false" aria-controls="frontMenu">☰</button><div class="front-menu" id="frontMenu"><button type="button" id="frontLoginBtn">🔑 Login</button><button type="button" id="frontJoinBtn">📝 Join / Create Account</button></div></div></nav>
   <section class="front-hero"><h1>Launch Your Digital Operations With<br>Our Print Portal</h1><p>All-in-one platform for seamless online printing and digital services.</p></section>
   <div class="front-status-banner" role="status">🟢 All Portal Services Operational · Fast 300 DPI Rendering Active</div>
   <section class="front-highlights" aria-label="Portal highlights">
@@ -6131,12 +6132,13 @@ try {
 })();
 
 </script>
+<div id="infoModal" class="info-modal" hidden role="dialog" aria-modal="true" aria-labelledby="infoModalTitle"><div class="info-modal-card"><button id="infoModalClose" class="info-modal-close" type="button" aria-label="Close">×</button><h2 id="infoModalTitle"></h2><div id="infoModalBody"></div></div></div>
 <footer class="op-footer" aria-label="Website footer">
   <div class="op-footer-grid">
     <div><h3>OP Printing Hub</h3><p>Digital printing and document tools for everyday work.</p><span class="made-india">Made in India 🇮🇳</span></div>
-    <div><h4>About &amp; Support</h4><a href="#loginScreen">About Us</a><a href="mailto:support@opprintinghub.com">Contact Us</a><a href="#faq">Help &amp; FAQs</a></div>
+    <div><h4>About &amp; Support</h4><a href="#about">About Us</a><a href="#contact">Contact Us</a><a href="#faq">Help &amp; FAQs</a></div>
     <div><h4>Legal</h4><a href="#privacy">Privacy Policy</a><a href="#terms">Terms &amp; Conditions</a><a href="#disclaimer">Disclaimer</a><a href="#cookies">Cookie Policy</a></div>
-    <div><h4>Resources</h4><a href="#pricing">Pricing &amp; Plans</a><a href="#jobs">Government Jobs</a><a href="#mainApp">All PDF Tools</a><a href="#sitemap">Sitemap</a><a href="mailto:support@opprintinghub.com">✉️ Support Email</a><a href="#social">🔗 Social Media</a></div>
+    <div><h4>Resources</h4><a href="#pricing">Pricing &amp; Plans</a><a href="#mainApp">All PDF Tools</a><a href="#sitemap">Sitemap</a><a href="#contact">✉️ Support Email</a><a href="#social">🔗 Social Media</a></div>
   </div>
   <div class="op-footer-bottom">© 2026 OP Printing Hub · Secure portal access</div>
 </footer>
@@ -6145,6 +6147,25 @@ try {
   const phrases=['Automate your printing workflow','Crop ID cards with confidence','Create clean A4-ready documents'];
   const hero=document.querySelector('#loginScreen .front-hero h1');
   if(hero){let i=0;setInterval(()=>{i=(i+1)%phrases.length;hero.classList.add('op-type-fade');setTimeout(()=>{hero.innerHTML=phrases[i]+'<br>with OP Printing Hub';hero.classList.remove('op-type-fade')},220)},4200);}
+})();
+</script>
+<script>
+(() => {
+  const data={
+    pricing:{title:'Pricing & Plans',body:'<p>Portal access and premium features are managed according to the plans shown inside your account.</p><ul><li>Basic ID Cropper: Front/Back image upload and manual adjustment.</li><li>Premium Auto ID Cropper: PDF upload, automatic layout detection and manual fallback.</li><li>PDF Editor Premium: advanced PDF editing after approval.</li><li>Other tools: passport sheets, 4×6 photo print, PDF conversion, arranger, resizer and compressor.</li></ul><p>Final price, validity and approval status are always shown in the portal before submission.</p>'},
+    faq:{title:'Help & FAQs',body:'<ul><li><b>Login नहीं हो रहा?</b> Email/password जाँचें और जरूरत हो तो Forgot Password से OTP लें.</li><li><b>OTP नहीं आया?</b> Spam folder देखें और 120-second cooldown पूरा होने दें.</li><li><b>Auto crop गलत है?</b> साफ, सीधी और high-resolution PDF/image लगाएँ; manual crop fallback इस्तेमाल करें.</li><li><b>PDF premium कैसे मिलेगा?</b> Portal में payment proof submit करें और admin approval की प्रतीक्षा करें.</li><li><b>फाइल सुरक्षित है?</b> केवल आवश्यक processing के लिए भेजी जाती है; sensitive files का backup अपने पास रखें.</li></ul>'},
+    about:{title:'About OP Printing Hub',body:'<p>OP Printing Hub एक practical digital printing portal है, जो ID cards, passport photos, PDF processing और A4 print workflows को एक जगह सरल बनाने के लिए बनाया गया है.</p><p>हमारा लक्ष्य छोटे printing operators और distributors को तेज, साफ और आसान tools देना है.</p>'},
+    contact:{title:'Contact Us',body:'<p>Support के लिए अपने portal administrator से संपर्क करें।</p><p><b>Support email:</b> अपना verified support email यहाँ configure करें।</p><p>कृपया message में registered email, समस्या का screenshot और समय शामिल करें। अपना password या OTP कभी साझा न करें.</p>'},
+    privacy:{title:'Privacy Policy',body:'<p>Portal account, payment proof और uploaded documents को केवल requested service, access control और support के लिए process किया जाता है. Password और OTP किसी के साथ साझा न करें.</p>'},
+    terms:{title:'Terms & Conditions',body:'<ul><li>Portal का उपयोग केवल lawful printing और document work के लिए करें.</li><li>अपलोड की गई files और दिए गए details की जिम्मेदारी user की है.</li><li>Premium features approval और validity rules के अधीन हैं.</li><li>Security bypass, abuse, spam या unauthorized access निषिद्ध है.</li><li>Service availability network और third-party providers पर निर्भर हो सकती है.</li></ul>'},
+    disclaimer:{title:'Disclaimer',body:'<p>Auto-crop और OCR सहायता प्रदान करते हैं, लेकिन हर document पर perfect result की गारंटी नहीं है. Final print से पहले preview और personal details स्वयं verify करें.</p>'},
+    cookies:{title:'Cookie Policy',body:'<p>Portal login state, preferences और security workflow के लिए आवश्यक browser storage का उपयोग कर सकता है. Browser storage clear करने पर दोबारा login करना पड़ सकता है.</p>'},
+    sitemap:{title:'Sitemap',body:'<ul><li>Home</li><li>Pricing &amp; Plans</li><li>All PDF Tools</li><li>Help &amp; FAQs</li><li>Account and Support</li></ul>'},
+    social:{title:'Support & Social Links',body:'<p>Official WhatsApp number और social links administrator द्वारा verify करके यहाँ जोड़े जाने चाहिए. गलत या निजी नंबर दिखाने से बचने के लिए फिलहाल केवल portal support channel उपयोग करें.</p>'}
+  };
+  const modal=document.getElementById('infoModal'),title=document.getElementById('infoModalTitle'),body=document.getElementById('infoModalBody');
+  function close(){modal.hidden=true} document.getElementById('infoModalClose').onclick=close;modal.onclick=e=>{if(e.target===modal)close()};document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+  document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const key=a.getAttribute('href').slice(1);if(!data[key])return;e.preventDefault();title.textContent=data[key].title;body.innerHTML=data[key].body;modal.hidden=false;document.getElementById('infoModalClose').focus();});
 })();
 </script>
 </body>
