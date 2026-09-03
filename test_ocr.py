@@ -5,7 +5,7 @@ pytesseract.pytesseract.tesseract_cmd = (
     r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 )
 
-image = Image.open("test-card.png")
+image = Image.open(r"C:\Users\harsh\test-card.jpg")
 text = pytesseract.image_to_string(image, lang="eng")
 
 print(text)
