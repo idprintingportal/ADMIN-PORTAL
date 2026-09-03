@@ -13,7 +13,12 @@ if os.path.exists(_tesseract_path):
     pytesseract.pytesseract.tesseract_cmd = _tesseract_path
 
 app = Flask(__name__)
-
+@app.get("/health")
+def health():
+    return jsonify({
+        "ok": True,
+        "service": "pdf-crop-worker"
+    })
 @app.after_request
 def allow_local_portal(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
