@@ -993,7 +993,7 @@ body:has(#loginScreen.front-home){background:radial-gradient(circle at 10% 10%,#
   .premium-only{display:none!important}.premium-crop-mode .premium-only{display:block!important}
   /* Landing information footer must never appear inside the logged-in portal. */
   #mainApp:not([style*="display: none"]) ~ .op-footer{display:none!important}
-.premium-upload-cta{display:inline-flex;align-items:center;justify-content:center;margin-top:12px;padding:12px 22px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;font-size:14px;font-weight:800;box-shadow:0 8px 20px #2563eb55;transition:transform .18s,box-shadow .18s}
+  .premium-upload-cta{display:inline-flex;align-items:center;justify-content:center;margin-top:12px;padding:12px 22px;border:0;border-radius:12px;background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 8px 20px #2563eb55;transition:transform .18s,box-shadow .18s}
 .upload-box:hover .premium-upload-cta{transform:translateY(-2px);box-shadow:0 12px 26px #2563eb77}
 @keyframes dashboardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}@keyframes tabIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .portal-main-heading,#frontServiceSearch,.front-services .service-tile:first-of-type{display:none!important}
@@ -1280,7 +1280,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
       
       <div id="slotCounter" class="slot-counter-badge">Cards on Page: 0 / 5 (Next Slot: #1)</div>
       <div class="upload-section premium-only" style="margin:12px 0;">
-        <label class="upload-box" for="pvcPdfInput" style="max-width:520px;"><strong style="display:block;font-size:14px;margin-bottom:4px;">✨ Premium Auto ID Cropper: PDF से Front/Back</strong><div id="pvcPdfName" style="font-size:12px;color:var(--text-muted);">Premium access के बाद PDF चुनें · ऊपर-नीचे या left-right layout अपने-आप पहचाना जाएगा</div><span class="premium-upload-cta">📄 Choose ID PDF</span></label>
+        <div class="upload-box" style="max-width:520px;cursor:default;"><strong style="display:block;font-size:14px;margin-bottom:4px;">✨ Premium Auto ID Cropper: PDF से Front/Back</strong><div id="pvcPdfName" style="font-size:12px;color:var(--text-muted);">Premium access के बाद PDF चुनें · ऊपर-नीचे या left-right layout अपने-आप पहचाना जाएगा</div><button type="button" class="premium-upload-cta" onclick="document.getElementById('pvcPdfInput').click()">📄 Choose ID PDF</button></div>
         <input id="pvcPdfInput" type="file" accept="application/pdf">
         <p id="pvcPdfStatus" role="status" style="min-height:18px;margin:8px 0 0;font-size:12px;color:var(--accent-blue);text-align:center;"></p>
       </div>
