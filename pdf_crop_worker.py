@@ -219,6 +219,11 @@ def crop_card():
                         "back": "data:image/png;base64," + png_data(back)})
     except Exception as exc:
         return jsonify(error=str(exc)[:240]), 422
+        import pytesseract
+
+pytesseract.pytesseract.tesseract_cmd = (
+    r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+)
 
 
 if __name__ == "__main__":
