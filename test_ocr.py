@@ -6,5 +6,9 @@ pytesseract.pytesseract.tesseract_cmd = (
 )
 
 image = Image.open(r"C:\Users\harsh\test-card.jpg")
-text = pytesseract.image_to_string(image, lang="eng+hin")
+text = pytesseract.image_to_string(
+    image,
+    lang="eng+hin+mar",
+    config="--oem 3 --psm 6"
+)
 print(text)
