@@ -3557,15 +3557,8 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
     addedCardsCount = 0;
     a4Ctx.fillStyle = '#ffffff';
     a4Ctx.fillRect(0, 0, A4_W, A4_H);
-    const totalPairWidth = (CARD_W * 2) + GAP_2_5MM_PX;
-    const startX = (A4_W - totalPairWidth) / 2;
-    for (let i = 0; i < MAX_CARDS; i++) {
-      const currentY = 45 + (i * (CARD_H + 45));
-      a4Ctx.strokeStyle = '#e2e8f0';
-      a4Ctx.lineWidth = 2;
-      a4Ctx.strokeRect(startX, currentY, CARD_W, CARD_H);
-      a4Ctx.strokeRect(startX + CARD_W + GAP_2_5MM_PX, currentY, CARD_W, CARD_H);
-    }
+    // Keep the A4 preview clean after reset. Empty slot guide rectangles are
+    // intentionally not painted because they otherwise appear in exported PDF/JPG.
     slotCounter.innerText = `Cards on Page: 0 / 5 (Next Slot: #1)`;
     downloadPdfBtn.disabled = true;
     downloadJpgBtn.disabled = true;
