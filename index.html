@@ -951,6 +951,30 @@
 .tab-btn,.pdf-tools-menu button,.action-btn,.login-btn{min-height:44px!important;padding:11px 16px!important;font-size:14px!important;font-weight:700!important;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}.tab-btn:hover,.pdf-tools-menu button:hover,.action-btn:hover,.login-btn:hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 8px 18px #38bdf844}.pdf-tools-menu button{min-height:50px!important;font-size:13px!important}.front-home .service-tile{animation:opFloatIn .45s ease both}.front-home .service-tile:nth-child(3){animation-delay:.05s}.front-home .service-tile:nth-child(4){animation-delay:.1s}.front-home .service-tile:nth-child(5){animation-delay:.15s}.front-home .service-tile:nth-child(6){animation-delay:.2s}@keyframes opFloatIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @media(max-width:900px){.front-home .front-services{grid-template-columns:repeat(3,1fr);margin:0 22px}.front-home .front-hero{margin:42px 22px 30px}.front-home .front-hero h1{font-size:31px}.front-home .front-nav{gap:14px}.front-home .front-nav .front-icons{margin-left:8px}}
 @media(max-width:520px){.front-home .front-services{grid-template-columns:repeat(2,1fr);gap:12px}.front-home .front-services h3{font-size:20px}.front-home .front-hero h1{font-size:25px}.front-home .front-hero p{font-size:13px}}
+
+/* Modern landing upgrade: split value proposition + floating authentication card. */
+body:has(#loginScreen.front-home){background:radial-gradient(circle at 10% 10%,#dbeafe 0,#eef2ff 35%,#ecfdf5 100%)!important}
+#loginScreen.front-home{max-width:1320px;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(350px,.65fr);gap:24px;padding:18px 28px 48px;border-radius:28px;background:rgba(255,255,255,.42)!important;border:1px solid rgba(255,255,255,.75);box-shadow:0 24px 70px rgba(30,64,175,.16);backdrop-filter:blur(18px)}
+#loginScreen.front-home .front-nav{grid-column:1/-1;margin:-18px -28px 0;padding:0 28px;border-radius:28px 28px 0 0}
+#loginScreen.front-home .front-hero{grid-column:1;margin:0;text-align:left;min-height:245px;display:flex;flex-direction:column;justify-content:center;padding:44px 42px}
+#loginScreen.front-home .front-hero h1{margin:0 0 15px;font-size:clamp(30px,4vw,48px)}
+#loginScreen.front-home .front-search,#loginScreen.front-home .front-services{grid-column:1;margin-left:0;margin-right:0;width:auto}
+#loginScreen.front-home .front-search{margin-top:-2px;margin-bottom:0}
+#loginScreen.front-home .front-services{grid-template-columns:repeat(4,1fr);margin-bottom:0}
+#loginScreen.front-home .front-services h3{grid-column:1/-1}
+#loginScreen.front-home>.badge,#loginScreen.front-home>h2,#loginScreen.front-home>p,#loginScreen.front-home>#loginEmail,#loginScreen.front-home>#loginPass,#loginScreen.front-home>#authBtn,#loginScreen.front-home>#errorMsg,#loginScreen.front-home>div[style]{grid-column:2}
+#loginScreen.front-home>.badge{align-self:end;margin-top:8px}
+#loginScreen.front-home>h2{font-size:28px!important;margin-bottom:0!important}
+#loginScreen.front-home>#loginEmail,#loginScreen.front-home>#loginPass{width:100%;margin:0}
+#loginScreen.front-home>#authBtn{width:100%;margin-top:2px}
+#loginScreen.front-home>#errorMsg{border:1px solid #fb7185;border-radius:12px;padding:10px;background:#fff1f2;color:#be123c}
+.login-input.input-error{border-color:#ef4444!important;box-shadow:0 0 0 3px #ef444433!important}
+.login-input.input-error,.auth-error-shake{animation:authShake .32s ease}
+@keyframes authShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.front-status-banner{grid-column:1/-1;padding:11px 16px;border:1px solid #86efac;border-radius:14px;background:#ecfdf5;color:#166534;font-weight:700;text-align:center;box-shadow:0 8px 18px #16a34a18}
+.front-highlights{grid-column:1;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.front-highlight{padding:15px;border-radius:16px;background:rgba(255,255,255,.72);border:1px solid #dbeafe;box-shadow:0 8px 20px #1720330b;font-weight:700;color:#243b69}
+@media(max-width:850px){#loginScreen.front-home{display:block;padding:12px 16px 36px}#loginScreen.front-home .front-nav{margin:-12px -16px 0;padding:0 16px}#loginScreen.front-home .front-hero{margin:18px 0 20px;min-height:220px;padding:30px 24px;text-align:center}.front-status-banner,.front-highlights{margin:14px 0}.front-highlights{grid-template-columns:1fr}.front-highlight{padding:12px}.front-home .front-services{grid-template-columns:repeat(2,1fr);margin:20px 0}.front-home .front-search{width:100%;margin:14px 0}.front-home>.badge,.front-home>h2,.front-home>p,.front-home>#loginEmail,.front-home>#loginPass,.front-home>#authBtn,.front-home>#errorMsg,.front-home>div[style]{margin-left:auto;margin-right:auto;max-width:520px}}
 .portal-main-heading,#frontServiceSearch,.front-services .service-tile:first-of-type{display:none!important}
 body:has(#loginScreen.front-home){background:#edf3f8!important}
 .front-home{background:#edf3f8!important}
@@ -981,6 +1005,12 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
 <div id="loginScreen" class="auth-box front-home">
   <nav class="front-nav"><strong>OP Printing Hub</strong><label class="front-language" style="margin-left:auto;margin-right:58px;font-size:12px;color:#475569;display:flex;align-items:center;gap:6px;">🌐 <select id="frontLanguageSelect" style="border:1px solid #cbd5e1;border-radius:9px;padding:7px;background:#fff;color:#334155;"><option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option></select></label><div class="front-menu-wrap"><button class="front-menu-btn" id="frontMenuBtn" aria-expanded="false" aria-controls="frontMenu">☰</button><div class="front-menu" id="frontMenu"><button type="button" id="frontLoginBtn">🔑 Login</button><button type="button" id="frontJoinBtn">📝 Join / Create Account</button></div></div></nav>
   <section class="front-hero"><h1>Launch Your Digital Operations With<br>Our Print Portal</h1><p>All-in-one platform for seamless online printing and digital services.</p></section>
+  <div class="front-status-banner" role="status">🟢 All Portal Services Operational · Fast 300 DPI Rendering Active</div>
+  <section class="front-highlights" aria-label="Portal highlights">
+    <div class="front-highlight">⚡ Fast Processing</div>
+    <div class="front-highlight">🛡️ Secure Workflow</div>
+    <div class="front-highlight">🖨️ Perfect A4 Alignment</div>
+  </section>
   <input class="front-search" id="frontServiceSearch" type="search" placeholder="⌕  Search services, forms, files... (e.g. Aadhaar, PDF)" aria-label="Search services">
   <section class="front-services"><h3>Essential &amp; Services</h3><div class="service-tile" tabindex="0" onclick="document.getElementById('loginEmail').focus()"><span>📝</span><small>Mock Test</small></div><div class="service-tile" tabindex="0" onclick="document.getElementById('loginEmail').focus()"><span>🪪</span><small>ID Card Print</small></div><div class="service-tile" tabindex="0" onclick="document.getElementById('loginEmail').focus()"><span>✂️</span><small>PVC Auto Crop</small></div><div class="service-tile" tabindex="0" onclick="document.getElementById('loginEmail').focus()"><span>🖨️</span><small>Auto Print</small></div><div class="service-tile" tabindex="0" onclick="document.getElementById('loginEmail').focus()"><span>📷</span><small>Passport Photo</small></div></section>
   
