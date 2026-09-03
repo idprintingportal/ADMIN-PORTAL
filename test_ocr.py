@@ -1,15 +1,20 @@
+import cv2
 import pytesseract
-from PIL import Image
 
 pytesseract.pytesseract.tesseract_cmd = (
     r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 )
 
-image = Image.open(r"C:\Users\harsh\test-card.jpg").convert("L")
-image = image.resize((image.width * 2, image.height * 2))
+image = cv2.imread(r"C:\Users\harsh\test-card.jpg")
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+gray = cv2.resize(gray, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+gray = cv2.GaussianBlur(gray, (3, 3), 0)
+clean = cv2.threshold(
+    gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU
+)[1]
 
 text = pytesseract.image_to_string(
-    image,
+    clean,
     lang="eng+hin+mar",
     config="--oem 3 --psm 6"
 )
