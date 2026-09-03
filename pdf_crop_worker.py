@@ -13,6 +13,22 @@ if os.path.exists(_tesseract_path):
     pytesseract.pytesseract.tesseract_cmd = _tesseract_path
 
 app = Flask(__name__)
+@app.get("/ocr-status")
+def ocr_status():
+    try:
+        langs = pytesseract.get_languages(config="")
+        return jsonify({
+            "tesseract": True,
+            "eng": "eng" in langs,
+            "hin": "hin" in langs,
+            "mar": "mar" in langs,
+            "languages": langs
+        })
+    except Exception as e:
+        return jsonify({
+            "tesseract": False,
+            "error": str(e)
+        }), 500
 @app.get("/health")
 def health():
     return jsonify({
