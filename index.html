@@ -885,6 +885,10 @@
 .tab-btn{min-height:54px!important;padding:14px 20px!important;font-size:15px!important}.tool-active{background:#2563eb!important;color:#fff!important;border-color:#60a5fa!important;box-shadow:0 8px 20px #2563eb66!important}.premium-crop-mode .basic-only{display:none!important}
 </style>
 <style>
+  .op-footer{margin:28px auto 0;padding:32px 28px 18px;max-width:1320px;border:1px solid #ffffff24;border-radius:24px 24px 0 0;background:linear-gradient(135deg,#0f172eee,#1e1b4bee);color:#cbd5e1;box-shadow:0 -16px 45px #02061744;backdrop-filter:blur(18px)}
+  .front-nav-links{display:flex;align-items:center;gap:16px;margin-left:38px}.front-nav-links a{color:#475569;text-decoration:none;font-size:12px;font-weight:700;transition:color .2s,transform .2s}.front-nav-links a:hover{color:#2563eb;transform:translateY(-1px)}
+  .op-footer-grid{display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:28px}.op-footer h3{color:#93c5fd;font-size:21px;margin-bottom:8px}.op-footer h4{color:#fff;margin-bottom:12px}.op-footer p{font-size:13px;line-height:1.6}.op-footer a{display:block;color:#cbd5e1;text-decoration:none;font-size:13px;margin:8px 0;transition:color .2s,transform .2s}.op-footer a:hover{color:#67e8f9;transform:translateX(4px)}.made-india{display:inline-block;margin-top:14px;padding:7px 11px;border:1px solid #34d39988;border-radius:999px;color:#a7f3d0;background:#064e3b66;font-size:12px;font-weight:700}.op-footer-bottom{border-top:1px solid #ffffff1c;margin-top:25px;padding-top:14px;text-align:center;font-size:12px;color:#94a3b8}.op-type-fade{opacity:.15;transition:opacity .22s}.op-footer~*{position:relative}
+  @media(max-width:900px){.front-nav-links{display:none}}@media(max-width:700px){.op-footer{padding:25px 18px 15px}.op-footer-grid{grid-template-columns:1fr 1fr;gap:20px}.op-footer-grid>div:first-child{grid-column:1/-1}}
 #tab-pdf-editor .pe-shell{background:#111b2d;border:1px solid #34435c;border-radius:16px;overflow:hidden;text-align:left;color:#e8eef8}
 #tab-pdf-editor .pe-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:24px;background:#172338}
 #tab-pdf-editor h1{font-size:26px;margin:2px 0 5px;text-align:left;color:#f8fafc;background:none;-webkit-text-fill-color:initial}
@@ -986,6 +990,8 @@ body:has(#loginScreen.front-home){background:radial-gradient(circle at 10% 10%,#
 #mainApp .tab-content{animation:tabIn .3s ease both}
 .dashboard-status{padding:10px 15px;margin:0 auto 15px;border:1px solid #34d39966;border-radius:14px;background:linear-gradient(90deg,#064e3b88,#0f766e55);color:#a7f3d0;text-align:center;font-weight:700;letter-spacing:.1px;box-shadow:0 8px 22px #10b98122}
 .premium-only{display:none!important}.premium-crop-mode .premium-only{display:block!important}
+.premium-upload-cta{display:inline-flex;align-items:center;justify-content:center;margin-top:12px;padding:12px 22px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;font-size:14px;font-weight:800;box-shadow:0 8px 20px #2563eb55;transition:transform .18s,box-shadow .18s}
+.upload-box:hover .premium-upload-cta{transform:translateY(-2px);box-shadow:0 12px 26px #2563eb77}
 @keyframes dashboardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}@keyframes tabIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .portal-main-heading,#frontServiceSearch,.front-services .service-tile:first-of-type{display:none!important}
 body:has(#loginScreen.front-home){background:#edf3f8!important}
@@ -1015,7 +1021,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
 
 <!-- 1. Login Screen with Running Ticker, Ad Images & Services Info -->
 <div id="loginScreen" class="auth-box front-home">
-  <nav class="front-nav"><strong>OP Printing Hub</strong><label class="front-language" style="margin-left:auto;margin-right:58px;font-size:12px;color:#475569;display:flex;align-items:center;gap:6px;">🌐 <select id="frontLanguageSelect" style="border:1px solid #cbd5e1;border-radius:9px;padding:7px;background:#fff;color:#334155;"><option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option></select></label><div class="front-menu-wrap"><button class="front-menu-btn" id="frontMenuBtn" aria-expanded="false" aria-controls="frontMenu">☰</button><div class="front-menu" id="frontMenu"><button type="button" id="frontLoginBtn">🔑 Login</button><button type="button" id="frontJoinBtn">📝 Join / Create Account</button></div></div></nav>
+  <nav class="front-nav"><strong>OP Printing Hub</strong><div class="front-nav-links" aria-label="Primary navigation"><a href="#loginScreen">Home</a><a href="#pricing">Pricing &amp; Plans</a><a href="#jobs">Government Jobs</a><a href="#mainApp">All PDF Tools</a><a href="#faq">Help &amp; FAQs</a></div><label class="front-language" style="margin-left:auto;margin-right:58px;font-size:12px;color:#475569;display:flex;align-items:center;gap:6px;">🌐 <select id="frontLanguageSelect" style="border:1px solid #cbd5e1;border-radius:9px;padding:7px;background:#fff;color:#334155;"><option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option></select></label><div class="front-menu-wrap"><button class="front-menu-btn" id="frontMenuBtn" aria-expanded="false" aria-controls="frontMenu">☰</button><div class="front-menu" id="frontMenu"><button type="button" id="frontLoginBtn">🔑 Login</button><button type="button" id="frontJoinBtn">📝 Join / Create Account</button></div></div></nav>
   <section class="front-hero"><h1>Launch Your Digital Operations With<br>Our Print Portal</h1><p>All-in-one platform for seamless online printing and digital services.</p></section>
   <div class="front-status-banner" role="status">🟢 All Portal Services Operational · Fast 300 DPI Rendering Active</div>
   <section class="front-highlights" aria-label="Portal highlights">
@@ -1271,7 +1277,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
       
       <div id="slotCounter" class="slot-counter-badge">Cards on Page: 0 / 5 (Next Slot: #1)</div>
       <div class="upload-section premium-only" style="margin:12px 0;">
-        <label class="upload-box" for="pvcPdfInput" style="max-width:520px;"><strong style="display:block;font-size:14px;margin-bottom:4px;">✨ Premium Auto ID Cropper: PDF से Front/Back</strong><div id="pvcPdfName" style="font-size:12px;color:var(--text-muted);">Premium access के बाद PDF चुनें · ऊपर-नीचे या left-right layout अपने-आप पहचाना जाएगा</div></label>
+        <label class="upload-box" for="pvcPdfInput" style="max-width:520px;"><strong style="display:block;font-size:14px;margin-bottom:4px;">✨ Premium Auto ID Cropper: PDF से Front/Back</strong><div id="pvcPdfName" style="font-size:12px;color:var(--text-muted);">Premium access के बाद PDF चुनें · ऊपर-नीचे या left-right layout अपने-आप पहचाना जाएगा</div><span class="premium-upload-cta">📄 Choose ID PDF</span></label>
         <input id="pvcPdfInput" type="file" accept="application/pdf">
         <p id="pvcPdfStatus" role="status" style="min-height:18px;margin:8px 0 0;font-size:12px;color:var(--accent-blue);text-align:center;"></p>
       </div>
@@ -6124,6 +6130,22 @@ try {
  window.addEventListener('portal-auth-cleared',reset);window.addEventListener('beforeunload',e=>{if(dirty||(inlineSession&&cleanText(inline.value)!==inlineSession.initial)){e.preventDefault();e.returnValue='';}});buttons();
 })();
 
+</script>
+<footer class="op-footer" aria-label="Website footer">
+  <div class="op-footer-grid">
+    <div><h3>OP Printing Hub</h3><p>Digital printing and document tools for everyday work.</p><span class="made-india">Made in India 🇮🇳</span></div>
+    <div><h4>About &amp; Support</h4><a href="#loginScreen">About Us</a><a href="mailto:support@opprintinghub.com">Contact Us</a><a href="#faq">Help &amp; FAQs</a></div>
+    <div><h4>Legal</h4><a href="#privacy">Privacy Policy</a><a href="#terms">Terms &amp; Conditions</a><a href="#disclaimer">Disclaimer</a><a href="#cookies">Cookie Policy</a></div>
+    <div><h4>Resources</h4><a href="#pricing">Pricing &amp; Plans</a><a href="#jobs">Government Jobs</a><a href="#mainApp">All PDF Tools</a><a href="#sitemap">Sitemap</a><a href="mailto:support@opprintinghub.com">✉️ Support Email</a><a href="#social">🔗 Social Media</a></div>
+  </div>
+  <div class="op-footer-bottom">© 2026 OP Printing Hub · Secure portal access</div>
+</footer>
+<script>
+(() => {
+  const phrases=['Automate your printing workflow','Crop ID cards with confidence','Create clean A4-ready documents'];
+  const hero=document.querySelector('#loginScreen .front-hero h1');
+  if(hero){let i=0;setInterval(()=>{i=(i+1)%phrases.length;hero.classList.add('op-type-fade');setTimeout(()=>{hero.innerHTML=phrases[i]+'<br>with OP Printing Hub';hero.classList.remove('op-type-fade')},220)},4200);}
+})();
 </script>
 </body>
 </html>
