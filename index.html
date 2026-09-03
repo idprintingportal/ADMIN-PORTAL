@@ -975,6 +975,18 @@ body:has(#loginScreen.front-home){background:radial-gradient(circle at 10% 10%,#
 .front-highlights{grid-column:1;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .front-highlight{padding:15px;border-radius:16px;background:rgba(255,255,255,.72);border:1px solid #dbeafe;box-shadow:0 8px 20px #1720330b;font-weight:700;color:#243b69}
 @media(max-width:850px){#loginScreen.front-home{display:block;padding:12px 16px 36px}#loginScreen.front-home .front-nav{margin:-12px -16px 0;padding:0 16px}#loginScreen.front-home .front-hero{margin:18px 0 20px;min-height:220px;padding:30px 24px;text-align:center}.front-status-banner,.front-highlights{margin:14px 0}.front-highlights{grid-template-columns:1fr}.front-highlight{padding:12px}.front-home .front-services{grid-template-columns:repeat(2,1fr);margin:20px 0}.front-home .front-search{width:100%;margin:14px 0}.front-home>.badge,.front-home>h2,.front-home>p,.front-home>#loginEmail,.front-home>#loginPass,.front-home>#authBtn,.front-home>#errorMsg,.front-home>div[style]{margin-left:auto;margin-right:auto;max-width:520px}}
+
+/* Logged-in dashboard visual layer */
+#mainApp{background:linear-gradient(135deg,#172033cc,#0f172acc),radial-gradient(circle at 85% 5%,#2563eb55,transparent 36%);border:1px solid #ffffff18;border-radius:26px;padding:18px;box-shadow:0 24px 70px #02061766;backdrop-filter:blur(18px);animation:dashboardIn .45s ease both}
+#mainApp>.pdf-tools-bar,#mainApp>.tab-nav,#mainApp>.container>div,#mainApp .control-panel,#mainApp .upload-box,#mainApp .tab-content>div{border-color:#ffffff22}
+#mainApp .container{background:rgba(15,23,42,.42);border:1px solid #ffffff18;border-radius:22px;padding:18px;box-shadow:0 12px 35px #02061733}
+#mainApp .tab-btn{background:rgba(30,41,59,.82);border:1px solid #64748b66;color:#dbeafe}
+#mainApp .tab-btn:hover{background:#2563ebaa;color:#fff;transform:translateY(-3px) scale(1.02)}
+#mainApp .tab-btn.active,#mainApp .tab-btn.tool-active{background:linear-gradient(135deg,#2563eb,#4f46e5)!important;color:#fff!important;border-color:#93c5fd!important;box-shadow:0 10px 26px #2563eb66!important}
+#mainApp .tab-content{animation:tabIn .3s ease both}
+.dashboard-status{padding:10px 15px;margin:0 auto 15px;border:1px solid #34d39966;border-radius:14px;background:linear-gradient(90deg,#064e3b88,#0f766e55);color:#a7f3d0;text-align:center;font-weight:700;letter-spacing:.1px;box-shadow:0 8px 22px #10b98122}
+.premium-only{display:none!important}.premium-crop-mode .premium-only{display:block!important}
+@keyframes dashboardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}@keyframes tabIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .portal-main-heading,#frontServiceSearch,.front-services .service-tile:first-of-type{display:none!important}
 body:has(#loginScreen.front-home){background:#edf3f8!important}
 .front-home{background:#edf3f8!important}
@@ -1196,6 +1208,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
 <!-- 3. Main Portal Application -->
 <div id="mainApp">
   <div id="maintenanceBanner" hidden style="max-width:900px;margin:0 auto 14px;padding:14px 18px;border:1px solid #f59e0b;border-radius:12px;background:#451a03;color:#fde68a;text-align:center;font-weight:600;">🛠️ <span id="maintenanceBannerText">Portal maintenance चल रहा है। कृपया बाद में प्रयास करें।</span></div>
+  <div class="dashboard-status" role="status">🟢 All Portal Services Operational · Secure Processing Active</div>
   <div class="pdf-tools-bar"><button id="pdfToolsBtn" class="pdf-tools-btn" type="button">📑 PDF Tools ▾</button><div id="pdfToolsMenu" class="pdf-tools-menu"><button data-pdf-tab="tab-pdf-editor">✏️ Edit PDF</button><button data-pdf-tab="tab-arranger">📚 Merge / Arrange</button><button data-pdf-tab="tab-arranger">✂️ Split / Delete / Reorder</button><button data-pdf-tab="tab-arranger">🔄 Rotate Pages</button><button data-pdf-tab="tab-jpg-to-pdf">🖼️ JPG/PNG → PDF</button><button data-pdf-tab="tab-pdf-to-jpg">🔁 PDF → JPG</button><button data-pdf-tab="tab-pdf-compressor">🗜️ Compress PDF</button><button data-pdf-tab="tab-resizer">📐 Resize Images</button><button data-pdf-info="Protect / Unlock PDF">🔒 Protect / Unlock PDF</button><button data-pdf-info="Word / Excel / PowerPoint conversion">📄 Office Conversion</button></div></div>
   <div style="max-width:720px;margin:0 auto 14px;padding:0 4px;">
     <input id="portalServiceSearch" type="search" placeholder="🔎 Search tools: ID card, PVC, passport, PDF, JPG…" aria-label="Search portal tools" style="width:100%;padding:12px 15px;border-radius:12px;border:1px solid rgba(56,189,248,.35);background:rgba(15,23,42,.85);color:#fff;font-size:13px;">
@@ -1257,7 +1270,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
       <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">इमेज सिलेक्ट करते ही वह <strong>ऑटोमैटिकली सही ID साइज में फिट</strong> हो जाएगी। जरूरत पड़ने पर मैनुअल क्रॉप भी कर सकते हैं।</p>
       
       <div id="slotCounter" class="slot-counter-badge">Cards on Page: 0 / 5 (Next Slot: #1)</div>
-      <div class="upload-section" style="margin:12px 0;">
+      <div class="upload-section premium-only" style="margin:12px 0;">
         <label class="upload-box" for="pvcPdfInput" style="max-width:520px;"><strong style="display:block;font-size:14px;margin-bottom:4px;">✨ Premium Auto ID Cropper: PDF से Front/Back</strong><div id="pvcPdfName" style="font-size:12px;color:var(--text-muted);">Premium access के बाद PDF चुनें · ऊपर-नीचे या left-right layout अपने-आप पहचाना जाएगा</div></label>
         <input id="pvcPdfInput" type="file" accept="application/pdf">
         <p id="pvcPdfStatus" role="status" style="min-height:18px;margin:8px 0 0;font-size:12px;color:var(--accent-blue);text-align:center;"></p>
