@@ -216,9 +216,15 @@ def split_cards(image: Image.Image):
             min(card_area.height - 1, middle + card_area.height // 5),
         )
         cut = min(search, key=lambda y: row_scores[y])
+        # Prefer the whitespace cut, but still split at the centre when a
+        # scanned card has graphics/text running through the divider.
         if row_scores[cut] < card_area.width * 0.12:
-            front = trim_content(card_area.crop((0, 0, card_area.width, cut)))
-            back = trim_content(card_area.crop((0, cut, card_area.width, card_area.height)))
+            split_y = cut
+        else:
+            split_y = card_area.height // 2
+        front = trim_content(card_area.crop((0, 0, card_area.width, split_y)))
+        back = trim_content(card_area.crop((0, split_y, card_area.width, card_area.height)))
+        if front.width > 20 and front.height > 20 and back.width > 20 and back.height > 20:
             return front, back, "stacked"
     if ratio <= 2.2:
         blank = Image.new("RGB", content.size, "white")
