@@ -259,7 +259,9 @@ def crop_pan_pair(image: Image.Image):
     PAN pair at the bottom. The pair is arranged left-to-right.
     """
     image = image.convert("RGB")
-    y0 = int(image.height * 0.70)
+    # The signed PAN layout places explanatory text above the physical
+    # left/right card pair; start below that text.
+    y0 = int(image.height * 0.79)
     pair = trim_content(image.crop((0, y0, image.width, image.height)))
     cut = pair.width // 2
     front = trim_content(pair.crop((0, 0, cut, pair.height)))
