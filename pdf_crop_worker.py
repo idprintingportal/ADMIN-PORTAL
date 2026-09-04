@@ -193,24 +193,30 @@ def split_cards(image: Image.Image):
     width, height = image.size
     content = trim_content(image)
     ratio = content.width / max(1, content.height)
+    # Many government-ID PDFs place front and back one above the other on a
+    # portrait page. Do this check before the landscape ratio check because
+    # white margins or side labels can make the trimmed page look misleading.
+    if content.height > content.width * 1.12:
+        card_area = content
+        row_scores = []
+        pix = card_area.convert("L")
+        for y in range(card_area.height):
+            dark = sum(
+                1 for x in range(card_area.width)
+                if pix.getpixel((x, y)) < 245
+            )
+            row_scores.append(dark)
+        middle = card_area.height // 2
+        search = range(
+            max(1, middle - card_area.height // 5),
+            min(card_area.height - 1, middle + card_area.height // 5),
+        )
+        cut = min(search, key=lambda y: row_scores[y])
+        if row_scores[cut] < card_area.width * 0.12:
+            front = trim_content(card_area.crop((0, 0, card_area.width, cut)))
+            back = trim_content(card_area.crop((0, cut, card_area.width, card_area.height)))
+            return front, back, "stacked"
     if ratio <= 2.2:
-        # e-Shram/MahaSarathi/Aadhaar samples are commonly two cards stacked
-        # vertically on an A4 page. Keep the left card column and split near
-        # the widest whitespace between the two cards.
-        if content.height > content.width * 1.18:
-            card_area = content.crop((0, 0, max(1, int(content.width * 0.70)), content.height))
-            row_scores = []
-            pix = card_area.convert("L")
-            for y in range(card_area.height):
-                dark = sum(1 for x in range(card_area.width) if pix.getpixel((x, y)) < 245)
-                row_scores.append(dark)
-            middle = card_area.height // 2
-            search = range(max(1, middle - card_area.height // 5), min(card_area.height - 1, middle + card_area.height // 5))
-            cut = min(search, key=lambda y: row_scores[y])
-            if row_scores[cut] < card_area.width * 0.08:
-                front = trim_content(card_area.crop((0, 0, card_area.width, cut)))
-                back = trim_content(card_area.crop((0, cut, card_area.width, card_area.height)))
-                return front, back, "stacked"
         blank = Image.new("RGB", content.size, "white")
         return content, blank, "single"
     cut = width // 2
