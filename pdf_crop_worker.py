@@ -252,6 +252,21 @@ def template_boxes(filename: str):
     return None
 
 
+def crop_pan_pair(image: Image.Image):
+    """Crop the physical PAN front/back pair from signed PAN layouts.
+
+    Some e-PAN PDFs contain an e-PAN at the top and the printable physical
+    PAN pair at the bottom. The pair is arranged left-to-right.
+    """
+    image = image.convert("RGB")
+    y0 = int(image.height * 0.70)
+    pair = trim_content(image.crop((0, y0, image.width, image.height)))
+    cut = pair.width // 2
+    front = trim_content(pair.crop((0, 0, cut, pair.height)))
+    back = trim_content(pair.crop((cut, 0, pair.width, pair.height)))
+    return front, back, "pan-bottom-side-by-side"
+
+
 def crop_pdf_box(image: Image.Image, box, page_rect):
     """Crop a PDF-point rectangle from a rendered image."""
     sx = image.width / max(1, float(page_rect.width))
@@ -294,9 +309,15 @@ def crop_card():
         except Exception:
             pixmap = page.get_pixmap(dpi=600, alpha=False)
         image = Image.open(io.BytesIO(pixmap.tobytes("png"))).convert("RGB")
+        # Signed PAN PDFs can contain both an e-PAN and a separate physical
+        # PAN front/back pair. Prefer the physical pair for this known layout.
+        filename_lower = (uploaded.filename or "").lower()
+        if "pan" in filename_lower or "signed" in filename_lower:
+            front, back, layout = crop_pan_pair(image)
+        else:
+            front, back, layout = split_cards(image)
         # Detection is primary. Templates are only a bounded fallback for the
         # supplied government-ID samples and never override a good detection.
-        front, back, layout = split_cards(image)
         if layout == "single":
             boxes = template_boxes(uploaded.filename)
             if boxes:
