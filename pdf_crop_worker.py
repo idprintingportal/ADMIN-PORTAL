@@ -7,34 +7,21 @@ from PIL import Image, ImageChops
 import cv2
 import numpy as np
 import pytesseract
+import tempfile
+
+try:
+    from paddle_engine import read_with_paddle
+    PADDLE_AVAILABLE = True
+except Exception as exc:
+    print("PaddleOCR unavailable:", exc)
+    PADDLE_AVAILABLE = False
 
 _tesseract_path = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 if os.path.exists(_tesseract_path):
     pytesseract.pytesseract.tesseract_cmd = _tesseract_path
 
 app = Flask(__name__)
-@app.get("/ocr-status")
-def ocr_status():
-    try:
-        langs = pytesseract.get_languages(config="")
-        return jsonify({
-            "tesseract": True,
-            "eng": "eng" in langs,
-            "hin": "hin" in langs,
-            "mar": "mar" in langs,
-            "languages": langs
-        })
-    except Exception as e:
-        return jsonify({
-            "tesseract": False,
-            "error": str(e)
-        }), 500
-@app.get("/health")
-def health():
-    return jsonify({
-        "ok": True,
-        "service": "pdf-crop-worker"
-    })
+
 @app.after_request
 def allow_local_portal(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
@@ -70,6 +57,24 @@ def read_card_text(image: Image.Image) -> str:
         return pytesseract.image_to_string(clean, lang="eng+hin+mar", config="--oem 3 --psm 6").lower()
     except pytesseract.TesseractNotFoundError:
         return ""
+
+
+def read_paddle_from_image(image: Image.Image) -> dict:
+    """Run optional PaddleOCR without making it a hard worker dependency."""
+    if not PADDLE_AVAILABLE:
+        return {"text": "", "scores": [], "averageScore": 0}
+    temp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp_file:
+            temp_path = temp_file.name
+        image.convert("RGB").save(temp_path, format="PNG")
+        return read_with_paddle(temp_path)
+    except Exception as exc:
+        print("PaddleOCR read failed:", exc)
+        return {"text": "", "scores": [], "averageScore": 0}
+    finally:
+        if temp_path and os.path.exists(temp_path):
+            os.remove(temp_path)
 
 
 def identify_card(text: str) -> str:
@@ -265,9 +270,17 @@ def crop_card():
                 layout = "template-front-back" if len(boxes) > 1 else "template-single"
         front_text = read_card_text(front)
         back_text = read_card_text(back) if back.getbbox() else ""
+        front_paddle = read_paddle_from_image(front)
+        back_paddle = read_paddle_from_image(back) if back.getbbox() else {"text": "", "scores": [], "averageScore": 0}
+        combined_text = front_text + " " + back_text + " " + front_paddle.get("text", "") + " " + back_paddle.get("text", "")
         return jsonify({"success": True, "layout": layout,
-                        "cardType": identify_card(front_text + " " + back_text),
+                        "cardType": identify_card(combined_text),
                         "ocrAvailable": True,
+                        "paddleOcr": {"available": PADDLE_AVAILABLE,
+                                      "frontText": front_paddle.get("text", ""),
+                                      "backText": back_paddle.get("text", ""),
+                                      "frontScore": front_paddle.get("averageScore", 0),
+                                      "backScore": back_paddle.get("averageScore", 0)},
                         "page": "data:image/png;base64," + png_data(image),
                         "front": "data:image/png;base64," + png_data(front),
                         "back": "data:image/png;base64," + png_data(back)})
