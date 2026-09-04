@@ -22,6 +22,25 @@ if os.path.exists(_tesseract_path):
 
 app = Flask(__name__)
 
+@app.get("/health")
+def health():
+    return jsonify({"ok": True, "service": "pdf-crop-worker"})
+
+@app.get("/ocr-status")
+def ocr_status():
+    try:
+        langs = pytesseract.get_languages(config="")
+        return jsonify({
+            "tesseract": True,
+            "eng": "eng" in langs,
+            "hin": "hin" in langs,
+            "mar": "mar" in langs,
+            "paddleOcr": PADDLE_AVAILABLE,
+            "languages": langs,
+        })
+    except Exception as exc:
+        return jsonify({"tesseract": False, "paddleOcr": PADDLE_AVAILABLE, "error": str(exc)}), 500
+
 @app.after_request
 def allow_local_portal(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
