@@ -3475,6 +3475,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
   }
   pvcPdfInput.addEventListener('change',()=>{const f=pvcPdfInput.files[0];if(!f)return;pvcPdfName.textContent='✅ '+f.name;document.getElementById('pvcPasswordBox').hidden=true;pvcRenderPdf(f).catch(e=>{pvcPdfStatus.textContent='PDF खोलने के लिए password आवश्यक है।';document.getElementById('pvcPasswordBox').hidden=false;});});
   document.getElementById('pvcUnlockBtn').addEventListener('click',()=>{const f=pvcPdfInput.files[0];if(f)pvcRenderPdf(f,document.getElementById('pvcPdfPassword').value).catch(e=>{pvcPdfStatus.textContent='❌ '+e.message;});});
+  pvcSideMode.addEventListener('change',()=>{const f=pvcPdfInput.files[0];if(f)pvcRenderPdf(f).catch(e=>{pvcPdfStatus.textContent='❌ '+e.message;});});
   cardPrintMode.addEventListener('change',()=>{slotCounter.dataset.mode=cardPrintMode.value;addCardBtn.textContent=cardPrintMode.value==='pvc'?'➕ Add PVC Card to A4':cardPrintMode.value==='auto'?'➕ Auto-Place on A4':'➕ Add This Card to A4 Sheet';});
 
   document.getElementById('card1Input').addEventListener('change', (e) => {
