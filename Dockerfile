@@ -6,6 +6,9 @@ RUN apt-get update \
         tesseract-ocr \
         tesseract-ocr-hin \
         tesseract-ocr-mar \
+        libzbar0 \
+        libgl1 \
+        libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
