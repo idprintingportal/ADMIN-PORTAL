@@ -189,7 +189,11 @@ def split_cards(image: Image.Image):
         crops = [_quad_crop(image, q) for q in sorted(quads, key=lambda q: float(np.mean(q[:, 1])))]
         if len(crops) >= 2:
             return crops[0], crops[1], "detected-front-back"
-        return crops[0], Image.new("RGB", crops[0].size, "white"), "detected-single"
+        # A portrait page may expose only one rectangle to contour detection
+        # even though the second card is below it. Let the stacked fallback
+        # inspect the complete page before declaring the PDF single-sided.
+        if image.height <= image.width * 1.12:
+            return crops[0], Image.new("RGB", crops[0].size, "white"), "detected-single"
     width, height = image.size
     content = trim_content(image)
     ratio = content.width / max(1, content.height)
