@@ -289,6 +289,15 @@ def crop_pan_pair(image: Image.Image):
     return front, back, "pan-bottom-side-by-side"
 
 
+def crop_vertical_pair(image: Image.Image):
+    """Split a full-page government card printed front-above-back."""
+    content = trim_content(image)
+    cut = content.height // 2
+    front = trim_content(content.crop((0, 0, content.width, cut)))
+    back = trim_content(content.crop((0, cut, content.width, content.height)))
+    return front, back, "stacked"
+
+
 def crop_pdf_box(image: Image.Image, box, page_rect):
     """Crop a PDF-point rectangle from a rendered image."""
     sx = image.width / max(1, float(page_rect.width))
@@ -338,8 +347,11 @@ def crop_card():
         filename_lower = (uploaded.filename or "").lower()
         if card_type == "pan" or "pan" in filename_lower or "signed" in filename_lower:
             front, back, layout = crop_pan_pair(image)
-        elif card_type in {"aadhaar", "maandhan", "maha", "mahasarathi"} or any(name in filename_lower for name in ("aadhaar", "aadhar", "maandhan", "mandhan", "mahasarathi")):
-            # These government-ID samples commonly place front above back.
+        elif card_type in {"eshram", "maandhan", "maha", "mahasarathi"} or any(name in filename_lower for name in ("e shram", "eshram", "maandhan", "mandhan", "mahasarathi")):
+            # These samples are full-page front-above-back layouts. Avoid
+            # contour detection selecting small logos or text boxes.
+            front, back, layout = crop_vertical_pair(image)
+        elif card_type == "aadhaar" or any(name in filename_lower for name in ("aadhaar", "aadhar")):
             front, back, layout = split_cards(image)
         else:
             front, back, layout = split_cards(image)
