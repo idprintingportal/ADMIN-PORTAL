@@ -8,6 +8,9 @@ import cv2
 import numpy as np
 import pytesseract
 import tempfile
+import json
+import urllib.request
+import urllib.error
 
 try:
     from paddle_engine import read_with_paddle
@@ -19,12 +22,20 @@ except Exception as exc:
 # Keep PaddleOCR installed, but do not let its heavy inference block the
 # crop request on small Render instances. Enable later with ENABLE_PADDLE_OCR=true.
 PADDLE_ENABLED = os.getenv("ENABLE_PADDLE_OCR", "false").lower() == "true"
+PORTAL_AUTH_URL = os.getenv("PORTAL_AUTH_URL", "").strip()
 
 _tesseract_path = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 if os.path.exists(_tesseract_path):
     pytesseract.pytesseract.tesseract_cmd = _tesseract_path
 
 app = Flask(__name__)
+app.config["MAX_CONTENT_LENGTH"] = int(os.getenv("MAX_UPLOAD_BYTES", str(25 * 1024 * 1024)))
+ALLOWED_ORIGINS = {
+    origin.strip().rstrip("/") for origin in os.getenv(
+        "ALLOWED_ORIGINS",
+        "https://all-services-are-working-fine-2.onrender.com,http://localhost:3000,http://127.0.0.1:5500",
+    ).split(",") if origin.strip()
+}
 
 @app.get("/health")
 def health():
@@ -48,15 +59,49 @@ def ocr_status():
 
 @app.after_request
 def allow_local_portal(response):
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+    origin = request.headers.get("Origin", "").rstrip("/")
+    if origin in ALLOWED_ORIGINS:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Vary"] = "Origin"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["Cache-Control"] = "no-store"
     return response
+
+
+@app.errorhandler(413)
+def request_too_large(_error):
+    return jsonify(error="PDF upload is too large."), 413
 
 
 @app.route("/crop-card", methods=["OPTIONS"])
 def crop_card_options():
     return ("", 204)
+
+
+def require_portal_session():
+    """Validate the portal bearer session before doing expensive PDF work."""
+    if not PORTAL_AUTH_URL:
+        return None  # Allows local development; set PORTAL_AUTH_URL in production.
+    token = request.headers.get("Authorization", "")
+    if not token.startswith("Bearer "):
+        return jsonify(error="Login required."), 401
+    raw_token = token[7:].strip()
+    if len(raw_token) != 64:
+        return jsonify(error="Invalid session."), 401
+    body = json.dumps({"action": "getMe", "token": raw_token}).encode("utf-8")
+    try:
+        req = urllib.request.Request(PORTAL_AUTH_URL, data=body, headers={"Content-Type": "application/json"}, method="POST")
+        with urllib.request.urlopen(req, timeout=8) as response:
+            result = json.loads(response.read().decode("utf-8"))
+        if not result.get("success") or result.get("state") != "active":
+            return jsonify(error="Active account required."), 403
+    except Exception:
+        return jsonify(error="Session validation unavailable."), 503
+    return None
 
 
 def trim_content(image: Image.Image, padding: int = 18) -> Image.Image:
@@ -332,6 +377,9 @@ def png_data(image: Image.Image) -> str:
 
 @app.post("/crop-card")
 def crop_card():
+    auth_error = require_portal_session()
+    if auth_error is not None:
+        return auth_error
     uploaded = request.files.get("file")
     if not uploaded:
         return jsonify(error="PDF file is required."), 400
