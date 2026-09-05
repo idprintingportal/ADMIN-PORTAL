@@ -1281,12 +1281,6 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
       <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">इमेज सिलेक्ट करते ही वह <strong>ऑटोमैटिकली सही ID साइज में फिट</strong> हो जाएगी। जरूरत पड़ने पर मैनुअल क्रॉप भी कर सकते हैं।</p>
       
       <div id="slotCounter" class="slot-counter-badge">Cards on Page: 0 / 5 (Next Slot: #1)</div>
-      <div class="upload-section premium-only" style="margin:12px 0;">
-        <div class="upload-box" style="max-width:520px;cursor:default;"><strong style="display:block;font-size:14px;margin-bottom:4px;">✨ Premium Auto ID Cropper: PDF से Front/Back</strong><div id="pvcPdfName" style="font-size:12px;color:var(--text-muted);">Premium access के बाद PDF चुनें · ऊपर-नीचे या left-right layout अपने-आप पहचाना जाएगा</div><button type="button" class="premium-upload-cta" onclick="document.getElementById('pvcPdfInput').click()">📄 Choose ID PDF</button></div>
-        <input id="pvcPdfInput" type="file" accept="application/pdf">
-        <p id="pvcPdfStatus" role="status" style="min-height:18px;margin:8px 0 0;font-size:12px;color:var(--accent-blue);text-align:center;"></p>
-      </div>
-      <div id="pvcPasswordBox" hidden style="max-width:420px;margin:10px auto;padding:14px;border:1px solid #38bdf8;border-radius:10px;background:rgba(15,23,42,.8);"><label style="display:block;text-align:left;font-size:12px;">🔒 PDF Password</label><input id="pvcPdfPassword" type="password" class="login-input" autocomplete="off"><button id="pvcUnlockBtn" type="button" class="login-btn">Unlock & Auto-Crop</button></div>
       <div class="control-panel" style="margin:12px auto;max-width:520px;text-align:left;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;">
         <label style="font-size:12px;color:var(--text-muted);">Print mode
           <select id="cardPrintMode" class="login-input" style="width:auto;display:inline-block;margin:0 4px;padding:7px 10px;">
@@ -1295,16 +1289,23 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
         </label>
         <label style="font-size:12px;color:var(--text-muted);">Card type
           <select id="pvcCardType" class="login-input" style="width:auto;display:inline-block;margin:0 4px;padding:7px 10px;">
-            <option value="auto">Auto Detect</option><option value="aadhaar">Aadhaar</option><option value="ayushman">Ayushman</option><option value="pan">PAN</option><option value="voter">Voter ID</option>
+            <option value="aadhaar">Aadhaar</option><option value="ayushman">Ayushman</option><option value="pan">PAN Card</option><option value="voter">Voter ID</option><option value="eshram">e-Shram</option><option value="maandhan">Maandhan</option><option value="other">Other</option>
           </select>
         </label>
         <label style="font-size:12px;color:var(--text-muted);">Sides
-          <select id="pvcSideMode" class="login-input" style="width:auto;display:inline-block;margin:0 4px;padding:7px 10px;"><option value="auto">Auto</option><option value="single">Single card</option><option value="double">Front + Back</option></select>
+          <select id="pvcSideMode" class="login-input" style="width:auto;display:inline-block;margin:0 4px;padding:7px 10px;"><option value="single">Single card</option><option value="double">Front + Back</option><option value="front">Front only</option><option value="back">Back only</option></select>
         </label>
         <label style="font-size:12px;color:var(--text-muted);">Copies <input id="cardCopies" class="login-input" type="number" min="1" max="5" value="1" style="width:70px;display:inline-block;margin:0 4px;padding:7px 10px;"></label>
         <label style="font-size:12px;color:var(--text-muted);"><input id="pvcBorderEnabled" type="checkbox" checked> Black border</label>
         <label style="font-size:12px;color:var(--text-muted);">Border size <input id="pvcBorderSize" type="range" min="1" max="20" value="6" style="width:90px;vertical-align:middle;"><output id="pvcBorderSizeValue">6 px</output></label>
       </div>
+
+      <div class="upload-section premium-only" style="margin:12px 0;">
+        <div class="upload-box" style="max-width:520px;cursor:default;"><strong style="display:block;font-size:14px;margin-bottom:4px;">✨ Premium Auto ID Cropper: PDF से Front/Back</strong><div id="pvcPdfName" style="font-size:12px;color:var(--text-muted);">पहले Card Type और Sides चुनें, फिर PDF upload करें</div><button type="button" class="premium-upload-cta" onclick="document.getElementById('pvcPdfInput').click()">📄 Choose ID PDF</button></div>
+        <input id="pvcPdfInput" type="file" accept="application/pdf">
+        <p id="pvcPdfStatus" role="status" style="min-height:18px;margin:8px 0 0;font-size:12px;color:var(--accent-blue);text-align:center;"></p>
+      </div>
+      <div id="pvcPasswordBox" hidden style="max-width:420px;margin:10px auto;padding:14px;border:1px solid #38bdf8;border-radius:10px;background:rgba(15,23,42,.8);"><label style="display:block;text-align:left;font-size:12px;">🔒 PDF Password</label><input id="pvcPdfPassword" type="password" class="login-input" autocomplete="off"><button id="pvcUnlockBtn" type="button" class="login-btn">Unlock & Auto-Crop</button></div>
 
       <div class="upload-section basic-only">
         <label class="upload-box" for="card1Input">
@@ -3468,7 +3469,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
     pvcPdfStatus.textContent='PDF तैयार हो रही है…';
     if(/pan|signed/i.test(file.name)){
       try{
-        const form=new FormData();form.append('file',file);if(password)form.append('password',password);
+        const form=new FormData();form.append('file',file);form.append('card_type',pvcCardType.value);form.append('sides',pvcSideMode.value);if(password)form.append('password',password);
         const response=await fetch('https://all-services-are-working-fine-2.onrender.com/crop-card',{method:'POST',body:form});
         const result=await response.json();
         if(!response.ok||!result.success)throw new Error(result.error||'PAN crop unavailable.');
