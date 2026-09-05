@@ -279,10 +279,11 @@ def crop_pan_pair(image: Image.Image):
     PAN pair at the bottom. The pair is arranged left-to-right.
     """
     image = image.convert("RGB")
-    # The signed PAN layout places explanatory text above the physical
-    # left/right card pair. The marked pair occupies the bottom quarter.
-    y0 = int(image.height * 0.765)
-    pair = trim_content(image.crop((0, y0, image.width, image.height)))
+    # The signed PAN layout places explanatory text above the dashed Cut line;
+    # only the marked physical pair below it is printable.
+    y0 = int(image.height * 0.805)
+    y1 = int(image.height * 0.975)
+    pair = image.crop((0, y0, image.width, y1))
     cut = pair.width // 2
     front = trim_content(pair.crop((0, 0, cut, pair.height)))
     back = trim_content(pair.crop((cut, 0, pair.width, pair.height)))
@@ -360,10 +361,11 @@ def crop_card():
         elif card_type == "aadhaar" or any(name in filename_lower for name in ("aadhaar", "aadhar")):
             # Aadhaar samples commonly print the actual left/right pair below
             # the explanatory information on the page.
-            front, back, layout = crop_horizontal_pair_band(image, 0.62, 1.0, "aadhaar-bottom-side-by-side")
+            front, back, layout = crop_horizontal_pair_band(image, 0.77, 1.0, "aadhaar-bottom-side-by-side")
         elif card_type == "voter" or any(name in filename_lower for name in ("voter", "epic", "election")):
-            # Voter samples commonly place the actual pair in the upper band.
-            front, back, layout = crop_horizontal_pair_band(image, 0.0, 0.45, "voter-top-side-by-side")
+            # Voter samples place the actual left/right pair below the ECI
+            # heading and above the larger polling-information section.
+            front, back, layout = crop_horizontal_pair_band(image, 0.105, 0.325, "voter-top-side-by-side")
         elif card_type in {"eshram", "maandhan", "maha", "mahasarathi"} or any(name in filename_lower for name in ("e shram", "eshram", "maandhan", "mandhan", "mahasarathi")):
             # These samples are full-page front-above-back layouts. Avoid
             # contour detection selecting small logos or text boxes.
