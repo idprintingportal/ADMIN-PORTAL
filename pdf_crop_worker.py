@@ -338,6 +338,9 @@ def crop_card():
         filename_lower = (uploaded.filename or "").lower()
         if card_type == "pan" or "pan" in filename_lower or "signed" in filename_lower:
             front, back, layout = crop_pan_pair(image)
+        elif card_type in {"aadhaar", "maandhan", "maha", "mahasarathi"} or any(name in filename_lower for name in ("aadhaar", "aadhar", "maandhan", "mandhan", "mahasarathi")):
+            # These government-ID samples commonly place front above back.
+            front, back, layout = split_cards(image)
         else:
             front, back, layout = split_cards(image)
         # Detection is primary. Templates are only a bounded fallback for the
