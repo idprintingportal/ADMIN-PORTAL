@@ -16,6 +16,10 @@ except Exception as exc:
     print("PaddleOCR unavailable:", exc)
     PADDLE_AVAILABLE = False
 
+# Keep PaddleOCR installed, but do not let its heavy inference block the
+# crop request on small Render instances. Enable later with ENABLE_PADDLE_OCR=true.
+PADDLE_ENABLED = os.getenv("ENABLE_PADDLE_OCR", "false").lower() == "true"
+
 _tesseract_path = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 if os.path.exists(_tesseract_path):
     pytesseract.pytesseract.tesseract_cmd = _tesseract_path
@@ -35,7 +39,8 @@ def ocr_status():
             "eng": "eng" in langs,
             "hin": "hin" in langs,
             "mar": "mar" in langs,
-            "paddleOcr": PADDLE_AVAILABLE,
+            "paddleOcr": PADDLE_AVAILABLE and PADDLE_ENABLED,
+            "paddleInstalled": PADDLE_AVAILABLE,
             "languages": langs,
         })
     except Exception as exc:
@@ -85,6 +90,8 @@ def read_card_text(image: Image.Image) -> str:
 
 
 def read_paddle_from_image(image: Image.Image) -> dict:
+    if not (PADDLE_AVAILABLE and PADDLE_ENABLED):
+        return {"text": "", "scores": [], "averageScore": 0}
     """Run optional PaddleOCR without making it a hard worker dependency."""
     if not PADDLE_AVAILABLE:
         return {"text": "", "scores": [], "averageScore": 0}
