@@ -1289,11 +1289,11 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
         </label>
         <label style="font-size:12px;color:var(--text-muted);">Card type
           <select id="pvcCardType" class="login-input" style="width:auto;display:inline-block;margin:0 4px;padding:7px 10px;">
-            <option value="aadhaar">Aadhaar</option><option value="ayushman">Ayushman</option><option value="pan">PAN Card</option><option value="voter">Voter ID</option><option value="eshram">e-Shram</option><option value="maandhan">Maandhan</option><option value="other">Other</option>
+            <option value="auto">Auto Detect</option><option value="aadhaar">Aadhaar</option><option value="ayushman">Ayushman</option><option value="pan">PAN Card</option><option value="voter">Voter ID</option><option value="eshram">e-Shram</option><option value="maandhan">Maandhan</option><option value="mahasarathi">MahaSarathi</option><option value="other">Other</option>
           </select>
         </label>
         <label style="font-size:12px;color:var(--text-muted);">Sides
-          <select id="pvcSideMode" class="login-input" style="width:auto;display:inline-block;margin:0 4px;padding:7px 10px;"><option value="single">Single card</option><option value="double">Front + Back</option><option value="front">Front only</option><option value="back">Back only</option></select>
+          <select id="pvcSideMode" class="login-input" style="width:auto;display:inline-block;margin:0 4px;padding:7px 10px;"><option value="auto">Auto</option><option value="single">Single card</option><option value="double">Front + Back</option><option value="front">Front only</option><option value="back">Back only</option></select>
         </label>
         <label style="font-size:12px;color:var(--text-muted);">Copies <input id="cardCopies" class="login-input" type="number" min="1" max="5" value="1" style="width:70px;display:inline-block;margin:0 4px;padding:7px 10px;"></label>
         <label style="font-size:12px;color:var(--text-muted);"><input id="pvcBorderEnabled" type="checkbox" checked> Black border</label>
