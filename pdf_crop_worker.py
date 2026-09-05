@@ -199,9 +199,16 @@ def split_cards(image: Image.Image):
     image = image.convert("RGB")
     quads = detect_card_quads(image)
     if quads:
-        crops = [_quad_crop(image, q) for q in sorted(quads, key=lambda q: float(np.mean(q[:, 1])))]
-        if len(crops) >= 2:
-            return crops[0], crops[1], "detected-front-back"
+        # Classify by the card centres, not by filename: vertical centres mean
+        # front-above-back; horizontal centres mean front-left/back-right.
+        ordered = sorted(quads, key=lambda q: (float(np.mean(q[:, 1])), float(np.mean(q[:, 0]))))
+        if len(ordered) >= 2:
+            centers = [np.mean(q, axis=0) for q in ordered[:2]]
+            vertical_layout = abs(centers[1][1] - centers[0][1]) >= abs(centers[1][0] - centers[0][0])
+            crops = [_quad_crop(image, q) for q in ordered[:2]]
+            return crops[0], crops[1], "stacked" if vertical_layout else "side-by-side"
+        crop = _quad_crop(image, ordered[0])
+        return crop, Image.new("RGB", crop.size, "white"), "detected-single"
         # A portrait page may expose only one rectangle to contour detection
         # even though the second card is below it. Let the stacked fallback
         # inspect the complete page before declaring the PDF single-sided.
@@ -309,6 +316,8 @@ def crop_card():
     if not uploaded:
         return jsonify(error="PDF file is required."), 400
     password = request.form.get("password", "")
+    card_type = request.form.get("card_type", "other").lower()
+    sides = request.form.get("sides", "single").lower()
     try:
         document = fitz.open(stream=uploaded.read(), filetype="pdf")
         if document.needs_pass and not document.authenticate(password):
@@ -327,7 +336,7 @@ def crop_card():
         # Signed PAN PDFs can contain both an e-PAN and a separate physical
         # PAN front/back pair. Prefer the physical pair for this known layout.
         filename_lower = (uploaded.filename or "").lower()
-        if "pan" in filename_lower or "signed" in filename_lower:
+        if card_type == "pan" or "pan" in filename_lower or "signed" in filename_lower:
             front, back, layout = crop_pan_pair(image)
         else:
             front, back, layout = split_cards(image)
@@ -339,6 +348,8 @@ def crop_card():
                 front = trim_content(crop_pdf_box(image, boxes[0], page.rect), padding=8)
                 back = trim_content(crop_pdf_box(image, boxes[1], page.rect), padding=8) if len(boxes) > 1 else Image.new("RGB", front.size, "white")
                 layout = "template-front-back" if len(boxes) > 1 else "template-single"
+        if sides in {"single", "front"}:
+            back = Image.new("RGB", front.size, "white")
         front_text = read_card_text(front)
         back_text = read_card_text(back) if back.getbbox() else ""
         front_paddle = read_paddle_from_image(front)
