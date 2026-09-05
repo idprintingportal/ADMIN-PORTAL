@@ -45,7 +45,13 @@ def ocr_status():
 def allow_local_portal(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     return response
+
+
+@app.route("/crop-card", methods=["OPTIONS"])
+def crop_card_options():
+    return ("", 204)
 
 
 def trim_content(image: Image.Image, padding: int = 18) -> Image.Image:
