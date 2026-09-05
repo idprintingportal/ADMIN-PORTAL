@@ -298,6 +298,16 @@ def crop_vertical_pair(image: Image.Image):
     return front, back, "stacked"
 
 
+def crop_horizontal_pair_band(image: Image.Image, start: float, end: float, layout: str):
+    """Crop a left/right card pair from a known page band."""
+    image = image.convert("RGB")
+    band = trim_content(image.crop((0, int(image.height * start), image.width, int(image.height * end))))
+    cut = band.width // 2
+    front = trim_content(band.crop((0, 0, cut, band.height)))
+    back = trim_content(band.crop((cut, 0, band.width, band.height)))
+    return front, back, layout
+
+
 def crop_pdf_box(image: Image.Image, box, page_rect):
     """Crop a PDF-point rectangle from a rendered image."""
     sx = image.width / max(1, float(page_rect.width))
@@ -347,6 +357,13 @@ def crop_card():
         filename_lower = (uploaded.filename or "").lower()
         if card_type == "pan" or "pan" in filename_lower or "signed" in filename_lower:
             front, back, layout = crop_pan_pair(image)
+        elif card_type == "aadhaar" or any(name in filename_lower for name in ("aadhaar", "aadhar")):
+            # Aadhaar samples commonly print the actual left/right pair below
+            # the explanatory information on the page.
+            front, back, layout = crop_horizontal_pair_band(image, 0.62, 1.0, "aadhaar-bottom-side-by-side")
+        elif card_type == "voter" or any(name in filename_lower for name in ("voter", "epic", "election")):
+            # Voter samples commonly place the actual pair in the upper band.
+            front, back, layout = crop_horizontal_pair_band(image, 0.0, 0.45, "voter-top-side-by-side")
         elif card_type in {"eshram", "maandhan", "maha", "mahasarathi"} or any(name in filename_lower for name in ("e shram", "eshram", "maandhan", "mandhan", "mahasarathi")):
             # These samples are full-page front-above-back layouts. Avoid
             # contour detection selecting small logos or text boxes.
