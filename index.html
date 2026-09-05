@@ -1300,6 +1300,13 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
         <label style="font-size:12px;color:var(--text-muted);">Border size <input id="pvcBorderSize" type="range" min="1" max="20" value="6" style="width:90px;vertical-align:middle;"><output id="pvcBorderSizeValue">6 px</output></label>
       </div>
 
+      <div class="upload-section premium-only" style="margin:12px 0;">
+        <div class="upload-box" style="max-width:520px;cursor:default;"><strong style="display:block;font-size:14px;margin-bottom:4px;">✨ Premium Auto ID Cropper: PDF से Front/Back</strong><div id="pvcPdfName" style="font-size:12px;color:var(--text-muted);">पहले Card Type और Sides चुनें, फिर PDF upload करें</div><button type="button" class="premium-upload-cta" onclick="document.getElementById('pvcPdfInput').click()">📄 Choose ID PDF</button></div>
+        <input id="pvcPdfInput" type="file" accept="application/pdf">
+        <p id="pvcPdfStatus" role="status" style="min-height:18px;margin:8px 0 0;font-size:12px;color:var(--accent-blue);text-align:center;"></p>
+      </div>
+      <div id="pvcPasswordBox" hidden style="max-width:420px;margin:10px auto;padding:14px;border:1px solid #38bdf8;border-radius:10px;background:rgba(15,23,42,.8);"><label style="display:block;text-align:left;font-size:12px;">🔒 PDF Password</label><input id="pvcPdfPassword" type="password" class="login-input" autocomplete="off"><button id="pvcUnlockBtn" type="button" class="login-btn">Unlock & Auto-Crop</button></div>
+
       <div class="upload-section basic-only">
         <label class="upload-box" for="card1Input">
           <strong style="display:block; font-size:14px; margin-bottom:4px;">📁 Front Side</strong>
@@ -1831,12 +1838,6 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
         <button id="openMaintenanceSettingsBtn" type="button" class="action-btn btn-add">🛠️ Maintenance Settings</button>
         <div id="maintenanceCountdown" role="status" style="display:none;margin-top:10px;padding:10px 14px;border-radius:10px;background:#172338;border:1px solid #f59e0b;color:#fbbf24;font-size:13px;font-weight:700;text-align:center;"></div>
       </div>
-      <div class="upload-section premium-only" style="margin:12px 0;">
-        <div class="upload-box" style="max-width:520px;cursor:default;"><strong style="display:block;font-size:14px;margin-bottom:4px;">✨ Premium Auto ID Cropper: PDF से Front/Back</strong><div id="pvcPdfName" style="font-size:12px;color:var(--text-muted);">पहले Card Type और Sides चुनें, फिर PDF upload करें</div><button type="button" class="premium-upload-cta" onclick="document.getElementById('pvcPdfInput').click()">📄 Choose ID PDF</button></div>
-        <input id="pvcPdfInput" type="file" accept="application/pdf">
-        <p id="pvcPdfStatus" role="status" style="min-height:18px;margin:8px 0 0;font-size:12px;color:var(--accent-blue);text-align:center;"></p>
-      </div>
-      <div id="pvcPasswordBox" hidden style="max-width:420px;margin:10px auto;padding:14px;border:1px solid #38bdf8;border-radius:10px;background:rgba(15,23,42,.8);"><label style="display:block;text-align:left;font-size:12px;">🔒 PDF Password</label><input id="pvcPdfPassword" type="password" class="login-input" autocomplete="off"><button id="pvcUnlockBtn" type="button" class="login-btn">Unlock & Auto-Crop</button></div>
       <dialog id="maintenanceSettingsDialog" style="max-width:620px;width:calc(100% - 32px);border:1px solid #f59e0b;border-radius:14px;padding:22px;background:#172338;color:#fff;">
         <h3 style="font-size:16px;color:#fbbf24;margin:0 0 14px;">🛠️ Portal Maintenance</h3>
         <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><input type="checkbox" id="maintenanceEnabled"> Maintenance mode चालू करें</label>
