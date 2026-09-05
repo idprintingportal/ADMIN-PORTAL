@@ -1112,7 +1112,14 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
   <input type="password" id="signUpPass" class="login-input" placeholder="पासवर्ड बनाएं">
   <input type="password" id="signUpConfirmPass" class="login-input" placeholder="पासवर्ड फिर से लिखें">
 
-  <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 12px; padding: 12px; margin: 12px 0; text-align: left; font-size: 12px; color: var(--text-muted);">
+  <div id="registrationOtpGate" style="margin:12px 0;padding:12px;border:1px solid rgba(56,189,248,.4);border-radius:12px;background:rgba(15,23,42,.75);">
+    <button type="button" id="sendRegistrationOtpBtn" class="login-btn">📧 Send Email OTP</button>
+    <input type="text" id="registrationOtpInput" class="login-input" placeholder="6-digit Email OTP" inputmode="numeric" maxlength="6" hidden>
+    <button type="button" id="verifyRegistrationOtpBtn" class="login-btn" hidden>✅ Verify OTP</button>
+    <div id="registrationOtpStatus" role="status" style="font-size:12px;margin-top:8px;color:#93c5fd;"></div>
+  </div>
+
+  <div id="registrationPaymentSection" hidden style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 12px; padding: 12px; margin: 12px 0; text-align: left; font-size: 12px; color: var(--text-muted);">
     <div style="font-size: 11px; color: var(--accent-blue); font-weight: 700; margin-bottom: 6px;">💳 QR Payment Instructions</div>
     <div style="margin-bottom: 8px;">Please pay only through the QR code below and upload the proof after payment.</div>
 
@@ -1135,11 +1142,13 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
     </div>
   </div>
 
+  <div id="registrationPaymentFields" hidden>
   <input type="text" id="signUpTxnId" class="login-input" placeholder="Transaction ID / Reference Number">
   <label style="display:block; width:100%; text-align:left; font-size:11px; color:var(--text-muted); margin-bottom:8px;">📸 Upload payment screenshot</label>
   <input type="file" id="signUpPaymentScreenshot" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:block; width:100%; background: rgba(15, 23, 42, 0.9); color:#fff; padding:10px; border-radius:10px; border:1px solid rgba(56, 189, 248, 0.3); margin-bottom:12px;">
 
   <button id="signUpBtn" class="login-btn" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">✅ Create Account</button>
+  </div>
   <div id="signUpStatusMsg" style="font-size:13px; margin-top:12px; display:none; font-weight:500;"></div>
 
   <div>
@@ -2665,6 +2674,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
       name: name,
       email: email,
       mobile: mobile,
+      registrationToken: registrationToken,
       pass: pass,
       assignedTimestamp: assignedTimestamp,
       expiryTime: distExpiryTime,
@@ -2873,6 +2883,13 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
   const signUpEmail = document.getElementById('signUpEmail');
   const signUpPass = document.getElementById('signUpPass');
   const signUpConfirmPass = document.getElementById('signUpConfirmPass');
+  const sendRegistrationOtpBtn = document.getElementById('sendRegistrationOtpBtn');
+  const verifyRegistrationOtpBtn = document.getElementById('verifyRegistrationOtpBtn');
+  const registrationOtpInput = document.getElementById('registrationOtpInput');
+  const registrationOtpStatus = document.getElementById('registrationOtpStatus');
+  const registrationPaymentSection = document.getElementById('registrationPaymentSection');
+  const registrationPaymentFields = document.getElementById('registrationPaymentFields');
+  let registrationToken = '';
   const signUpTxnId = document.getElementById('signUpTxnId');
   const signUpPaymentScreenshot = document.getElementById('signUpPaymentScreenshot');
   const paymentQrImage = document.getElementById('paymentQrImage');
@@ -3070,6 +3087,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
     const name = signUpName.value.trim();
     const email = signUpEmail.value.trim().toLowerCase();
     const mobile = signUpMobile.value.trim();
+    if (!registrationToken) { registrationOtpStatus.textContent='पहले email OTP verify करें।'; registrationOtpStatus.style.color='#fca5a5'; return; }
     const pass = signUpPass.value;
     const confirmPass = signUpConfirmPass.value;
     const txnId = signUpTxnId.value.trim();
@@ -3181,6 +3199,13 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
   }
 
   signUpBtn.addEventListener('click', handleSignUp);
+  sendRegistrationOtpBtn.addEventListener('click',async()=>{
+    const officeName=signUpOffice.value.trim(),name=signUpName.value.trim(),email=signUpEmail.value.trim().toLowerCase(),mobile=signUpMobile.value.trim(),pass=signUpPass.value,confirmPass=signUpConfirmPass.value;
+    if(!officeName||!name||!email||!mobile||!pass||pass!==confirmPass){registrationOtpStatus.textContent='Office, name, email, mobile और matching password भरें।';registrationOtpStatus.style.color='#fca5a5';return;}
+    sendRegistrationOtpBtn.disabled=true;registrationOtpStatus.textContent='⏳ OTP भेजा जा रहा है…';
+    try{await secureApi({action:'requestRegistrationOtp',officeName,name,email,mobile});registrationOtpInput.hidden=false;verifyRegistrationOtpBtn.hidden=false;registrationOtpStatus.textContent='✅ OTP आपके email पर भेजा गया है।';registrationOtpStatus.style.color='#86efac';registrationOtpInput.focus();}catch(e){registrationOtpStatus.textContent='❌ '+e.message;registrationOtpStatus.style.color='#fca5a5';}finally{sendRegistrationOtpBtn.disabled=false;}
+  });
+  verifyRegistrationOtpBtn.addEventListener('click',async()=>{const email=signUpEmail.value.trim().toLowerCase();verifyRegistrationOtpBtn.disabled=true;try{const result=await secureApi({action:'verifyRegistrationOtp',email,otp:registrationOtpInput.value.trim()});registrationToken=result.registrationToken;registrationPaymentSection.hidden=false;registrationPaymentFields.hidden=false;sendRegistrationOtpBtn.hidden=true;registrationOtpInput.disabled=true;verifyRegistrationOtpBtn.hidden=true;registrationOtpStatus.textContent='✅ Email verified. अब payment section खुल गया है।';registrationOtpStatus.style.color='#86efac';}catch(e){registrationOtpStatus.textContent='❌ '+e.message;registrationOtpStatus.style.color='#fca5a5';}finally{verifyRegistrationOtpBtn.disabled=false;}});
   signUpConfirmPass.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSignUp(); });
 
   // ==========================================================
