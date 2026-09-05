@@ -990,6 +990,7 @@ body:has(#loginScreen.front-home){background:radial-gradient(circle at 10% 10%,#
 #mainApp .tab-btn.active,#mainApp .tab-btn.tool-active{background:linear-gradient(135deg,#2563eb,#4f46e5)!important;color:#fff!important;border-color:#93c5fd!important;box-shadow:0 10px 26px #2563eb66!important}
 #mainApp .tab-content{animation:tabIn .3s ease both}
 .dashboard-status{padding:10px 15px;margin:0 auto 15px;border:1px solid #34d39966;border-radius:14px;background:linear-gradient(90deg,#064e3b88,#0f766e55);color:#a7f3d0;text-align:center;font-weight:700;letter-spacing:.1px;box-shadow:0 8px 22px #10b98122}
+.welcome-office{padding:16px 20px;margin:0 auto 18px;border:1px solid #60a5fa88;border-radius:16px;background:linear-gradient(110deg,#1d4ed855,#7c3aed44);color:#f8fafc;text-align:center;font-size:clamp(18px,2.4vw,28px);font-weight:800;letter-spacing:.2px;box-shadow:0 10px 28px #2563eb33}.welcome-office small{display:block;margin-top:5px;color:#bfdbfe;font-size:13px;font-weight:600}
   .premium-only{display:none!important}.premium-crop-mode .premium-only{display:block!important}
   .premium-preview{display:none}.premium-crop-mode .premium-preview{display:flex!important;gap:16px;justify-content:center;flex-wrap:wrap}
   .premium-only .upload-box{margin-left:auto;margin-right:auto;text-align:center}
@@ -1104,12 +1105,21 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
   <h2 style="font-size: 20px; margin-bottom: 6px; color: var(--accent-blue);">Sign Up</h2>
   <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">अपने अकाउंट को बनाएं और पोर्टल में लॉगिन करें</p>
 
-  <input type="text" id="signUpName" class="login-input" placeholder="पूरा नाम लिखें">
+  <input type="text" id="signUpOffice" class="login-input" placeholder="कृपया अपने Office / Center / Company का नाम दर्ज करें" maxlength="150">
+  <input type="text" id="signUpName" class="login-input" placeholder="पूरा नाम लिखें" maxlength="100">
   <input type="email" id="signUpEmail" class="login-input" placeholder="ईमेल आईडी दर्ज करें">
+  <input type="tel" id="signUpMobile" class="login-input" placeholder="मोबाइल नंबर दर्ज करें" inputmode="tel" maxlength="20">
   <input type="password" id="signUpPass" class="login-input" placeholder="पासवर्ड बनाएं">
   <input type="password" id="signUpConfirmPass" class="login-input" placeholder="पासवर्ड फिर से लिखें">
 
-  <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 12px; padding: 12px; margin: 12px 0; text-align: left; font-size: 12px; color: var(--text-muted);">
+  <div id="registrationOtpGate" style="margin:12px 0;padding:12px;border:1px solid rgba(56,189,248,.4);border-radius:12px;background:rgba(15,23,42,.75);">
+    <button type="button" id="sendRegistrationOtpBtn" class="login-btn">📧 Send Email OTP</button>
+    <input type="text" id="registrationOtpInput" class="login-input" placeholder="6-digit Email OTP" inputmode="numeric" maxlength="6" hidden>
+    <button type="button" id="verifyRegistrationOtpBtn" class="login-btn" hidden>✅ Verify OTP</button>
+    <div id="registrationOtpStatus" role="status" style="font-size:12px;margin-top:8px;color:#93c5fd;"></div>
+  </div>
+
+  <div id="registrationPaymentSection" hidden style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 12px; padding: 12px; margin: 12px 0; text-align: left; font-size: 12px; color: var(--text-muted);">
     <div style="font-size: 11px; color: var(--accent-blue); font-weight: 700; margin-bottom: 6px;">💳 QR Payment Instructions</div>
     <div style="margin-bottom: 8px;">Please pay only through the QR code below and upload the proof after payment.</div>
 
@@ -1132,11 +1142,13 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
     </div>
   </div>
 
+  <div id="registrationPaymentFields" hidden>
   <input type="text" id="signUpTxnId" class="login-input" placeholder="Transaction ID / Reference Number">
   <label style="display:block; width:100%; text-align:left; font-size:11px; color:var(--text-muted); margin-bottom:8px;">📸 Upload payment screenshot</label>
   <input type="file" id="signUpPaymentScreenshot" accept="image/jpeg,image/jpg,image/png,image/webp" style="display:block; width:100%; background: rgba(15, 23, 42, 0.9); color:#fff; padding:10px; border-radius:10px; border:1px solid rgba(56, 189, 248, 0.3); margin-bottom:12px;">
 
   <button id="signUpBtn" class="login-btn" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">✅ Create Account</button>
+  </div>
   <div id="signUpStatusMsg" style="font-size:13px; margin-top:12px; display:none; font-weight:500;"></div>
 
   <div>
@@ -1220,6 +1232,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
 <div id="mainApp">
   <div id="maintenanceBanner" hidden style="max-width:900px;margin:0 auto 14px;padding:14px 18px;border:1px solid #f59e0b;border-radius:12px;background:#451a03;color:#fde68a;text-align:center;font-weight:600;">🛠️ <span id="maintenanceBannerText">Portal maintenance चल रहा है। कृपया बाद में प्रयास करें।</span></div>
   <div class="dashboard-status" role="status">🟢 All Portal Services Operational · Secure Processing Active</div>
+  <div id="officeWelcome" class="welcome-office" role="status" hidden></div>
   <div class="pdf-tools-bar"><button id="pdfToolsBtn" class="pdf-tools-btn" type="button">📑 PDF Tools ▾</button><div id="pdfToolsMenu" class="pdf-tools-menu"><button data-pdf-tab="tab-pdf-editor">✏️ Edit PDF</button><button data-pdf-tab="tab-arranger">📚 Merge / Arrange</button><button data-pdf-tab="tab-arranger">✂️ Split / Delete / Reorder</button><button data-pdf-tab="tab-arranger">🔄 Rotate Pages</button><button data-pdf-tab="tab-jpg-to-pdf">🖼️ JPG/PNG → PDF</button><button data-pdf-tab="tab-pdf-to-jpg">🔁 PDF → JPG</button><button data-pdf-tab="tab-pdf-compressor">🗜️ Compress PDF</button><button data-pdf-tab="tab-resizer">📐 Resize Images</button><button data-pdf-info="Protect / Unlock PDF">🔒 Protect / Unlock PDF</button><button data-pdf-info="Word / Excel / PowerPoint conversion">📄 Office Conversion</button></div></div>
   <div style="max-width:720px;margin:0 auto 14px;padding:0 4px;">
     <input id="portalServiceSearch" type="search" placeholder="🔎 Search tools: ID card, PVC, passport, PDF, JPG…" aria-label="Search portal tools" style="width:100%;padding:12px 15px;border-radius:12px;border:1px solid rgba(56,189,248,.35);background:rgba(15,23,42,.85);color:#fff;font-size:13px;">
@@ -1992,6 +2005,8 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
   function mergeDistributorCache(list) { saveDistributorCache(list); return distributorMemoryCache; }
   function acceptSession(result, email) {
     authToken=result.token; authRole=result.role; authEmail=email; authExpires=result.expires;
+    const welcome=document.getElementById('officeWelcome');
+    if(welcome){welcome.replaceChildren();const office=String(result.record?.officeName||'').trim();welcome.append(document.createTextNode(office?`Welcome · ${office}`:'Welcome to OP Printing Hub'));const note=document.createElement('small');note.textContent='Happy Business! आपका काम सफल और आसान रहे।';welcome.append(note);welcome.hidden=false;}
     distributorMemoryCache=[];
   }
   function clearAuth() {
@@ -1999,6 +2014,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
     adminPanelUntil=0;
     if(adminUnlockPending) finishAdminUnlock(false);
     authToken=''; authRole=''; authEmail=''; authExpires=0; distributorMemoryCache=[];
+    const welcome=document.getElementById('officeWelcome');if(welcome)welcome.hidden=true;
     activeDistributorSession=null; currentRenewalDistributor=null; currentLoggedDistributorEmail='';
     sessionStorage.removeItem('isLoggedIn');
     document.getElementById('distributorTableBody').replaceChildren();
@@ -2654,8 +2670,11 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
 
     const newDistData = {
       id: Date.now(),
+      officeName: officeName,
       name: name,
       email: email,
+      mobile: mobile,
+      registrationToken: registrationToken,
       pass: pass,
       assignedTimestamp: assignedTimestamp,
       expiryTime: distExpiryTime,
@@ -2858,10 +2877,19 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
   const adminTabBtn = document.getElementById('adminTabBtn');
 
   const goToSignUp = document.getElementById('goToSignUp');
+  const signUpOffice = document.getElementById('signUpOffice');
   const signUpName = document.getElementById('signUpName');
+  const signUpMobile = document.getElementById('signUpMobile');
   const signUpEmail = document.getElementById('signUpEmail');
   const signUpPass = document.getElementById('signUpPass');
   const signUpConfirmPass = document.getElementById('signUpConfirmPass');
+  const sendRegistrationOtpBtn = document.getElementById('sendRegistrationOtpBtn');
+  const verifyRegistrationOtpBtn = document.getElementById('verifyRegistrationOtpBtn');
+  const registrationOtpInput = document.getElementById('registrationOtpInput');
+  const registrationOtpStatus = document.getElementById('registrationOtpStatus');
+  const registrationPaymentSection = document.getElementById('registrationPaymentSection');
+  const registrationPaymentFields = document.getElementById('registrationPaymentFields');
+  let registrationToken = '';
   const signUpTxnId = document.getElementById('signUpTxnId');
   const signUpPaymentScreenshot = document.getElementById('signUpPaymentScreenshot');
   const paymentQrImage = document.getElementById('paymentQrImage');
@@ -3055,8 +3083,11 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
   async function handleSignUp() {
     if (authRole === 'admin') { alert('Logout before public signup.'); return; }
     clearAuth();
+    const officeName = signUpOffice.value.trim();
     const name = signUpName.value.trim();
     const email = signUpEmail.value.trim().toLowerCase();
+    const mobile = signUpMobile.value.trim();
+    if (!registrationToken) { registrationOtpStatus.textContent='पहले email OTP verify करें।'; registrationOtpStatus.style.color='#fca5a5'; return; }
     const pass = signUpPass.value;
     const confirmPass = signUpConfirmPass.value;
     const txnId = signUpTxnId.value.trim();
@@ -3064,7 +3095,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
     const selectedPlanValue = document.querySelector('input[name="planType"]:checked')?.value || '1month';
     const selectedPlan = PAYMENT_PLAN_OPTIONS[selectedPlanValue] || PAYMENT_PLAN_OPTIONS['1month'];
 
-    if (!name || !email || !pass || !confirmPass || !txnId) {
+    if (!officeName || !name || !email || !mobile || !pass || !confirmPass || !txnId) {
       signUpStatusMsg.innerText = '⚠️ कृपया सभी फ़ील्ड भरें!';
       signUpStatusMsg.style.color = '#ef4444';
       signUpStatusMsg.style.display = 'block';
@@ -3111,8 +3142,10 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
 
     const newDistData = {
       id: Date.now(),
+      officeName: officeName,
       name: name,
       email: email,
+      mobile: mobile,
       pass: pass,
       assignedTimestamp: assignedTimestamp,
       expiryTime: distExpiryTime,
@@ -3166,6 +3199,13 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
   }
 
   signUpBtn.addEventListener('click', handleSignUp);
+  sendRegistrationOtpBtn.addEventListener('click',async()=>{
+    const officeName=signUpOffice.value.trim(),name=signUpName.value.trim(),email=signUpEmail.value.trim().toLowerCase(),mobile=signUpMobile.value.trim(),pass=signUpPass.value,confirmPass=signUpConfirmPass.value;
+    if(!officeName||!name||!email||!mobile||!pass||pass!==confirmPass){registrationOtpStatus.textContent='Office, name, email, mobile और matching password भरें।';registrationOtpStatus.style.color='#fca5a5';return;}
+    sendRegistrationOtpBtn.disabled=true;registrationOtpStatus.textContent='⏳ OTP भेजा जा रहा है…';
+    try{await secureApi({action:'requestRegistrationOtp',officeName,name,email,mobile});registrationOtpInput.hidden=false;verifyRegistrationOtpBtn.hidden=false;registrationOtpStatus.textContent='✅ OTP आपके email पर भेजा गया है।';registrationOtpStatus.style.color='#86efac';registrationOtpInput.focus();}catch(e){registrationOtpStatus.textContent='❌ '+e.message;registrationOtpStatus.style.color='#fca5a5';}finally{sendRegistrationOtpBtn.disabled=false;}
+  });
+  verifyRegistrationOtpBtn.addEventListener('click',async()=>{const email=signUpEmail.value.trim().toLowerCase();verifyRegistrationOtpBtn.disabled=true;try{const result=await secureApi({action:'verifyRegistrationOtp',email,otp:registrationOtpInput.value.trim()});registrationToken=result.registrationToken;registrationPaymentSection.hidden=false;registrationPaymentFields.hidden=false;sendRegistrationOtpBtn.hidden=true;registrationOtpInput.disabled=true;verifyRegistrationOtpBtn.hidden=true;registrationOtpStatus.textContent='✅ Email verified. अब payment section खुल गया है।';registrationOtpStatus.style.color='#86efac';}catch(e){registrationOtpStatus.textContent='❌ '+e.message;registrationOtpStatus.style.color='#fca5a5';}finally{verifyRegistrationOtpBtn.disabled=false;}});
   signUpConfirmPass.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSignUp(); });
 
   // ==========================================================
@@ -3470,7 +3510,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
     if(/pan|signed/i.test(file.name)){
       try{
         const form=new FormData();form.append('file',file);form.append('card_type',pvcCardType.value);form.append('sides',pvcSideMode.value);if(password)form.append('password',password);
-        const response=await fetch('https://all-services-are-working-fine-2.onrender.com/crop-card',{method:'POST',body:form});
+        const response=await fetch('https://all-services-are-working-fine-2.onrender.com/crop-card',{method:'POST',headers:{Authorization:'Bearer '+authToken},body:form});
         const result=await response.json();
         if(!response.ok||!result.success)throw new Error(result.error||'PAN crop unavailable.');
         pvcCropQueue={page:result.front,backPage:result.back,backPending:true};
@@ -3478,7 +3518,7 @@ body:has(#loginScreen.front-home){background:#edf3f8!important}
         pvcPdfStatus.textContent='✅ PAN Front/Back तैयार है।';document.getElementById('pvcPasswordBox').hidden=true;openCropEngine(result.front,'card_front');return;
       }catch(panError){console.warn('PAN worker failed:',panError);pvcPdfStatus.textContent='❌ PAN crop failed: '+panError.message;return;}
     }
-    try{if(!/pan|signed/i.test(file.name)){const form=new FormData();form.append('file',file);if(password)form.append('password',password);const workerResponse=await fetch('https://all-services-are-working-fine-2.onrender.com/crop-card',{method:'POST',body:form});const workerResult=await workerResponse.json();if(!workerResponse.ok||!workerResult.success)throw new Error(workerResult.error||'Card processing unavailable.');pvcCropQueue={page:workerResult.front,backPage:workerResult.back,backPending:pvcSideMode.value!=='single'};autoFitCardToCanvas(workerResult.front,canvas1,ctx1,true);if(workerResult.back){autoFitCardToCanvas(workerResult.back,canvas2,ctx2,false);}pvcPdfStatus.textContent='✅ Front/Back preview तैयार है। जरूरत हो तो नीचे Manual Crop दबाएँ।';openCropEngine(workerResult.front,'card_front');document.getElementById('pvcPasswordBox').hidden=true;return;}}catch(workerError){console.warn('Auto-crop worker failed:',workerError);pvcPdfStatus.textContent='PDF तैयार करने में समस्या हुई; manual PDF crop जारी है।'}
+    try{if(!/pan|signed/i.test(file.name)){const form=new FormData();form.append('file',file);form.append('card_type',pvcCardType.value);form.append('sides',pvcSideMode.value);if(password)form.append('password',password);const workerResponse=await fetch('https://all-services-are-working-fine-2.onrender.com/crop-card',{method:'POST',headers:{Authorization:'Bearer '+authToken},body:form});const workerResult=await workerResponse.json();if(!workerResponse.ok||!workerResult.success)throw new Error(workerResult.error||'Card processing unavailable.');pvcCropQueue={page:workerResult.front,backPage:workerResult.back,backPending:pvcSideMode.value!=='single'};autoFitCardToCanvas(workerResult.front,canvas1,ctx1,true);if(workerResult.back){autoFitCardToCanvas(workerResult.back,canvas2,ctx2,false);}pvcPdfStatus.textContent='✅ Front/Back preview तैयार है। जरूरत हो तो नीचे Manual Crop दबाएँ।';openCropEngine(workerResult.front,'card_front');document.getElementById('pvcPasswordBox').hidden=true;return;}}catch(workerError){console.warn('Auto-crop worker failed:',workerError);pvcPdfStatus.textContent='PDF तैयार करने में समस्या हुई; manual PDF crop जारी है।'}
     const data=await file.arrayBuffer();let doc;
     try{doc=await pdfjsLib.getDocument({data,password}).promise;}catch(e){if(/password/i.test(e.name||'')||/password/i.test(e.message||'')){document.getElementById('pvcPasswordBox').hidden=false;pvcPdfStatus.textContent='Password डालकर Unlock दबाएँ।';return;}throw e;}
     if(doc.numPages<1)throw new Error('PDF में page नहीं मिला।');const page=await doc.getPage(1),vp=page.getViewport({scale:3}),src=document.createElement('canvas');src.width=vp.width;src.height=vp.height;await page.render({canvasContext:src.getContext('2d'),viewport:vp}).promise;
